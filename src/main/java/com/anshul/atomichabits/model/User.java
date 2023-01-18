@@ -1,4 +1,4 @@
-package com.anshul.atomichabits.user;
+package com.anshul.atomichabits.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
