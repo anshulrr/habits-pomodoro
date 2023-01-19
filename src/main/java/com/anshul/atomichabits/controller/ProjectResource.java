@@ -30,7 +30,8 @@ public class ProjectResource {
 	
 	@GetMapping("/users/{user_id}/projects/{project_id}")
 	public Project retrieveProject(@PathVariable Long user_id, @PathVariable Long project_id) {
-		Optional<Project> project = projectRepository.findById(project_id);
+		Optional<User> user = userRepository.findById(user_id);
+		Optional<Project> project = projectRepository.findByProjectId(user.get(), project_id);
 		
 		return project.get();
 	}
