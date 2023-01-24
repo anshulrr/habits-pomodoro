@@ -93,4 +93,9 @@ public class User {
 	public void setPosts(List<Project> projects) {
 		this.projects = projects;
 	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
+	}
 }
