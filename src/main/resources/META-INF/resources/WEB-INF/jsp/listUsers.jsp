@@ -2,11 +2,14 @@
 
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="webjars/bootstrap/5.1.3/css/bootstrap.min.css">
 		<title> Users List Page</title>
 	</head>
 	<body>
-		<p>Users List</p>
-		<table class="table">
+		<div class="container">
+			
+			<p>Users List</p>
+			<table class="table">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -24,5 +27,9 @@
 					</c:forEach>
 				</tbody>
 			</table>
+		</div>
+			
+		<script src="" type="text/javascript"></script>
+		<script src="" type="text/javascript"></script>
 	</body>
 </html>
