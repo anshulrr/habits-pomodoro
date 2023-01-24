@@ -24,7 +24,8 @@ public class UserController {
 		 List<User> users = userRepository.findAll();
 		 // System.out.println(users.get(1));
 		 // System.out.println(users.toString());
-		 model.put("users", users.toString());
+		 // model.put("users", users.toString());
+		 model.put("users", users);
 		 return "listUsers";
 	}
 }
