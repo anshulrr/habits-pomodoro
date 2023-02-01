@@ -2,8 +2,12 @@ package com.anshul.atomichabits.model;
 
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -13,7 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 
-@Entity(name="user_details")
+@Entity(name="users")
 public class User {
 
 	protected User() {
@@ -23,15 +27,21 @@ public class User {
 	@GeneratedValue
 	private Long id;
 	
-	@NotBlank(message = "Name is mandatory")
-	@Size(min=2, message = "Name should have atleast 2 characters")
-	private String name;
-	
+	@NotBlank(message = "Username is mandatory")
+	@Size(min=2, message = "Username should have atleast 2 characters")
+	@Column(unique=true)
+	private String username;
+
 	@Email
 	@NotBlank(message = "Email is mandatory")
 	private String email;
 	
-	private String password = "default";
+
+	@NotBlank(message = "Password is mandatory")
+	private String password;
+	
+	// required for spring security
+	private boolean enabled = true;
 
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
@@ -40,9 +50,9 @@ public class User {
 	public User(Long id, String name, String email, String password) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.username = name;
 		this.email = email;
-		this.password = password;
+//		this.password = (new BCryptPasswordEncoder()).encode(password);
 	}
 
 
@@ -56,13 +66,13 @@ public class User {
 	}
 
 
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String name) {
+		this.username = name;
 	}
 
 
@@ -74,15 +84,21 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
 
 
-	public String getPassword() {
-		return password;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 
 	public void setPassword(String password) {
-		this.password = password;
+//		this.password = password;
+//		this.password = (new BCryptPasswordEncoder()).encode(password);
+		this.password = (PasswordEncoderFactories.createDelegatingPasswordEncoder()).encode(password);
 	}
 	
 	public List<Project> getProjects() {
@@ -96,6 +112,6 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
+		return "User [id=" + id + ", username=" + username + ", email=" + email + "]";
 	}
 }

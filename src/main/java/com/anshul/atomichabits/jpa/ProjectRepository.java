@@ -10,6 +10,6 @@ import com.anshul.atomichabits.model.User;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-	@Query("select p from Project p where p.user = ?1 and p.id = ?2")
-	public Optional<Project> findByProjectId(User user, Long project_id);
+	@Query("select p from projects p where p.user = ?1 and p.id = ?2")
+	public Optional<Project> findUserProjectById(User user, Long project_id);
 }

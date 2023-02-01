@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,25 +29,28 @@ public class ProjectResource {
 		this.projectRepository = p;
 	}
 	
-	@GetMapping("/users/{user_id}/projects/{project_id}")
-	public Project retrieveProject(@PathVariable Long user_id, @PathVariable Long project_id) {
-		Optional<User> user = userRepository.findById(user_id);
-		Optional<Project> project = projectRepository.findByProjectId(user.get(), project_id);
+	@GetMapping("/projects/{id}")
+	public Project retrieveProject(@PathVariable Long id, Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		
+		Optional<Project> project = projectRepository.findUserProjectById(user.get(), id);
+		
+		if (project.isEmpty())
+			throw new ProjectNotFoundException("id:" + id);
 		
 		return project.get();
 	}
 
-	@GetMapping("/users/{id}/projects")
-	public List<Project> retrieveProjectsOfUser(@PathVariable Long id) {
-		Optional<User> user = userRepository.findById(id);
+	@GetMapping("/projects")
+	public List<Project> retrieveProjectsOfUser(Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		return user.get().getProjects();
 	}
 	
-	@PostMapping("/users/{id}/projects")
-	public Project retrieveProjectsOfUser(@PathVariable Long id, @Valid @RequestBody Project project) {
-		
-		Optional<User> user = userRepository.findById(id);
+	@PostMapping("/projects")
+	public Project retrieveProjectsOfUser(@Valid @RequestBody Project project, Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
 		project.setUser(user.get());
 		
