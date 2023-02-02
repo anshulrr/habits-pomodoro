@@ -24,6 +24,9 @@ public class Project {
 	
 	private String description;
 	
+	// in minutes
+	private Integer slotLength;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
