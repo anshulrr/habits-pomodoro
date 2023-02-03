@@ -105,6 +105,14 @@ public class Task {
 		this.user = user;
 	}
 
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
 	@Override
 	public String toString() {
 		return "Task [id=" + id + ", description=" + description + ", slots=" + estimatedSlotsCount + ", dueDate=" + dueDate
