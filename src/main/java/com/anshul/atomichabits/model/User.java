@@ -46,6 +46,10 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
 	private List<Project> projects;
+
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<Slot> slots;
 	
 	public User(Long id, String name, String email, String password) {
 		super();
@@ -104,6 +108,16 @@ public class User {
 	public List<Project> getProjects() {
 		return projects;
 	}
+
+//	public String getPassword() {
+//		return password;
+//	}
+
+
+	public List<Slot> getSlots() {
+		return slots;
+	}
+
 
 	// dt how  would we set multiple posts at a time	
 	public void setPosts(List<Project> projects) {
