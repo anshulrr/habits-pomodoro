@@ -62,6 +62,7 @@ public class Project {
 		this.description = description;
 	}
 
+	@JsonIgnore
 	public User getUser() {
 		return user;
 	}

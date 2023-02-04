@@ -1,4 +1,4 @@
-package com.anshul.atomichabits.controller;
+package com.anshul.atomichabits.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

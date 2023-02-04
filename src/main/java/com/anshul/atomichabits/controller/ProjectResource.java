@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.exceptions.NotAuthorizedException;
+import com.anshul.atomichabits.exceptions.ProjectNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
@@ -31,12 +33,13 @@ public class ProjectResource {
 	
 	@GetMapping("/projects/{id}")
 	public Project retrieveProject(@PathVariable Long id, Principal principal) {
-		Optional<User> user = userRepository.findByUsername(principal.getName());
-		
-		Optional<Project> project = projectRepository.findUserProjectById(user.get(), id);
+		Optional<Project> project = projectRepository.findById(id);
 		
 		if (project.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
+		
+		if (project.get().getUser().getUsername() != principal.getName())
+			throw new NotAuthorizedException("not authorized");
 		
 		return project.get();
 	}
