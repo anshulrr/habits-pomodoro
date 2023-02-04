@@ -44,9 +44,8 @@ public class TaskResource {
 	@GetMapping("/projects/{project_id}/tasks")
 	public List<Task> retrieveProjectsOfUser(@PathVariable Long project_id, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		Optional<Project> project = projectRepository.findUserProjectById(user.get(), project_id);
 
-		List<Task> tasks = taskRepository.retrieveTasksByProjectId(user.get(), project.get());
+		List<Task> tasks = taskRepository.retrieveTasksByProjectId(user.get(), project_id);
 		
 		return tasks;
 	}
