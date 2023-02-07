@@ -118,7 +118,7 @@ public class Pomodoro {
 
 	@Override
 	public String toString() {
-		return "Slot [id=" + id + ", startTime=" + startTime + ", endTime=" + endTime + ", length=" + length
+		return "Pomodoro [id=" + id + ", startTime=" + startTime + ", endTime=" + endTime + ", length=" + length
 				+ ", timeElapsed=" + timeElapsed + ", status=" + status + ", task=" + task + ", user=" + user + "]";
 	}
 	

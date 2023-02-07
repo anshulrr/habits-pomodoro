@@ -1,12 +1,15 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,14 +40,14 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<Pomodoro> retrieveProjectsOfUser(Principal principal) {
+	public List<Pomodoro> retrievePomodorosOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		return user.get().getPomodoros();
 	}
 	
 	@PostMapping("/pomodoros")
-	public Pomodoro retrieveProjectsOfUser(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
+	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
 		System.out.println(pomodoro.toString() + task_id);
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Task> task = taskRepository.findUserTaskById(user.get(), task_id);
@@ -57,5 +60,19 @@ public class PomodoroResource {
 		pomodoroRepository.save(pomodoro);
 		
 		return pomodoro;
+	}
+	
+	@PutMapping("/pomodoros/{id}/pause")
+	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
+		
+		pomodoro.get().setStatus("paused");
+		System.out.println(pomodoro.get());
+		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
+		
+		pomodoroRepository.save(pomodoro.get());
+		
+		return pomodoro.get();
 	}
 }

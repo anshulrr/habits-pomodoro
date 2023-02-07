@@ -52,7 +52,7 @@ public class ProjectResource {
 	}
 	
 	@PostMapping("/projects")
-	public Project retrieveProjectsOfUser(@Valid @RequestBody Project project, Principal principal) {
+	public Project createProjectOfUser(@Valid @RequestBody Project project, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
 		project.setUser(user.get());
