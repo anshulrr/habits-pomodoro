@@ -25,7 +25,7 @@ public class Project {
 	private String description;
 	
 	// in minutes
-	private Integer slotLength;
+	private Integer pomodoroLength;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

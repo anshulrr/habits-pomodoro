@@ -25,21 +25,21 @@ public class Task {
 	
 	private String description;
 	
-	private Integer estimatedSlotsCount = 0;
+	private Integer estimatedPomodorosCount = 0;
 	
 	// in minutes
-	private Integer slotLength;
+	private Integer pomodoroLength;
 	
 	private LocalDate dueDate;
 	
 	// added, finished
 	private String status = "added";
 	
-	public Task(Long id, String description, Integer slots, LocalDate dueDate, String status, User user) {
+	public Task(Long id, String description, Integer pomodoros, LocalDate dueDate, String status, User user) {
 		super();
 		this.id = id;
 		this.description = description;
-		this.estimatedSlotsCount = slots;
+		this.estimatedPomodorosCount = pomodoros;
 		this.dueDate = dueDate;
 		this.status = status;
 		this.user = user;
@@ -55,7 +55,7 @@ public class Task {
 	
 	@OneToMany(mappedBy = "task")
 	@JsonIgnore
-	private List<Slot> slots;
+	private List<Pomodoro> pomodoros;
 
 	public Long getId() {
 		return id;
@@ -73,12 +73,12 @@ public class Task {
 		this.description = description;
 	}
 
-	public Integer getSlots() {
-		return estimatedSlotsCount;
+	public Integer getPomodoros() {
+		return estimatedPomodorosCount;
 	}
 
-	public void setSlots(Integer slots) {
-		this.estimatedSlotsCount = slots;
+	public void setPomodoros(Integer pomodoros) {
+		this.estimatedPomodorosCount = pomodoros;
 	}
 
 	public LocalDate getDueDate() {
@@ -115,7 +115,7 @@ public class Task {
 
 	@Override
 	public String toString() {
-		return "Task [id=" + id + ", description=" + description + ", slots=" + estimatedSlotsCount + ", dueDate=" + dueDate
+		return "Task [id=" + id + ", description=" + description + ", pomodoross=" + estimatedPomodorosCount + ", dueDate=" + dueDate
 				+ ", status=" + status + ", user=" + user + "]";
 	}
 }

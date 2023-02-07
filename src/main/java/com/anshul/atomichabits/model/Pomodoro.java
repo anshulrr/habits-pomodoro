@@ -10,10 +10,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-@Entity(name="slots")
-public class Slot {
+@Entity(name="pomodoros")
+public class Pomodoro {
 	
-	Slot() {
+	Pomodoro() {
 		
 	}
 
@@ -39,7 +39,7 @@ public class Slot {
 	@JsonIgnore
 	private User user;
 
-	public Slot(Long id, LocalDateTime startTime, LocalDateTime endTime, Integer length, Integer timeElapsed, String status,
+	public Pomodoro(Long id, LocalDateTime startTime, LocalDateTime endTime, Integer length, Integer timeElapsed, String status,
 			Task task, User user) {
 		super();
 		this.id = id;

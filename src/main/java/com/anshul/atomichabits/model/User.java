@@ -49,7 +49,7 @@ public class User {
 
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
-	private List<Slot> slots;
+	private List<Pomodoro> pomodoros;
 	
 	public User(Long id, String name, String email, String password) {
 		super();
@@ -114,8 +114,8 @@ public class User {
 //	}
 
 
-	public List<Slot> getSlots() {
-		return slots;
+	public List<Pomodoro> getPomodoros() {
+		return pomodoros;
 	}
 
 
