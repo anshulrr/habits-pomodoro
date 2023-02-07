@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,7 +35,7 @@ public class BasicAuthSecurityConfiguration {
 		return http.build();
 	}
 	
-	// required for default spring security
+	// required for default spring security Todo: why
 	@Bean
 	public UserDetailsService userDetailService(DataSource dataSource) {
 		
