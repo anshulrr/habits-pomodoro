@@ -4,9 +4,11 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,7 +40,7 @@ public class ProjectResource {
 		if (project.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
 		
-		if (project.get().getUser().getUsername() != principal.getName())
+		if (!project.get().getUser().getUsername().equals(principal.getName()))
 			throw new NotAuthorizedException("not authorized");
 		
 		return project.get();
@@ -60,5 +62,24 @@ public class ProjectResource {
 		projectRepository.save(project);
 		
 		return project;
+	}
+	
+	@PutMapping("/projects/{id}")
+	public Project createProjectOfUser(@PathVariable Long id, @Valid @RequestBody Project project, Principal principal) {
+		Optional<Project> projectEntry = projectRepository.findById(id);
+		
+		if (projectEntry.isEmpty())
+			throw new ProjectNotFoundException("id:" + id);
+		
+		if (!projectEntry.get().getUser().getUsername().equals(principal.getName()))
+			throw new NotAuthorizedException("not authorized");
+		
+		projectEntry.get().setName(project.getName());
+		
+		projectEntry.get().setDescription(project.getDescription());
+		
+		projectRepository.save(projectEntry.get());
+		
+		return projectEntry.get();
 	}
 }
