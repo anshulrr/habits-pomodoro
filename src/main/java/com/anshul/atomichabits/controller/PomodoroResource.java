@@ -62,12 +62,13 @@ public class PomodoroResource {
 		return pomodoro;
 	}
 	
-	@PutMapping("/pomodoros/{id}/pause")
+	@PutMapping("/pomodoros/{id}")
 	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
 		
-		pomodoro.get().setStatus("paused");
+		System.out.println(json);
+		pomodoro.get().setStatus(json.get("status"));
 		System.out.println(pomodoro.get());
 		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
 		
