@@ -2,6 +2,8 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,8 +44,7 @@ public class PomodoroResource {
 	@GetMapping("/pomodoros")
 	public List<Pomodoro> retrievePomodorosOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-
-		return user.get().getPomodoros();
+		return pomodoroRepository.findAllForToday(user.get().getId(), LocalDateTime.now().with(LocalTime.MIN));
 	}
 	
 	@PostMapping("/pomodoros")
