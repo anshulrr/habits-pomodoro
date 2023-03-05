@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +71,11 @@ public class PomodoroResource {
 		
 		System.out.println(json);
 		pomodoro.get().setStatus(json.get("status"));
+		
+		if (json.get("status").equals("completed")) {
+			pomodoro.get().setEndTime(LocalDateTime.now(ZoneOffset.UTC));
+		}
+		
 		System.out.println(pomodoro.get());
 		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
 		
