@@ -64,20 +64,43 @@ public class PomodoroResource {
 		return pomodoro;
 	}
 	
-	@PutMapping("/pomodoros/{id}")
-	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
+//	@PutMapping("/pomodoros/{id}")
+//	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
+//		Optional<User> user = userRepository.findByUsername(principal.getName());
+//		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
+//		
+//		System.out.println(json);
+//		pomodoro.get().setStatus(json.get("status"));
+//		
+//		if (json.get("status").equals("completed")) {
+//			pomodoro.get().setEndTime(LocalDateTime.now(ZoneOffset.UTC));
+//		}
+//		
+//		System.out.println(pomodoro.get());
+//		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
+//		
+//		pomodoroRepository.save(pomodoro.get());
+//		
+//		return pomodoro.get();
+//	}
+	
+
+//	getting request data as params
+	@PutMapping(value = "/pomodoros/{id}", 
+			  params = { "timeElapsed", "status" })
+	public Pomodoro updatePomodor(@PathVariable Long id, @RequestParam("timeElapsed") String timeElapsed, @RequestParam("status") String status,  Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
 		
-		System.out.println(json);
-		pomodoro.get().setStatus(json.get("status"));
+		System.out.println(status);
+		pomodoro.get().setStatus(status);
 		
-		if (json.get("status").equals("completed")) {
+		if (status.equals("completed")) {
 			pomodoro.get().setEndTime(LocalDateTime.now(ZoneOffset.UTC));
 		}
 		
 		System.out.println(pomodoro.get());
-		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
+		pomodoro.get().setTimeElapsed(Integer.valueOf(timeElapsed));
 		
 		pomodoroRepository.save(pomodoro.get());
 		
