@@ -47,6 +47,13 @@ public class PomodoroResource {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		return pomodoroRepository.findAllForToday(user.get().getId(), LocalDateTime.now().with(LocalTime.MIN));
 	}
+
+	@GetMapping("/pomodoros/projects-time")
+	public List<Object> retrievePomodorosCountOfUser(Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		List<Object> o = pomodoroRepository.findProjectsTime(user.get().getId());
+		return o;
+	}
 	
 	@PostMapping("/pomodoros")
 	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
