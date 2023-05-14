@@ -2,7 +2,7 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -45,7 +45,7 @@ public class PomodoroResource {
 	@GetMapping("/pomodoros")
 	public List<Pomodoro> retrievePomodorosOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		return pomodoroRepository.findAllForToday(user.get().getId(), LocalDateTime.now().with(LocalTime.MIN));
+		return pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
 	}
 
 	@GetMapping("/pomodoros/projects-time")
@@ -80,7 +80,7 @@ public class PomodoroResource {
 //		pomodoro.get().setStatus(json.get("status"));
 //		
 //		if (json.get("status").equals("completed")) {
-//			pomodoro.get().setEndTime(LocalDateTime.now(ZoneOffset.UTC));
+//			pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
 //		}
 //		
 //		System.out.println(pomodoro.get());
@@ -103,7 +103,7 @@ public class PomodoroResource {
 		pomodoro.get().setStatus(status);
 		
 		if (status.equals("completed")) {
-			pomodoro.get().setEndTime(LocalDateTime.now(ZoneOffset.UTC));
+			pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
 		}
 		
 		System.out.println(pomodoro.get());

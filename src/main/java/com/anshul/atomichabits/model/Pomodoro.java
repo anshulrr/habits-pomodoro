@@ -1,9 +1,10 @@
 package com.anshul.atomichabits.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,8 +22,11 @@ public class Pomodoro {
 	@GeneratedValue
 	private Long id;
 	
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
+	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+	private OffsetDateTime startTime;
+	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+	private OffsetDateTime endTime;
+	
 	// in minutes
 	private Integer length = 25;
 	// in seconds
@@ -39,7 +43,7 @@ public class Pomodoro {
 	@JsonIgnore
 	private User user;
 
-	public Pomodoro(Long id, LocalDateTime startTime, LocalDateTime endTime, Integer length, Integer timeElapsed, String status,
+	public Pomodoro(Long id, OffsetDateTime startTime, OffsetDateTime endTime, Integer length, Integer timeElapsed, String status,
 			Task task, User user) {
 		super();
 		this.id = id;
@@ -60,19 +64,19 @@ public class Pomodoro {
 		this.id = id;
 	}
 
-	public LocalDateTime getStartTime() {
+	public OffsetDateTime getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
+	public void setStartTime(OffsetDateTime startTime) {
 		this.startTime = startTime;
 	}
 
-	public LocalDateTime getEndTime() {
+	public OffsetDateTime getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(LocalDateTime endTime) {
+	public void setEndTime(OffsetDateTime endTime) {
 		this.endTime = endTime;
 	}
 
