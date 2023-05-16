@@ -23,10 +23,10 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 //	public int findAllCount(Long id, OffsetDateTime date);
 	
 	@Query("""
-			select sum(p.timeElapsed) / 60 as time, p.task.project.name as project
+			select sum(p.timeElapsed) / 60 as minutes, p.task.project.name as project
 			from pomodoros as p
-			where p.user.id=?1 and p.status='completed' 
+			where p.user.id=?1 and p.status='completed' and startTime >= ?2
 			group by p.task.project.name
 			""")
-	public List<Object> findProjectsTime(Long id);
+	public List<Object> findProjectsTime(Long id, OffsetDateTime date);
 }

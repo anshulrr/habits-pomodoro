@@ -49,9 +49,21 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros/projects-time")
-	public List<Object> retrievePomodorosCountOfUser(Principal principal) {
+	public List<Object> retrievePomodorosCountOfUser(Principal principal, @RequestParam("limit") String limit) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		List<Object> o = pomodoroRepository.findProjectsTime(user.get().getId());
+		List<Object> o;
+		
+		if (limit.equals("weekly")) {
+			// todo: fix first day of week
+			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+		} else if (limit.equals("monthly")) {
+			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+		} else {
+			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+		}
+		
 		return o;
 	}
 	
