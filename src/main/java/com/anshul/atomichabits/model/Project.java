@@ -24,6 +24,9 @@ public class Project {
 	
 	private String description;
 	
+	@Column(columnDefinition = "varchar(255) default 'blue'")
+	private String color = "blue";
+	
 	// in minutes
 	private Integer pomodoroLength;
 	
@@ -60,6 +63,14 @@ public class Project {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	@JsonIgnore
