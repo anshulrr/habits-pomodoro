@@ -5,9 +5,11 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +51,7 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros/projects-time")
-	public List<Object> retrievePomodorosCountOfUser(Principal principal, @RequestParam("limit") String limit) {
+	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<Object> o;
 		
@@ -62,6 +64,25 @@ public class PomodoroResource {
 			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
 		} else {
 			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+		}
+		
+		return o;
+	}
+
+	@GetMapping("/pomodoros/tasks-time")
+	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("limit") String limit) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		List<Object> o;
+		
+		if (limit.equals("weekly")) {
+			// todo: fix first day of week
+			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+		} else if (limit.equals("monthly")) {
+			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+		} else {
+			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
 		}
 		
 		return o;
