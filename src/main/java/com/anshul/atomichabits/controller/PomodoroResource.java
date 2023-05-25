@@ -88,6 +88,37 @@ public class PomodoroResource {
 		return o;
 	}
 	
+
+	@GetMapping("/pomodoros/total-time")
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		List<String[]> o;
+		
+		if (limit.equals("weekly")) {
+			// todo: fix first day of week
+			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+		} else if (limit.equals("monthly")) {
+			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+		} else {
+			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+		}
+		
+//		List<Pomodoro> temp = pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+		
+//		Map<OffsetDateTime, List<Pomodoro>> result = temp.stream()
+//				  .collect(Collectors.groupingBy(Pomodoro::getStartTime));
+		
+		Map<String, List<String[]>> result = o.stream()
+				  .collect(Collectors.groupingBy((element -> (String)element[2])));
+		
+		
+		System.out.println(result);
+		
+		return result;
+	}
+	
 	@PostMapping("/pomodoros")
 	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
 		System.out.println(pomodoro.toString() + task_id);
