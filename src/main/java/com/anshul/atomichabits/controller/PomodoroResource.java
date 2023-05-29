@@ -1,10 +1,12 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +58,13 @@ public class PomodoroResource {
 		List<Object> o;
 		
 		if (limit.equals("weekly")) {
-			// todo: fix first day of week
-			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
+			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday);
+			o = pomodoroRepository.findProjectsTime(user.get().getId(), monday);
 		} else if (limit.equals("monthly")) {
-			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
+			System.out.println(first);
+			o = pomodoroRepository.findProjectsTime(user.get().getId(), first);
 		} else {
 			o = pomodoroRepository.findProjectsTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
 		}
@@ -75,12 +78,13 @@ public class PomodoroResource {
 		List<Object> o;
 		
 		if (limit.equals("weekly")) {
-			// todo: fix first day of week
-			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
+			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday);
+			o = pomodoroRepository.findTasksTime(user.get().getId(), monday);
 		} else if (limit.equals("monthly")) {
-			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
+			System.out.println(first);
+			o = pomodoroRepository.findTasksTime(user.get().getId(), first);
 		} else {
 			o = pomodoroRepository.findTasksTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
 		}
@@ -95,12 +99,13 @@ public class PomodoroResource {
 		List<String[]> o;
 		
 		if (limit.equals("weekly")) {
-			// todo: fix first day of week
-			System.out.println(OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().minusWeeks(1).with(LocalTime.MIN));
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
+			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday);
+			o = pomodoroRepository.findTotalTime(user.get().getId(), monday);
 		} else if (limit.equals("monthly")) {
-			System.out.println(OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
-			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN));
+			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
+			System.out.println(first);
+			o = pomodoroRepository.findTotalTime(user.get().getId(), first);
 		} else {
 			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
 		}
