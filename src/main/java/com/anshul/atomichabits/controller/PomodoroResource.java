@@ -122,24 +122,34 @@ public class PomodoroResource {
 	
 
 	@GetMapping("/pomodoros/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit) {
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<String[]> o;
 		
 		if (limit.equals("weekly")) {
 			OffsetDateTime monday = OffsetDateTime.now()
-					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+					.plusDays(-15 * 7)
 					.with(LocalTime.MIN);
-			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday);
-			o = pomodoroRepository.findTotalTime(user.get().getId(), monday);
+			OffsetDateTime end = monday.plusDays(15 * 7 + 1);
+			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
+			o = pomodoroRepository.findTotalTimeWeekly(user.get().getId(), monday, end);
 		} else if (limit.equals("monthly")) {
 			OffsetDateTime first = OffsetDateTime.now()
 					.withDayOfMonth(1)
 					.with(LocalTime.MIN);
-			System.out.println(first);
-			o = pomodoroRepository.findTotalTime(user.get().getId(), first);
+			first = first.plusMonths(offset);
+			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth())
+					.with(LocalTime.MAX);
+			System.out.println(first + " " + end);
+			o = pomodoroRepository.findTotalTimeMonthly(user.get().getId(), first, end);
 		} else {
-			o = pomodoroRepository.findTotalTime(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+			OffsetDateTime date = OffsetDateTime.now()
+					.plusDays(-15)
+					.with(LocalTime.MIN);
+			date = date.plusDays(offset);
+			OffsetDateTime end = date.plusDays(15 + 1);
+			System.out.println(date + " " + end);
+			o = pomodoroRepository.findTotalTimeDaily(user.get().getId(), date, end);
 		}
 		
 //		List<Pomodoro> temp = pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
@@ -151,7 +161,7 @@ public class PomodoroResource {
 				  .collect(Collectors.groupingBy((element -> (String)element[2])));
 		
 		
-		System.out.println(result);
+//		System.out.println(result);
 		
 		return result;
 	}

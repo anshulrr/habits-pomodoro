@@ -45,9 +45,32 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
-			where p.user_id=1 and p.status='completed'
+			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3
 			group by pp.name, pp.color, to_char(p.end_time, 'DD')
 			order by to_char(p.end_time, 'DD'), pp.name
 			""", nativeQuery = true)
-	public List<String[]> findTotalTime(Long id, OffsetDateTime date);
+	public List<String[]> findTotalTimeDaily(Long id, OffsetDateTime date, OffsetDateTime end);
+
+	@Query(value = """
+			select to_char(p.end_time, 'WW'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			from pomodoros as p
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3
+			group by pp.name, pp.color, to_char(p.end_time, 'WW')
+			order by to_char(p.end_time, 'WW'), pp.name
+			""", nativeQuery = true)
+	public List<String[]> findTotalTimeWeekly(Long id, OffsetDateTime date, OffsetDateTime end);
+
+	@Query(value = """
+			select to_char(p.end_time, 'MM'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			from pomodoros as p
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3
+			group by pp.name, pp.color, to_char(p.end_time, 'MM')
+			order by to_char(p.end_time, 'MM'), pp.name
+			""", nativeQuery = true)
+	public List<String[]> findTotalTimeMonthly(Long id, OffsetDateTime date, OffsetDateTime end);
+
 }
