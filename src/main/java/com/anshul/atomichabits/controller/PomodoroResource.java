@@ -126,11 +126,17 @@ public class PomodoroResource {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<String[]> o;
 		
+		System.out.println(limit + " " + offset);
+		
 		if (limit.equals("weekly")) {
 			OffsetDateTime monday = OffsetDateTime.now()
-					.plusDays(-15 * 7)
+					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+					.plusDays(-14 * 7)
 					.with(LocalTime.MIN);
-			OffsetDateTime end = monday.plusDays(15 * 7 + 1);
+			monday = monday.plusDays(15 * 7 * offset);
+			OffsetDateTime end = monday.plusDays(14 * 7)
+					.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+					.with(LocalTime.MAX);
 			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
 			o = pomodoroRepository.findTotalTimeWeekly(user.get().getId(), monday, end);
 		} else if (limit.equals("monthly")) {
@@ -144,10 +150,11 @@ public class PomodoroResource {
 			o = pomodoroRepository.findTotalTimeMonthly(user.get().getId(), first, end);
 		} else {
 			OffsetDateTime date = OffsetDateTime.now()
-					.plusDays(-15)
+					.plusDays(-14)
 					.with(LocalTime.MIN);
-			date = date.plusDays(offset);
-			OffsetDateTime end = date.plusDays(15 + 1);
+			date = date.plusDays(15 * offset);
+			OffsetDateTime end = date.plusDays(14)
+					.with(LocalTime.MAX);
 			System.out.println(date + " " + end);
 			o = pomodoroRepository.findTotalTimeDaily(user.get().getId(), date, end);
 		}
