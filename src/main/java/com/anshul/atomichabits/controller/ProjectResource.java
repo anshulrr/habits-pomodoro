@@ -48,7 +48,10 @@ public class ProjectResource {
 
 	@GetMapping("/projects")
 	public List<Project> retrieveProjectsOfUser(Principal principal) {
+//		TODO: how to avoid user query for user id
 		Optional<User> user = userRepository.findByUsername(principal.getName());
+		
+//		System.out.println(principal + " " + principal.getClass());
 
 		return user.get().getProjects();
 	}

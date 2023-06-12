@@ -44,7 +44,7 @@ public class JwtAuthenticationResource {
 		var claims = JwtClaimsSet.builder()
 								.issuer("self")
 								.issuedAt(Instant.now())
-								.expiresAt(Instant.now().plusSeconds(60 * 90))
+								.expiresAt(Instant.now().plusSeconds(60 * 360))
 								.subject(authentication.getName())
 								.claim("scope", createScope(authentication))
 								.build();
