@@ -7,8 +7,10 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,6 +36,10 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 public class JwtSecurityConfiguration {
+	
+	@Autowired
+	private Environment env;
+	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
@@ -112,7 +118,7 @@ public class JwtSecurityConfiguration {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedMethods("*")
-						.allowedOrigins("http://localhost:3000");
+						.allowedOrigins(env.getProperty("atomichabits.client.url"));
 			}
 		};
 	}
