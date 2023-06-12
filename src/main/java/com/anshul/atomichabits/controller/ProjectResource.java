@@ -82,6 +82,8 @@ public class ProjectResource {
 		
 		projectEntry.get().setDescription(project.getDescription());
 		
+		projectEntry.get().setColor(project.getColor());
+		
 		projectRepository.save(projectEntry.get());
 		
 		return projectEntry.get();
