@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.exceptions.NotAuthorizedException;
@@ -47,13 +48,13 @@ public class ProjectResource {
 	}
 
 	@GetMapping("/projects")
-	public List<Project> retrieveProjectsOfUser(Principal principal) {
+	public List<Project> retrieveProjectsOfUser(Principal principal, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 //		TODO: how to avoid user query for user id
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
 //		System.out.println(principal + " " + principal.getClass());
-
-		return user.get().getProjects();
+		
+		return projectRepository.findUserProjects(user.get().getId(), limit, offset);
 	}
 	
 	@PostMapping("/projects")
