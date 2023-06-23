@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.exceptions.NotAuthorizedException;
@@ -47,13 +48,20 @@ public class ProjectResource {
 	}
 
 	@GetMapping("/projects")
-	public List<Project> retrieveProjectsOfUser(Principal principal) {
+	public List<Project> retrieveProjectsOfUser(Principal principal, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 //		TODO: how to avoid user query for user id
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
 //		System.out.println(principal + " " + principal.getClass());
-
-		return user.get().getProjects();
+		
+//		TODO: using PageRequest
+		return projectRepository.findUserProjects(user.get().getId(), limit, offset);
+	}
+	
+	@GetMapping("/projects/count")
+	public Integer retrieveProjectsCountOfUser(Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		return projectRepository.getUserProjectsCount(user.get().getId());
 	}
 	
 	@PostMapping("/projects")
@@ -80,6 +88,8 @@ public class ProjectResource {
 		projectEntry.get().setName(project.getName());
 		
 		projectEntry.get().setDescription(project.getDescription());
+		
+		projectEntry.get().setColor(project.getColor());
 		
 		projectRepository.save(projectEntry.get());
 		
