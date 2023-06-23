@@ -54,7 +54,14 @@ public class ProjectResource {
 		
 //		System.out.println(principal + " " + principal.getClass());
 		
+//		TODO: using PageRequest
 		return projectRepository.findUserProjects(user.get().getId(), limit, offset);
+	}
+	
+	@GetMapping("/projects/count")
+	public Integer retrieveProjectsCountOfUser(Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		return projectRepository.getUserProjectsCount(user.get().getId());
 	}
 	
 	@PostMapping("/projects")
