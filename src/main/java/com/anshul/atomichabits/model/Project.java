@@ -38,7 +38,7 @@ public class Project {
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
+//	@JsonIgnore
 	private ProjectCategory projectCategory;
 
 	@OneToMany(mappedBy = "project")
@@ -108,6 +108,6 @@ public class Project {
 
 	@Override
 	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", description=" + description + ", user=" + user + "]";
+		return "Project [id=" + id + ", name=" + name + ", description=" + description + "]";
 	}
 }

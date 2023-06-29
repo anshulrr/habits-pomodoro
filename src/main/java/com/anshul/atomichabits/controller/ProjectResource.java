@@ -55,7 +55,11 @@ public class ProjectResource {
 //		System.out.println(principal + " " + principal.getClass());
 		
 //		TODO: using PageRequest
-		return projectRepository.findUserProjects(user.get().getId(), limit, offset);
+		List<Project> projects = projectRepository.findUserProjects(user.get(), limit, offset);
+//		System.out.println(projects.get(0));
+		
+//		TODO: remove unnecessary data of project categories
+		return projects;
 	}
 	
 	@GetMapping("/projects/count")
