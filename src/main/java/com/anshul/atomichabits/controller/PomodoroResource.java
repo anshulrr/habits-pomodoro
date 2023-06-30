@@ -123,7 +123,7 @@ public class PomodoroResource {
 	
 
 	@GetMapping("/pomodoros/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset) {
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<String[]> result;
 		
@@ -139,7 +139,7 @@ public class PomodoroResource {
 					.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 					.with(LocalTime.MAX);
 			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
-			result = pomodoroRepository.findTotalTimeWeekly(user.get().getId(), monday, end);
+			result = pomodoroRepository.findTotalTimeWeekly(user.get().getId(), monday, end, categories);
 		} else if (limit.equals("monthly")) {
 			OffsetDateTime first = OffsetDateTime.now()
 					.plusMonths(-14)
@@ -150,7 +150,7 @@ public class PomodoroResource {
 					.with(TemporalAdjusters.lastDayOfMonth())
 					.with(LocalTime.MAX);
 			System.out.println(first + " " + end);
-			result = pomodoroRepository.findTotalTimeMonthly(user.get().getId(), first, end);
+			result = pomodoroRepository.findTotalTimeMonthly(user.get().getId(), first, end, categories);
 		} else {
 			OffsetDateTime date = OffsetDateTime.now()
 					.plusDays(-14)
@@ -159,7 +159,7 @@ public class PomodoroResource {
 			OffsetDateTime end = date.plusDays(14)
 					.with(LocalTime.MAX);
 			System.out.println(date + " " + end);
-			result = pomodoroRepository.findTotalTimeDaily(user.get().getId(), date, end);
+			result = pomodoroRepository.findTotalTimeDaily(user.get().getId(), date, end, categories);
 		}
 		
 		Map<String, List<String[]>> groupedResult = result.stream()
