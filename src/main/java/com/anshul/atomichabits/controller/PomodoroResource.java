@@ -53,7 +53,7 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros/projects-time")
-	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset) {
+	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<Object> result;
 		
@@ -64,7 +64,7 @@ public class PomodoroResource {
 			monday = monday.plusDays(7 * offset);
 			OffsetDateTime end = monday.plusDays(7);
 			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
-			result = pomodoroRepository.findProjectsTime(user.get().getId(), monday, end);
+			result = pomodoroRepository.findProjectsTime(user.get().getId(), monday, end, categories);
 		} else if (limit.equals("monthly")) {
 			OffsetDateTime first = OffsetDateTime.now()
 					.withDayOfMonth(1)
@@ -73,14 +73,14 @@ public class PomodoroResource {
 			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth())
 					.with(LocalTime.MAX);
 			System.out.println(first + " " + end);
-			result = pomodoroRepository.findProjectsTime(user.get().getId(), first, end);
+			result = pomodoroRepository.findProjectsTime(user.get().getId(), first, end, categories);
 		} else {
 			OffsetDateTime date = OffsetDateTime.now()
 					.with(LocalTime.MIN);
 			date = date.plusDays(offset);
 			OffsetDateTime end = date.plusDays(1);
 			System.out.println(date + " " + end);
-			result = pomodoroRepository.findProjectsTime(user.get().getId(), date, end);
+			result = pomodoroRepository.findProjectsTime(user.get().getId(), date, end, categories);
 		}
 		
 		return result;
