@@ -36,13 +36,16 @@ public class ProjectResource {
 	
 	@GetMapping("/projects/{id}")
 	public Project retrieveProject(@PathVariable Long id, Principal principal) {
-		Optional<Project> project = projectRepository.findById(id);
+//		Optional<Project> project = projectRepository.findById(id);
+//		
+//		if (project.isEmpty())
+//			throw new ProjectNotFoundException("id:" + id);
+//		
+//		if (!project.get().getUser().getUsername().equals(principal.getName()))
+//			throw new NotAuthorizedException("not authorized");
 		
-		if (project.isEmpty())
-			throw new ProjectNotFoundException("id:" + id);
-		
-		if (!project.get().getUser().getUsername().equals(principal.getName()))
-			throw new NotAuthorizedException("not authorized");
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Optional<Project> project= projectRepository.findUserProjectById(user.get(), id);
 		
 		return project.get();
 	}
@@ -55,7 +58,11 @@ public class ProjectResource {
 //		System.out.println(principal + " " + principal.getClass());
 		
 //		TODO: using PageRequest
-		return projectRepository.findUserProjects(user.get().getId(), limit, offset);
+		List<Project> projects = projectRepository.findUserProjects(user.get(), limit, offset);
+//		System.out.println(projects.get(0));
+		
+//		TODO: remove unnecessary data of project categories
+		return projects;
 	}
 	
 	@GetMapping("/projects/count")

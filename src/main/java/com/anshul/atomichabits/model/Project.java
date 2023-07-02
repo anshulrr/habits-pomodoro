@@ -1,5 +1,7 @@
 package com.anshul.atomichabits.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -8,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity(name="projects")
 public class Project {
@@ -33,6 +36,14 @@ public class Project {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+//	@JsonIgnore
+	private ProjectCategory projectCategory;
+
+	@OneToMany(mappedBy = "project")
+	@JsonIgnore
+	private List<Task> tasks;
 
 	public Project(Long id, String name, String description) {
 		super();
@@ -82,9 +93,21 @@ public class Project {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	public ProjectCategory getProjectCategory() {
+		return projectCategory;
+	}
+
+	public void setProjectCategory(ProjectCategory projectCategory) {
+		this.projectCategory = projectCategory;
+	}
+
+	public List<Task> getTasks() {
+		return tasks;
+	}
 
 	@Override
 	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", description=" + description + ", user=" + user + "]";
+		return "Project [id=" + id + ", name=" + name + ", description=" + description + "]";
 	}
 }
