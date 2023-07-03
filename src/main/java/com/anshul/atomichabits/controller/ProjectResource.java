@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.exceptions.NotAuthorizedException;
 import com.anshul.atomichabits.exceptions.ProjectNotFoundException;
+import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
+import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
@@ -27,11 +29,13 @@ public class ProjectResource {
 
 	private UserRepository userRepository;
 	private ProjectRepository projectRepository;
+	private ProjectCategoryRepository projectCategoryRepository;
 	
 
-	public ProjectResource(UserRepository u, ProjectRepository p) {
+	public ProjectResource(UserRepository u, ProjectRepository p, ProjectCategoryRepository pc) {
 		this.userRepository = u;
 		this.projectRepository = p;
+		this.projectCategoryRepository = pc;
 	}
 	
 	@GetMapping("/projects/{id}")
@@ -71,11 +75,15 @@ public class ProjectResource {
 		return projectRepository.getUserProjectsCount(user.get().getId());
 	}
 	
-	@PostMapping("/projects")
-	public Project createProjectOfUser(@Valid @RequestBody Project project, Principal principal) {
+	@PostMapping("/project-categories/{categoryId}/projects")
+	public Project createProjectOfUser(@PathVariable Long categoryId, @Valid @RequestBody Project project, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
+		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(), categoryId);
+		
 		project.setUser(user.get());
+		
+		project.setProjectCategory(category.get());
 		
 		projectRepository.save(project);
 		
@@ -83,7 +91,7 @@ public class ProjectResource {
 	}
 	
 	@PutMapping("/projects/{id}")
-	public Project createProjectOfUser(@PathVariable Long id, @Valid @RequestBody Project project, Principal principal) {
+	public Project updateProjectOfUser(@PathVariable Long id, @Valid @RequestBody Project project, Principal principal) {
 		Optional<Project> projectEntry = projectRepository.findById(id);
 		
 		if (projectEntry.isEmpty())

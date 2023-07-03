@@ -48,3 +48,35 @@ select p.end_time::date, sum(p.time_elapsed) / 60 as time, pp.name as project
 			where p.user_id=1 and p.status='completed'
 			group by pp.name, p.end_time::date
 			order by pp.name;
+			
+select date_trunc('day', end_time at time zone 'IST') daily, sum(time_elapsed)/60 
+from pomodoros 
+where status='completed' 
+group by daily 
+order by daily;			
+			
+select date_trunc('day', end_time) daily, sum(time_elapsed)/60
+from pomodoros 
+group by daily 
+order by daily;
+
+select date_trunc('week', end_time) weekly, sum(time_elapsed)/60
+from pomodoros 
+group by weekly 
+order by weekly;
+
+
+with data as (
+  select date_trunc('day', end_time) as daily, sum(time_elapsed)/60 sum_time
+  from pomodoros
+  where status='completed'
+  group by daily
+  order by daily
+)
+select daily, avg(sum_time) over (order by daily asc rows between unbounded preceding and current row)
+from data;
+
+select date_trunc('day', end_time) as daily, avg(sum(time_elapsed)/60) over (order by date_trunc('day', end_time) asc rows between unbounded preceding and current row) 
+from pomodoros 
+where status='completed'
+group by daily;
