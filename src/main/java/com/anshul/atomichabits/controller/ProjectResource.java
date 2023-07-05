@@ -85,9 +85,7 @@ public class ProjectResource {
 		
 		project.setProjectCategory(category.get());
 		
-		projectRepository.save(project);
-		
-		return project;
+		return projectRepository.save(project);
 	}
 	
 	@PutMapping("/projects/{id}")
@@ -106,8 +104,6 @@ public class ProjectResource {
 		
 		projectEntry.get().setColor(project.getColor());
 		
-		projectRepository.save(projectEntry.get());
-		
-		return projectEntry.get();
+		return projectRepository.save(projectEntry.get());
 	}
 }

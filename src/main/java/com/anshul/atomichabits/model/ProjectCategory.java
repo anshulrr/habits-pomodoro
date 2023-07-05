@@ -32,8 +32,8 @@ public class ProjectCategory {
 	
 	private Integer level;
 	
-//	@Column(columnDefinition = "varchar(255) default 'blue'")
-//	private String color = "blue";
+//	@Column(columnDefinition = "varchar(255) default '00FFFF'")
+//	private String color = "00FFFF";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

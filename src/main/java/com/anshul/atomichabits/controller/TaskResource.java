@@ -61,8 +61,6 @@ public class TaskResource {
 		task.setUser(user.get());
 		task.setProject(project.get());
 		
-		taskRepository.save(task);
-		
-		return task;
+		return taskRepository.save(task);
 	}
 }

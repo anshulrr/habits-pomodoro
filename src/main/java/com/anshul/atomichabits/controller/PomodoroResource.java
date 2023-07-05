@@ -180,9 +180,7 @@ public class PomodoroResource {
 		
 		System.out.println(pomodoro);
 		
-		pomodoroRepository.save(pomodoro);
-		
-		return pomodoro;
+		return pomodoroRepository.save(pomodoro);
 	}
 	
 //	@PutMapping("/pomodoros/{id}")
@@ -223,8 +221,6 @@ public class PomodoroResource {
 		System.out.println(pomodoro.get());
 		pomodoro.get().setTimeElapsed(Integer.valueOf(timeElapsed));
 		
-		pomodoroRepository.save(pomodoro.get());
-		
-		return pomodoro.get();
+		return pomodoroRepository.save(pomodoro.get());
 	}
 }

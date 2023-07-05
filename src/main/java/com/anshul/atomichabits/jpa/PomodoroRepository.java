@@ -16,7 +16,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	@Query("select p from pomodoros p where p.user = ?1 and p.id = ?2")
 	public Optional<Pomodoro> findUserPomodoroById(User user, Long task_id);
 	
-	@Query("select p from pomodoros p where p.user.id = ?1 and p.startTime >= ?2 and p.status = 'completed'")
+	@Query("select p from pomodoros p where p.user.id = ?1 and p.startTime >= ?2 and p.status = 'completed' order by p.id desc")
 	public List<Pomodoro> findAllForToday(Long id, OffsetDateTime date);
 	
 //	@Query("select count(p) from pomodoros p where p.user.id = ?1 and p.status = 'completed'")

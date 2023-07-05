@@ -27,8 +27,8 @@ public class Project {
 	
 	private String description;
 	
-	@Column(columnDefinition = "varchar(255) default 'blue'")
-	private String color = "blue";
+	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
+	private String color = "#00FFFF";
 	
 	// in minutes
 	private Integer pomodoroLength;

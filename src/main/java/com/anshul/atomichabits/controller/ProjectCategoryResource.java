@@ -69,9 +69,7 @@ public class ProjectCategoryResource {
 		
 		projectCategory.setUser(user.get());
 		
-		projectCategoryRepository.save(projectCategory);
-		
-		return projectCategory;
+		return projectCategoryRepository.save(projectCategory);
 	}
 	
 	@PutMapping("/project-categories/{id}")
@@ -88,8 +86,6 @@ public class ProjectCategoryResource {
 		
 		categoryEntry.get().setLevel(projectCategory.getLevel());
 		
-		projectCategoryRepository.save(categoryEntry.get());
-		
-		return categoryEntry.get();
+		return projectCategoryRepository.save(categoryEntry.get());
 	}
 }
