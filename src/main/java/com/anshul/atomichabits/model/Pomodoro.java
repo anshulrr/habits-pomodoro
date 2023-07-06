@@ -2,6 +2,7 @@ package com.anshul.atomichabits.model;
 
 import java.time.OffsetDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity(name="pomodoros")
+@JsonFilter("PomodorosFilter")
 public class Pomodoro {
 	
 	Pomodoro() {
@@ -36,7 +38,7 @@ public class Pomodoro {
 	private String status = "started";
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
+//	@JsonIgnore
 	private Task task;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

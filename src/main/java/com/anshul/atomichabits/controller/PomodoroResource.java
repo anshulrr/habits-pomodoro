@@ -2,17 +2,16 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,14 +20,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
-import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.Pomodoro;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import jakarta.validation.Valid;
 
@@ -47,9 +47,16 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<Pomodoro> retrievePomodorosOfUser(Principal principal) {
+	public MappingJacksonValue retrievePomodorosOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		return pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN));
+		
+		List<Pomodoro> pomodoros = pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN)); 
+		
+		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(pomodoros);
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "startTime", "endTime", "timeElapsed", "task");
+		FilterProvider filters = new SimpleFilterProvider().addFilter("PomodorosFilter", filter);
+		mappingJacksonValue.setFilters(filters);
+		return mappingJacksonValue;
 	}
 
 	@GetMapping("/pomodoros/projects-time")
