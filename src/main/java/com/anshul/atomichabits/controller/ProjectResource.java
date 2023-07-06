@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.dto.ProjectForList;
 import com.anshul.atomichabits.exceptions.NotAuthorizedException;
 import com.anshul.atomichabits.exceptions.ProjectNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
@@ -55,14 +56,14 @@ public class ProjectResource {
 	}
 
 	@GetMapping("/projects")
-	public List<Project> retrieveProjectsOfUser(Principal principal, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<ProjectForList> retrieveProjectsOfUser(Principal principal, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 //		TODO: how to avoid user query for user id
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		
 //		System.out.println(principal + " " + principal.getClass());
 		
 //		TODO: using PageRequest
-		List<Project> projects = projectRepository.findUserProjects(user.get(), limit, offset);
+		List<ProjectForList> projects = projectRepository.findUserProjects(user.get(), limit, offset);
 //		System.out.println(projects.get(0));
 		
 //		TODO: remove unnecessary data of project categories

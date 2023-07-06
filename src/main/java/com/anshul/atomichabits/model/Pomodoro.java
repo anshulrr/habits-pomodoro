@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity(name="pomodoros")
-@JsonFilter("PomodorosFilter")
 public class Pomodoro {
 	
 	Pomodoro() {
