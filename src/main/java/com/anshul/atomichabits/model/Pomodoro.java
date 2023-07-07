@@ -37,7 +37,7 @@ public class Pomodoro {
 	private String status = "started";
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-//	@JsonIgnore
+	@JsonIgnore
 	private Task task;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
