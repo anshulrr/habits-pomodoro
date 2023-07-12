@@ -97,6 +97,14 @@ public class Task {
 		this.status = status;
 	}
 
+	public Integer getPomodoroLength() {
+		return pomodoroLength;
+	}
+
+	public void setPomodoroLength(Integer pomodoroLength) {
+		this.pomodoroLength = pomodoroLength;
+	}
+
 	public User getUser() {
 		return user;
 	}
