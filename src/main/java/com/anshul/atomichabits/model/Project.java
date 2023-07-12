@@ -84,6 +84,14 @@ public class Project {
 		this.color = color;
 	}
 
+	public Integer getPomodoroLength() {
+		return pomodoroLength;
+	}
+
+	public void setPomodoroLength(Integer pomodoroLength) {
+		this.pomodoroLength = pomodoroLength;
+	}
+
 	@JsonIgnore
 	public User getUser() {
 		return user;

@@ -50,7 +50,7 @@ public class PomodoroResource {
 		
 		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN)); 
 		
-		System.out.println(pomodoros.get(0).getId());
+//		System.out.println(pomodoros.get(0).getId());
 		
 		return pomodoros;
 	}
@@ -174,14 +174,30 @@ public class PomodoroResource {
 	
 	@PostMapping("/pomodoros")
 	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
-		System.out.println(pomodoro.toString() + task_id);
+//		System.out.println(pomodoro.toString() + task_id);
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Task> task = taskRepository.findUserTaskById(user.get(), task_id);
-		
+
 		pomodoro.setUser(user.get());
 		pomodoro.setTask(task.get());
 		
-		System.out.println(pomodoro);
+//		System.out.println(pomodoro);
+//		System.out.println(task.get().getProject().getPomodoroLength());
+		
+		// TODO: get length from user settings
+		pomodoro.setLength(25);
+
+		var taskPomodoroLength = task.get().getPomodoroLength();
+		if (taskPomodoroLength != null) {
+			pomodoro.setLength(taskPomodoroLength);
+		} else {
+			var projectPomodoroLength = task.get().getProject().getPomodoroLength();
+			if (projectPomodoroLength != null) {
+//					System.out.println("setting length: " + projectPomodoroLength);
+				pomodoro.setLength(projectPomodoroLength);
+			}
+		}
+//		System.out.println(pomodoro.getLength());
 		
 		return pomodoroRepository.save(pomodoro);
 	}

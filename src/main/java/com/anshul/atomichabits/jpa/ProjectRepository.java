@@ -18,7 +18,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 //	@Query(value = "select * from projects where user_id = ?1 order by id limit ?2 offset ?3", nativeQuery = true)
 //	@Query(value = "select p.id, p.description, p.color, p.name, p.pomodoro_length, p.project_category_id, p.user_id, pc.name category from projects p join project_categories pc on p.project_category_id = pc.id where p.user_id = ?1 order by p.id limit ?2 offset ?3", nativeQuery = true)
 //	@Query(value = "select p.*, pc.name category from projects p join project_categories pc on p.project_category_id = pc.id where p.user_id = ?1 order by p.id limit ?2 offset ?3", nativeQuery = true)
-	@Query("select p.id id, p.name name, p.color color, p.projectCategory.name category from projects p where p.user = ?1 order by p.projectCategory.level asc limit ?2 offset ?3")
+	@Query("select p.id id, p.name name, p.color color, p.pomodoroLength pomodoroLength, p.projectCategory.name category from projects p where p.user = ?1 order by p.projectCategory.level asc, id desc limit ?2 offset ?3")
 	public List<ProjectForList> findUserProjects(User user, int limit, int offset);
 
 	@Query(value = "select count(*) from projects where user_id = ?1", nativeQuery = true)
