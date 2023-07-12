@@ -12,29 +12,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity(name="tasks")
+@Entity(name = "tasks")
 public class Task {
 
 	Task() {
-		
+
 	}
-	
+
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	private String description;
-	
+
 	private Integer estimatedPomodorosCount = 0;
-	
+
 	// in minutes
 	private Integer pomodoroLength;
-	
+
 	private LocalDate dueDate;
-	
+
 	// added, finished
 	private String status = "added";
-	
+
 	public Task(Long id, String description, Integer pomodoros, LocalDate dueDate, String status, User user) {
 		super();
 		this.id = id;
@@ -52,7 +52,7 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Project project;
-	
+
 	@OneToMany(mappedBy = "task")
 	@JsonIgnore
 	private List<Pomodoro> pomodoros;
@@ -123,7 +123,7 @@ public class Task {
 
 	@Override
 	public String toString() {
-		return "Task [id=" + id + ", description=" + description + ", pomodoros count=" + estimatedPomodorosCount + ", dueDate=" + dueDate
-				+ ", status=" + status + ", user=" + user + "]";
+		return "Task [id=" + id + ", description=" + description + ", pomodoros count=" + estimatedPomodorosCount
+				+ ", dueDate=" + dueDate + ", status=" + status + ", user=" + user + "]";
 	}
 }

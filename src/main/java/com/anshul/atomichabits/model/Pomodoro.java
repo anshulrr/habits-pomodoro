@@ -12,40 +12,40 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-@Entity(name="pomodoros")
+@Entity(name = "pomodoros")
 public class Pomodoro {
-	
+
 	Pomodoro() {
-		
+
 	}
 
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private OffsetDateTime startTime;
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private OffsetDateTime endTime;
-	
+
 	// in minutes
 	private Integer length = 25;
 	// in seconds
 	private Integer timeElapsed;
-	
+
 	// started, paused, completed, discarded
 	private String status = "started";
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Task task;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
 
-	public Pomodoro(Long id, OffsetDateTime startTime, OffsetDateTime endTime, Integer length, Integer timeElapsed, String status,
-			Task task, User user) {
+	public Pomodoro(Long id, OffsetDateTime startTime, OffsetDateTime endTime, Integer length, Integer timeElapsed,
+			String status, Task task, User user) {
 		super();
 		this.id = id;
 		this.startTime = startTime;
@@ -126,6 +126,5 @@ public class Pomodoro {
 		return "Pomodoro [id=" + id + ", startTime=" + startTime + ", endTime=" + endTime + ", length=" + length
 				+ ", timeElapsed=" + timeElapsed + ", status=" + status + ", task=" + task + ", user=" + user + "]";
 	}
-	
-	
-} 
+
+}

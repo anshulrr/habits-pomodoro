@@ -14,31 +14,29 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-@Entity(name="project_categories")
-@Table(uniqueConstraints={
-	    @UniqueConstraint(columnNames = {"user_id", "level"})
-	}) 
+@Entity(name = "project_categories")
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "level" }) })
 public class ProjectCategory {
-	
+
 	ProjectCategory() {
 	}
-	
+
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	private Integer level;
-	
-//	@Column(columnDefinition = "varchar(255) default '00FFFF'")
-//	private String color = "00FFFF";
+
+	//	@Column(columnDefinition = "varchar(255) default '00FFFF'")
+	//	private String color = "00FFFF";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
-	
+
 	@OneToMany(mappedBy = "projectCategory")
 	@JsonIgnore
 	private List<Project> projects;
@@ -65,7 +63,7 @@ public class ProjectCategory {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Integer getLevel() {
 		return level;
 	}

@@ -1,6 +1,5 @@
 package com.anshul.atomichabits.controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -13,19 +12,19 @@ import com.anshul.atomichabits.model.User;
 @Controller
 public class UserController {
 
-	private  UserRepository userRepository;
-	
+	private UserRepository userRepository;
+
 	public UserController(UserRepository r) {
 		userRepository = r;
 	}
-	
+
 	@RequestMapping("/users-list")
 	public String listAllUsers(ModelMap model) {
-		 List<User> users = userRepository.findAll();
-		 // System.out.println(users.get(1));
-		 // System.out.println(users.toString());
-		 // model.put("users", users.toString());
-		 model.put("users", users);
-		 return "listUsers";
+		List<User> users = userRepository.findAll();
+		// System.out.println(users.get(1));
+		// System.out.println(users.toString());
+		// model.put("users", users.toString());
+		model.put("users", users);
+		return "listUsers";
 	}
 }

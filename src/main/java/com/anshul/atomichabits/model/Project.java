@@ -12,33 +12,33 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity(name="projects")
+@Entity(name = "projects")
 public class Project {
-	
+
 	Project() {
 	}
-	
+
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	private String description;
-	
+
 	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
 	private String color = "#00FFFF";
-	
+
 	// in minutes
 	private Integer pomodoroLength;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-//	@JsonIgnore
+	//	@JsonIgnore
 	private ProjectCategory projectCategory;
 
 	@OneToMany(mappedBy = "project")
@@ -101,7 +101,7 @@ public class Project {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	public ProjectCategory getProjectCategory() {
 		return projectCategory;
 	}

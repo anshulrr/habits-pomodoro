@@ -18,25 +18,23 @@ import jakarta.validation.Valid;
 @RestController
 public class UserResource {
 
-		private  UserRepository userRepository;
-		
-		public UserResource(UserRepository r) {
-			this.userRepository = r;
-		}
-		
-		@GetMapping("/users")
-		public List<User> retrieveAllUsers() {
-			return userRepository.findAll();
-		}
-		
-		@PostMapping("/users")
-		public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-			User savedUser = userRepository.save(user);
-			
-			URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-					.path("/{id}")
-					.buildAndExpand(savedUser.getId())
-					.toUri();
-			return ResponseEntity.created(location).build();
-		}
+	private UserRepository userRepository;
+
+	public UserResource(UserRepository r) {
+		this.userRepository = r;
+	}
+
+	@GetMapping("/users")
+	public List<User> retrieveAllUsers() {
+		return userRepository.findAll();
+	}
+
+	@PostMapping("/users")
+	public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
+		User savedUser = userRepository.save(user);
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
+				.toUri();
+		return ResponseEntity.created(location).build();
+	}
 }

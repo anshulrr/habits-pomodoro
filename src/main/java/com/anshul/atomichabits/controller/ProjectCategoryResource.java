@@ -29,63 +29,65 @@ public class ProjectCategoryResource {
 
 	private UserRepository userRepository;
 	private ProjectCategoryRepository projectCategoryRepository;
-	
 
 	public ProjectCategoryResource(UserRepository u, ProjectCategoryRepository p) {
 		this.userRepository = u;
 		this.projectCategoryRepository = p;
 	}
-	
+
 	@GetMapping("/project-categories/{id}")
 	public ProjectCategory retrieveProject(@PathVariable Long id, Principal principal) {
 		Optional<ProjectCategory> project = projectCategoryRepository.findById(id);
-		
+
 		if (project.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
-		
+
 		if (!project.get().getUser().getUsername().equals(principal.getName()))
 			throw new NotAuthorizedException("not authorized");
-		
+
 		return project.get();
 	}
 
 	@GetMapping("/project-categories")
-	public List<ProjectCategory> retrieveProjectsOfUser(Principal principal, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-//		TODO: how to avoid user query for user id
+	public List<ProjectCategory> retrieveProjectsOfUser(Principal principal,
+			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+		// TODO: how to avoid user query for user id
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		
+
 		return projectCategoryRepository.findUserProjectCategories(user.get().getId(), limit, offset);
 	}
-	
+
 	@GetMapping("/project-categories/count")
 	public Integer retrieveProjectsCountOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		return projectCategoryRepository.getUserProjectCategoriesCount(user.get().getId());
 	}
-	
+
 	@PostMapping("/project-categories")
-	public ProjectCategory createProjectOfUser(@Valid @RequestBody ProjectCategory projectCategory, Principal principal) {
+	public ProjectCategory createProjectOfUser(@Valid @RequestBody ProjectCategory projectCategory,
+			Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		
+
 		projectCategory.setUser(user.get());
-		
+
 		return projectCategoryRepository.save(projectCategory);
 	}
-	
+
 	@PutMapping("/project-categories/{id}")
-	public ProjectCategory createProjectOfUser(@PathVariable Long id, @Valid @RequestBody ProjectCategory projectCategory, Principal principal) {
+	public ProjectCategory createProjectOfUser(@PathVariable Long id,
+			@Valid @RequestBody ProjectCategory projectCategory, Principal principal) {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findById(id);
-		
+
 		if (categoryEntry.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
-		
+
 		if (!categoryEntry.get().getUser().getUsername().equals(principal.getName()))
 			throw new NotAuthorizedException("not authorized");
-		
+
 		categoryEntry.get().setName(projectCategory.getName());
-		
+
 		categoryEntry.get().setLevel(projectCategory.getLevel());
-		
+
 		return projectCategoryRepository.save(categoryEntry.get());
 	}
 }

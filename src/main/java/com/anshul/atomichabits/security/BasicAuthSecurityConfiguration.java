@@ -18,27 +18,26 @@ public class BasicAuthSecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
+
 		http.authorizeHttpRequests()
-			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			.requestMatchers("/signup").permitAll()	// removing auth for signup
-			.anyRequest().authenticated();
-		
-		
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/signup").permitAll() // removing auth for signup
+				.anyRequest().authenticated();
+
 		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 		// disable form login
 		// http.formLogin();
-		
+
 		http.httpBasic();
-		
+
 		//  disable csrf
 		http.csrf().disable();
-		
+
 		return http.build();
 	}
-	
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -53,7 +52,7 @@ public class BasicAuthSecurityConfiguration {
 	// required for default spring security Todo: why
 	@Bean
 	public UserDetailsService userDetailService(DataSource dataSource) {
-		
+
 		var jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
 		return jdbcUserDetailsManager;

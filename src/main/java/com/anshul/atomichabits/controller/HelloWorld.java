@@ -9,7 +9,7 @@ public class HelloWorld {
 
 	@GetMapping("/")
 	public String getResponse(Authentication authentication) {
-		System.out.println(authentication.getPrincipal());
+		// System.out.println(authentication.getPrincipal());
 		return "Hello " + authentication.getName();
 	}
 }
