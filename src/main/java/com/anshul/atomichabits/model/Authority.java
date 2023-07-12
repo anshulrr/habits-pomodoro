@@ -7,17 +7,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-@Entity(name="authorities")
+@Entity(name = "authorities")
 public class Authority {
 
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username", referencedColumnName="username")
+	@JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
-	
+
 	private String authority;
 
 	public Authority(User user, String authority) {

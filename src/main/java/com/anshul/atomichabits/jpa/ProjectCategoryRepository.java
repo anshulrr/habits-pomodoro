@@ -14,7 +14,7 @@ public interface ProjectCategoryRepository extends JpaRepository<ProjectCategory
 
 	@Query("select p from project_categories p where p.user = ?1 and p.id = ?2")
 	public Optional<ProjectCategory> findUserProjectCategoryById(User user, Long category_id);
-	
+
 	@Query(value = "select * from project_categories where user_id = ?1 order by id limit ?2 offset ?3", nativeQuery = true)
 	public List<ProjectCategory> findUserProjectCategories(Long id, int limit, int offset);
 

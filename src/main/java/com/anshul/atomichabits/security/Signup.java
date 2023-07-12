@@ -11,23 +11,23 @@ import com.anshul.atomichabits.model.User;
 
 @RestController
 public class Signup {
-	
-	private  UserRepository userRepository;
-	private  AuthorityRepository authorityRepository;
-	
+
+	private UserRepository userRepository;
+	private AuthorityRepository authorityRepository;
+
 	public Signup(UserRepository r, AuthorityRepository a) {
 		this.userRepository = r;
 		this.authorityRepository = a;
 	}
-	
+
 	@PostMapping("/signup")
 	public String saveUser(@RequestBody User user) {
 		// System.out.println(user);
-		
+
 		userRepository.save(user);
-		
+
 		authorityRepository.save(new Authority(user, "user"));
-		
+
 		return "User created successfully";
 	}
 }

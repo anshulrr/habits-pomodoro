@@ -36,7 +36,6 @@ public class PomodoroResource {
 	private UserRepository userRepository;
 	private PomodoroRepository pomodoroRepository;
 	private TaskRepository taskRepository;
-	
 
 	public PomodoroResource(UserRepository u, PomodoroRepository p, TaskRepository t) {
 		this.userRepository = u;
@@ -47,143 +46,126 @@ public class PomodoroResource {
 	@GetMapping("/pomodoros")
 	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user.get().getId(), OffsetDateTime.now().with(LocalTime.MIN)); 
-		
-//		System.out.println(pomodoros.get(0).getId());
-		
+
+		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user.get().getId(),
+				OffsetDateTime.now().with(LocalTime.MIN));
+
+		// System.out.println(pomodoros.get(0).getId());
+
 		return pomodoros;
 	}
 
 	@GetMapping("/pomodoros/projects-time")
-	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit,
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<Object> result;
-		
+
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now()
-					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 					.with(LocalTime.MIN);
 			monday = monday.plusDays(7 * offset);
 			OffsetDateTime end = monday.plusDays(7);
-			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
+			// System.out.println(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
 			result = pomodoroRepository.findProjectsTime(user.get().getId(), monday, end, categories);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now()
-					.withDayOfMonth(1)
-					.with(LocalTime.MIN);
+			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
 			first = first.plusMonths(offset);
-			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth())
-					.with(LocalTime.MAX);
-			System.out.println(first + " " + end);
+			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+			// System.out.println(first + " " + end);
 			result = pomodoroRepository.findProjectsTime(user.get().getId(), first, end, categories);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now()
-					.with(LocalTime.MIN);
+			OffsetDateTime date = OffsetDateTime.now().with(LocalTime.MIN);
 			date = date.plusDays(offset);
 			OffsetDateTime end = date.plusDays(1);
-			System.out.println(date + " " + end);
+			// System.out.println(date + " " + end);
 			result = pomodoroRepository.findProjectsTime(user.get().getId(), date, end, categories);
 		}
-		
+
 		return result;
 	}
 
 	@GetMapping("/pomodoros/tasks-time")
-	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("limit") String limit,
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
-		
+
 		List<Object> result;
-		
+
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now()
-					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 					.with(LocalTime.MIN);
 			monday = monday.plusDays(7 * offset);
 			OffsetDateTime end = monday.plusDays(7);
-			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
+			// System.out.println(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
 			result = pomodoroRepository.findTasksTime(user.get().getId(), monday, end, categories);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now()
-					.withDayOfMonth(1)
-					.with(LocalTime.MIN);
+			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
 			first = first.plusMonths(offset);
-			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth())
-					.with(LocalTime.MAX);
-			System.out.println(first + " " + end);
+			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+			// System.out.println(first + " " + end);
 			result = pomodoroRepository.findTasksTime(user.get().getId(), first, end, categories);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now()
-					.with(LocalTime.MIN);
+			OffsetDateTime date = OffsetDateTime.now().with(LocalTime.MIN);
 			date = date.plusDays(offset);
 			OffsetDateTime end = date.plusDays(1);
-			System.out.println(date + " " + end);
+			// System.out.println(date + " " + end);
 			result = pomodoroRepository.findTasksTime(user.get().getId(), date, end, categories);
 		}
-		
+
 		return result;
 	}
-	
 
 	@GetMapping("/pomodoros/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit, @RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit,
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		List<String[]> result;
-		
-//		System.out.println(limit + " " + offset);
-		
+
+		// System.out.println(limit + " " + offset);
+
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now()
-					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-					.plusDays(-14 * 7)
-					.with(LocalTime.MIN);
+			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+					.plusDays(-14 * 7).with(LocalTime.MIN);
 			monday = monday.plusDays(15 * 7 * offset);
-			OffsetDateTime end = monday.plusDays(14 * 7)
-					.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+			OffsetDateTime end = monday.plusDays(14 * 7).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 					.with(LocalTime.MAX);
-			System.out.println(OffsetDateTime.now().getDayOfWeek() + " "+ monday + " " + end);
+			// System.out.println(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
 			result = pomodoroRepository.findTotalTimeWeekly(user.get().getId(), monday, end, categories);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now()
-					.plusMonths(-14)
-					.withDayOfMonth(1)
-					.with(LocalTime.MIN);
+			OffsetDateTime first = OffsetDateTime.now().plusMonths(-14).withDayOfMonth(1).with(LocalTime.MIN);
 			first = first.plusMonths(15 * offset);
-			OffsetDateTime end = first.plusMonths(14)
-					.with(TemporalAdjusters.lastDayOfMonth())
-					.with(LocalTime.MAX);
-			System.out.println(first + " " + end);
+			OffsetDateTime end = first.plusMonths(14).with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+			// System.out.println(first + " " + end);
 			result = pomodoroRepository.findTotalTimeMonthly(user.get().getId(), first, end, categories);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now()
-					.plusDays(-14)
-					.with(LocalTime.MIN);
+			OffsetDateTime date = OffsetDateTime.now().plusDays(-14).with(LocalTime.MIN);
 			date = date.plusDays(15 * offset);
-			OffsetDateTime end = date.plusDays(14)
-					.with(LocalTime.MAX);
-			System.out.println(date + " " + end);
+			OffsetDateTime end = date.plusDays(14).with(LocalTime.MAX);
+			// System.out.println(date + " " + end);
 			result = pomodoroRepository.findTotalTimeDaily(user.get().getId(), date, end, categories);
 		}
-		
+
 		Map<String, List<String[]>> groupedResult = result.stream()
-				  .collect(Collectors.groupingBy((element -> (String)element[2])));
-//		System.out.println(result);
-		
+				.collect(Collectors.groupingBy((element -> (String) element[2])));
+		// System.out.println(result);
+
 		return groupedResult;
 	}
-	
+
 	@PostMapping("/pomodoros")
-	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id, Principal principal) {
-//		System.out.println(pomodoro.toString() + task_id);
+	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
+			Principal principal) {
+		// System.out.println(pomodoro.toString() + task_id);
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Task> task = taskRepository.findUserTaskById(user.get(), task_id);
 
 		pomodoro.setUser(user.get());
 		pomodoro.setTask(task.get());
-		
-//		System.out.println(pomodoro);
-//		System.out.println(task.get().getProject().getPomodoroLength());
-		
+
+		// System.out.println(pomodoro);
+		// System.out.println(task.get().getProject().getPomodoroLength());
+
 		// TODO: get length from user settings
 		pomodoro.setLength(25);
 
@@ -193,53 +175,52 @@ public class PomodoroResource {
 		} else {
 			var projectPomodoroLength = task.get().getProject().getPomodoroLength();
 			if (projectPomodoroLength != null) {
-//					System.out.println("setting length: " + projectPomodoroLength);
+				// 			System.out.println("setting length: " + projectPomodoroLength);
 				pomodoro.setLength(projectPomodoroLength);
 			}
 		}
-//		System.out.println(pomodoro.getLength());
-		
+		// System.out.println(pomodoro.getLength());
+
 		return pomodoroRepository.save(pomodoro);
 	}
-	
-//	@PutMapping("/pomodoros/{id}")
-//	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
-//		Optional<User> user = userRepository.findByUsername(principal.getName());
-//		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
-//		
-//		System.out.println(json);
-//		pomodoro.get().setStatus(json.get("status"));
-//		
-//		if (json.get("status").equals("completed")) {
-//			pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
-//		}
-//		
-//		System.out.println(pomodoro.get());
-//		pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
-//		
-//		pomodoroRepository.save(pomodoro.get());
-//		
-//		return pomodoro.get();
-//	}
-	
 
-//	getting request data as params
-	@PutMapping(value = "/pomodoros/{id}", 
-			  params = { "timeElapsed", "status" })
-	public Pomodoro updatePomodor(@PathVariable Long id, @RequestParam("timeElapsed") String timeElapsed, @RequestParam("status") String status,  Principal principal) {
+	//	@PutMapping("/pomodoros/{id}")
+	//	public Pomodoro updatePomodor(@PathVariable Long id, @Valid @RequestBody Map<String, String> json, Principal principal) {
+	// Optional<User> user = userRepository.findByUsername(principal.getName());
+	// Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
+	// 
+	// System.out.println(json);
+	// pomodoro.get().setStatus(json.get("status"));
+	// 
+	// if (json.get("status").equals("completed")) {
+	// 	pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
+	// }
+	// 
+	// System.out.println(pomodoro.get());
+	// pomodoro.get().setTimeElapsed(Integer.valueOf(json.get("timeElapsed")));
+	// 
+	// pomodoroRepository.save(pomodoro.get());
+	// 
+	// return pomodoro.get();
+	//	}
+
+	//	getting request data as params
+	@PutMapping(value = "/pomodoros/{id}", params = { "timeElapsed", "status" })
+	public Pomodoro updatePomodor(@PathVariable Long id, @RequestParam("timeElapsed") String timeElapsed,
+			@RequestParam("status") String status, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
-		
-		System.out.println(status);
+
+		// System.out.println(status);
 		pomodoro.get().setStatus(status);
-		
+
 		if (status.equals("completed")) {
 			pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
 		}
-		
-		System.out.println(pomodoro.get());
+
+		// System.out.println(pomodoro.get());
 		pomodoro.get().setTimeElapsed(Integer.valueOf(timeElapsed));
-		
+
 		return pomodoroRepository.save(pomodoro.get());
 	}
 }

@@ -36,32 +36,31 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 public class JwtSecurityConfiguration {
-	
+
 	@Autowired
 	private Environment env;
-	
+
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
+
 		http.authorizeHttpRequests()
-		.requestMatchers("/authenticate").permitAll()
-			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			.requestMatchers("/signup").permitAll()	// removing auth for signup
-			.anyRequest().authenticated();
-		
-		
+				.requestMatchers("/authenticate").permitAll()
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/signup").permitAll() // removing auth for signup
+				.anyRequest().authenticated();
+
 		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 		http.httpBasic();
-		
+
 		http.csrf().disable();
-		
+
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-		
+
 		return http.build();
 	}
-	
+
 	@Bean
 	public KeyPair keyPair() {
 		try {
@@ -72,46 +71,43 @@ public class JwtSecurityConfiguration {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	@Bean
 	public RSAKey rsaKey(KeyPair keyPair) {
-		
-		return new RSAKey
-				.Builder((RSAPublicKey)keyPair.getPublic())
+
+		return new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
 				.privateKey(keyPair.getPrivate())
 				.keyID(UUID.randomUUID().toString())
 				.build();
 	}
-	
+
 	@Bean
 	public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey) {
 		var jwkSet = new JWKSet(rsaKey);
-		
-		return (jwkSelector, context) ->  jwkSelector.select(jwkSet);
+
+		return (jwkSelector, context) -> jwkSelector.select(jwkSet);
 	}
-	
+
 	@Bean
 	public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException {
 		return NimbusJwtDecoder
 				.withPublicKey(rsaKey.toRSAPublicKey())
-				.build();	
+				.build();
 	}
-	
+
 	@Bean
 	public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
 		return new NimbusJwtEncoder(jwkSource);
 	}
-	
 
+	@Bean
+	public AuthenticationManager authenticationManager(
+			UserDetailsService userDetailsService) {
+		var authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userDetailsService);
+		return new ProviderManager(authenticationProvider);
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService) {
-        var authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        return new ProviderManager(authenticationProvider);
-    }
-	
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -126,7 +122,7 @@ public class JwtSecurityConfiguration {
 	// required for default spring security Todo: why
 	@Bean
 	public UserDetailsService userDetailService(DataSource dataSource) {
-		
+
 		var jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 
 		return jdbcUserDetailsManager;
