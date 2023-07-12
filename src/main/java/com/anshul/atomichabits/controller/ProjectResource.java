@@ -89,9 +89,13 @@ public class ProjectResource {
 		return projectRepository.save(project);
 	}
 	
-	@PutMapping("/projects/{id}")
-	public Project updateProjectOfUser(@PathVariable Long id, @Valid @RequestBody Project project, Principal principal) {
+	@PutMapping("/project-categories/{categoryId}/projects/{id}")
+	public Project updateProjectOfUser(@PathVariable Long categoryId, @PathVariable Long id, @Valid @RequestBody Project project, Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+		
 		Optional<Project> projectEntry = projectRepository.findById(id);
+		
+		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(), categoryId);
 		
 		if (projectEntry.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
@@ -104,6 +108,8 @@ public class ProjectResource {
 		projectEntry.get().setDescription(project.getDescription());
 		
 		projectEntry.get().setColor(project.getColor());
+		
+		projectEntry.get().setProjectCategory(category.get());
 		
 		return projectRepository.save(projectEntry.get());
 	}
