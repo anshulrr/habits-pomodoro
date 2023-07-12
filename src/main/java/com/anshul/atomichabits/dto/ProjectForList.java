@@ -8,6 +8,8 @@ public interface ProjectForList {
 	
 	String getColor();
 
+	Integer getPomodoroLength();
+	
 	String getCategory();
 }
 
