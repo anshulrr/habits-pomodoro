@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,16 +24,19 @@ public class Task {
 	@GeneratedValue
 	private Long id;
 
+	@Column(nullable = false)
 	private String description;
 
 	private Integer estimatedPomodorosCount = 0;
 
 	// in minutes
+	@Column(columnDefinition = "integer default 0")
 	private Integer pomodoroLength;
 
 	private LocalDate dueDate;
 
 	// added, finished
+	@Column(columnDefinition = "varchar(255) default 'added'")
 	private String status = "added";
 
 	public Task(Long id, String description, Integer pomodoros, LocalDate dueDate, String status, User user) {
