@@ -84,6 +84,6 @@ public class ProjectCategory {
 
 	@Override
 	public String toString() {
-		return "Project Category [id=" + id + ", name=" + name + ", level=" + level + ", user=" + user + "]";
+		return "Project Category [id=" + id + ", name=" + name + ", level=" + level + "]";
 	}
 }

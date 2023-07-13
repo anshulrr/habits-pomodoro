@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 @Entity(name = "projects")
 public class Project {
 
-	Project() {
+	public Project() {
 	}
 
 	@Id
@@ -27,18 +27,19 @@ public class Project {
 
 	private String description;
 
-	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
-	private String color = "#00FFFF";
+	@Column(columnDefinition = "varchar(255) default '#228B22'")
+	private String color = "#228B22";
 
 	// in minutes
-	private Integer pomodoroLength;
+	@Column(columnDefinition = "integer default 0")
+	private Integer pomodoroLength = 0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	//	@JsonIgnore
+	@JsonIgnore
 	private ProjectCategory projectCategory;
 
 	@OneToMany(mappedBy = "project")
@@ -116,6 +117,8 @@ public class Project {
 
 	@Override
 	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", description=" + description + "]";
+		return "Project [id=" + id + ", name=" + name + ", description=" + description + ", color=" + color
+				+ ", pomodoroLength=" + pomodoroLength + ", projectCategory=" + projectCategory
+				+ "]";
 	}
 }
