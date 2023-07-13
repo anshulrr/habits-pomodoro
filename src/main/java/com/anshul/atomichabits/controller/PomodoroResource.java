@@ -2,7 +2,9 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
@@ -165,9 +167,9 @@ public class PomodoroResource {
 
 		pomodoro.setUser(user.get());
 		pomodoro.setTask(task.get());
-		
+
 		Optional<PomodoroDto> runningPomodoro = pomodoroRepository.findRunningPomodoro(user.get());
-		
+
 		if (runningPomodoro.isPresent()) {
 			System.out.println(runningPomodoro);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -216,10 +218,16 @@ public class PomodoroResource {
 
 	//	getting request data as params
 	@PutMapping(value = "/pomodoros/{id}", params = { "timeElapsed", "status" })
-	public Pomodoro updatePomodor(@PathVariable Long id, @RequestParam("timeElapsed") String timeElapsed,
-			@RequestParam("status") String status, Principal principal) {
+	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
+			@RequestParam("timeElapsed") String timeElapsed, @RequestParam("status") String status,
+			Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Pomodoro> pomodoro = pomodoroRepository.findById(id);
+
+		// Extra check for sync pomodoro
+		if (pomodoro.get().getStatus().equals("completed")) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 
 		// System.out.println(status);
 		pomodoro.get().setStatus(status);
@@ -228,22 +236,52 @@ public class PomodoroResource {
 			pomodoro.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
 		}
 
+		// Update the startTime, so that refresh api and sync logic works correctly
+		if (status.equals("started")) {
+			OffsetDateTime updatedStartTime = OffsetDateTime.now(ZoneOffset.UTC)
+					.minusSeconds(pomodoro.get().getTimeElapsed());
+			// System.out.println(updatedStartTime + " : " + pomodoro.get().getTimeElapsed());
+			pomodoro.get().setStartTime(updatedStartTime);
+		}
+
 		// System.out.println(pomodoro.get());
 		pomodoro.get().setTimeElapsed(Integer.valueOf(timeElapsed));
 
-		return pomodoroRepository.save(pomodoro.get());
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoro.get()), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/pomodoros/running")
 	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		// System.out.println(pomodoro.toString() + task_id);
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		Optional<PomodoroDto> runningPomodoro = pomodoroRepository.findRunningPomodoro(user.get());
-		
+
 		if (runningPomodoro.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+
+		// Automatically update timeElapsed for pomodoro with status started
+		// Otherwise it will start again without considering actual time elapsed
+		if (runningPomodoro.get().getStatus().equals("started")) {
+			Optional<Pomodoro> pomodoro = pomodoroRepository.findUserPomodoroById(user.get(),
+					runningPomodoro.get().getId());
+			OffsetDateTime startTime = pomodoro.get().getStartTime();
+
+			Long timeElapsed = Duration.between(startTime, OffsetDateTime.now()).getSeconds();
+			// System.out.println(Duration.between(startTime, OffsetDateTime.now()).getSeconds());
+			if (timeElapsed < pomodoro.get().getLength() * 60) {
+				pomodoro.get().setTimeElapsed(Math.toIntExact(timeElapsed));
+			} else {
+				pomodoro.get().setTimeElapsed(pomodoro.get().getLength() * 60 - 3);
+			}
+			pomodoroRepository.save(pomodoro.get());
+
+			Optional<PomodoroDto> updatedRunningPomodoro = pomodoroRepository.findRunningPomodoro(user.get());
+
+			return new ResponseEntity<>(updatedRunningPomodoro.get(), HttpStatus.OK);
+		}
+
 		return new ResponseEntity<>(runningPomodoro.get(), HttpStatus.OK);
 	}
 }
