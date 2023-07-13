@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
@@ -154,7 +157,7 @@ public class PomodoroResource {
 	}
 
 	@PostMapping("/pomodoros")
-	public Pomodoro createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
+	public ResponseEntity<Pomodoro> createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
 			Principal principal) {
 		// System.out.println(pomodoro.toString() + task_id);
 		Optional<User> user = userRepository.findByUsername(principal.getName());
@@ -162,6 +165,13 @@ public class PomodoroResource {
 
 		pomodoro.setUser(user.get());
 		pomodoro.setTask(task.get());
+		
+		Optional<PomodoroDto> runningPomodoro = pomodoroRepository.findRunningPomodoro(user.get());
+		
+		if (runningPomodoro.isPresent()) {
+			System.out.println(runningPomodoro);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 
 		// System.out.println(pomodoro);
 		// System.out.println(task.get().getProject().getPomodoroLength());
@@ -181,7 +191,7 @@ public class PomodoroResource {
 		}
 		// System.out.println(pomodoro.getLength());
 
-		return pomodoroRepository.save(pomodoro);
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}
 
 	//	@PutMapping("/pomodoros/{id}")
@@ -222,5 +232,18 @@ public class PomodoroResource {
 		pomodoro.get().setTimeElapsed(Integer.valueOf(timeElapsed));
 
 		return pomodoroRepository.save(pomodoro.get());
+	}
+	
+	@GetMapping("/pomodoros/running")
+	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
+		// System.out.println(pomodoro.toString() + task_id);
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+
+		Optional<PomodoroDto> runningPomodoro = pomodoroRepository.findRunningPomodoro(user.get());
+		
+		if (runningPomodoro.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(runningPomodoro.get(), HttpStatus.OK);
 	}
 }
