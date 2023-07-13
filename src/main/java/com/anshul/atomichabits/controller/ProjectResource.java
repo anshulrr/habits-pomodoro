@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
 import com.anshul.atomichabits.exceptions.NotAuthorizedException;
 import com.anshul.atomichabits.exceptions.ProjectNotFoundException;
@@ -77,23 +78,31 @@ public class ProjectResource {
 	}
 
 	@PostMapping("/project-categories/{categoryId}/projects")
-	public Project createProjectOfUser(@PathVariable Long categoryId, @Valid @RequestBody Project project,
+	public ProjectDto createProjectOfUser(@PathVariable Long categoryId, @Valid @RequestBody ProjectDto projectDto,
 			Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(),
 				categoryId);
 
-		project.setUser(user.get());
+		Project project = new Project();
 
+		project.setName(projectDto.getName());
+		project.setDescription(projectDto.getDescription());
+		project.setColor(projectDto.getColor());
+		project.setPomodoroLength(projectDto.getPomodoroLength());
+
+		project.setUser(user.get());
 		project.setProjectCategory(category.get());
 
-		return projectRepository.save(project);
+		projectRepository.save(project);
+
+		return new ProjectDto(project);
 	}
 
 	@PutMapping("/project-categories/{categoryId}/projects/{id}")
 	public Project updateProjectOfUser(@PathVariable Long categoryId, @PathVariable Long id,
-			@Valid @RequestBody Project project, Principal principal) {
+			@Valid @RequestBody ProjectDto projectDto, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		Optional<Project> projectEntry = projectRepository.findById(id);
@@ -107,14 +116,19 @@ public class ProjectResource {
 		if (!projectEntry.get().getUser().getUsername().equals(principal.getName()))
 			throw new NotAuthorizedException("not authorized");
 
-		projectEntry.get().setName(project.getName());
+		// System.out.println(projectEntry + "" + projectDto + category);
 
-		projectEntry.get().setDescription(project.getDescription());
-
-		projectEntry.get().setColor(project.getColor());
+		projectEntry.get().setName(projectDto.getName());
+		projectEntry.get().setDescription(projectDto.getDescription());
+		projectEntry.get().setColor(projectDto.getColor());
+		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
 
 		projectEntry.get().setProjectCategory(category.get());
 
-		return projectRepository.save(projectEntry.get());
+		projectRepository.save(projectEntry.get());
+
+		// System.out.println(projectEntry);
+
+		return projectEntry.get();
 	}
 }

@@ -169,12 +169,12 @@ public class PomodoroResource {
 		// TODO: get length from user settings
 		pomodoro.setLength(25);
 
-		var taskPomodoroLength = task.get().getPomodoroLength();
-		if (taskPomodoroLength != null) {
+		Integer taskPomodoroLength = task.get().getPomodoroLength();
+		if (taskPomodoroLength != 0) {
 			pomodoro.setLength(taskPomodoroLength);
 		} else {
-			var projectPomodoroLength = task.get().getProject().getPomodoroLength();
-			if (projectPomodoroLength != null) {
+			Integer projectPomodoroLength = task.get().getProject().getPomodoroLength();
+			if (projectPomodoroLength != 0) {
 				// 			System.out.println("setting length: " + projectPomodoroLength);
 				pomodoro.setLength(projectPomodoroLength);
 			}
