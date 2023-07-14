@@ -40,7 +40,7 @@ public class ProjectResource {
 	}
 
 	@GetMapping("/projects/{id}")
-	public Project retrieveProject(@PathVariable Long id, Principal principal) {
+	public ProjectDto retrieveProject(@PathVariable Long id, Principal principal) {
 		// Optional<Project> project = projectRepository.findById(id);
 		// 
 		// if (project.isEmpty())
@@ -52,7 +52,7 @@ public class ProjectResource {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 		Optional<Project> project = projectRepository.findUserProjectById(user.get(), id);
 
-		return project.get();
+		return new ProjectDto(project.get());
 	}
 
 	@GetMapping("/projects")
