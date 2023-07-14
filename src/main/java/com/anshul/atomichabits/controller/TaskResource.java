@@ -7,9 +7,12 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -32,20 +35,21 @@ public class TaskResource {
 		this.taskRepository = t;
 	}
 
-	//	@GetMapping("/projects/{project_id}/tasks/{task_id}")
-	//	public Project retrieveProject(@PathVariable Long project_id, @PathVariable Long task_id, Principal principal) {
-	// Optional<User> user = userRepository.findByUsername(principal.getName());
-	// 
-	// Optional<Project> project = projectRepository.findUserProjectById(user.get(), project_id);
-	// 
-	// return project.get();
-	//	}
-
-	@GetMapping("/projects/{project_id}/tasks")
-	public List<Task> retrieveProjectsOfUser(@PathVariable Long project_id, Principal principal) {
+	@GetMapping("/projects/{project_id}/tasks/{task_id}")
+	public Task retrieveProject(@PathVariable Long project_id, @PathVariable Long task_id, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
-		List<Task> tasks = taskRepository.retrieveTasksByProjectId(user.get(), project_id);
+		//TODO: user check
+		Optional<Task> task = taskRepository.findById(task_id);
+
+		return task.get();
+	}
+
+	@GetMapping("/projects/{project_id}/tasks")
+	public List<Task> retrieveProjectsOfUser(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Optional<User> user = userRepository.findByUsername(principal.getName());
+
+		List<Task> tasks = taskRepository.retrieveTasksByProjectId(user.get(), project_id, status);
 
 		return tasks;
 	}
@@ -62,5 +66,18 @@ public class TaskResource {
 		task.setProject(project.get());
 
 		return taskRepository.save(task);
+	}
+
+	@PutMapping("/projects/{project_id}/tasks/{id}")
+	public Task retrieveProjectsOfUser(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, Principal principal) {
+		Optional<Task> taskEntry = taskRepository.findById(id);
+		
+		System.out.println(taskDto);
+
+		taskEntry.get().setDescription(taskDto.description());
+		taskEntry.get().setPomodoroLength(taskDto.pomodoroLength());
+		taskEntry.get().setStatus(taskDto.status());
+
+		return taskRepository.save(taskEntry.get());
 	}
 }

@@ -3,6 +3,7 @@ package com.anshul.atomichabits.dto;
 import com.anshul.atomichabits.model.Project;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public class ProjectDto {
@@ -32,6 +33,7 @@ public class ProjectDto {
 	@NotBlank
 	private String color;
 	
+	@NotNull
 	@PositiveOrZero
 	private Integer pomodoroLength;
 	
