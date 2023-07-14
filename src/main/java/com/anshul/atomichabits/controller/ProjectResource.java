@@ -77,13 +77,13 @@ public class ProjectResource {
 		return projectRepository.getUserProjectsCount(user.get().getId());
 	}
 
-	@PostMapping("/project-categories/{categoryId}/projects")
-	public ProjectDto createProjectOfUser(@PathVariable Long categoryId, @Valid @RequestBody ProjectDto projectDto,
+	@PostMapping("/projects")
+	public ProjectDto createProjectOfUser(@Valid @RequestBody ProjectDto projectDto,
 			Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(),
-				categoryId);
+				projectDto.getProjectCategoryId());
 
 		Project project = new Project();
 
@@ -100,15 +100,15 @@ public class ProjectResource {
 		return new ProjectDto(project);
 	}
 
-	@PutMapping("/project-categories/{categoryId}/projects/{id}")
-	public Project updateProjectOfUser(@PathVariable Long categoryId, @PathVariable Long id,
+	@PutMapping("/projects/{id}")
+	public Project updateProjectOfUser(@PathVariable Long id,
 			@Valid @RequestBody ProjectDto projectDto, Principal principal) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		Optional<Project> projectEntry = projectRepository.findById(id);
 
 		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(),
-				categoryId);
+				projectDto.getProjectCategoryId());
 
 		if (projectEntry.isEmpty())
 			throw new ProjectNotFoundException("id:" + id);
