@@ -10,6 +10,7 @@ public class ProjectDto {
 	public ProjectDto() {
 	}
 	
+	// For entity to dto mapping
 	public ProjectDto(Project project) {
 		super();
 		this.id = project.getId();
@@ -17,6 +18,8 @@ public class ProjectDto {
 		this.description = project.getDescription();
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
+		// System.out.println("mapping category id");
+		this.projectCategoryId = project.getProjectCategory().getId();
 	}
 
 	private Long id;
@@ -31,6 +34,8 @@ public class ProjectDto {
 	
 	@PositiveOrZero
 	private Integer pomodoroLength;
+	
+	private Long projectCategoryId;
 	
 	public Long getId() {
 		return id;
@@ -72,9 +77,18 @@ public class ProjectDto {
 		this.pomodoroLength = pomodoroLength;
 	}
 
+	// TODO check: I think because of spring boot projection, getters is used to decide variable name in dto object
+	public Long getProjectCategoryId() {
+		return projectCategoryId;
+	}
+
+	public void setProjectCategoryId(Long projectCategoryId) {
+		this.projectCategoryId = projectCategoryId;
+	}
+
 	@Override
 	public String toString() {
 		return "ProjectDto [id=" + id + ", name=" + name + ", description=" + description + ", color=" + color
-				+ ", pomodoroLength=" + pomodoroLength + "]";
+				+ ", pomodoroLength=" + pomodoroLength + ", projectCategoryId=" + projectCategoryId + "]";
 	}
 }
