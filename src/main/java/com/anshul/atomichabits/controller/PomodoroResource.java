@@ -49,18 +49,18 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal) {
+	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
 
 		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user.get().getId(),
-				OffsetDateTime.now().with(LocalTime.MIN));
+				OffsetDateTime.now().with(LocalTime.MIN), categories);
 
 		// System.out.println(pomodoros.get(0).getId());
 
 		return pomodoros;
 	}
 
-	@GetMapping("/pomodoros/projects-time")
+	@GetMapping("/stats/projects-time")
 	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit,
 			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
@@ -90,7 +90,7 @@ public class PomodoroResource {
 		return result;
 	}
 
-	@GetMapping("/pomodoros/tasks-time")
+	@GetMapping("/stats/tasks-time")
 	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("limit") String limit,
 			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
@@ -121,7 +121,7 @@ public class PomodoroResource {
 		return result;
 	}
 
-	@GetMapping("/pomodoros/total-time")
+	@GetMapping("/stats/total-time")
 	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit,
 			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
 		Optional<User> user = userRepository.findByUsername(principal.getName());
