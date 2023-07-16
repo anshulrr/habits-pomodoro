@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.anshul.atomichabits.jpa.UserRepository;
-import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
