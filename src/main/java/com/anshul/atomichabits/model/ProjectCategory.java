@@ -18,7 +18,7 @@ import jakarta.persistence.UniqueConstraint;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "level" }) })
 public class ProjectCategory {
 
-	ProjectCategory() {
+	public ProjectCategory() {
 	}
 
 	@Id
