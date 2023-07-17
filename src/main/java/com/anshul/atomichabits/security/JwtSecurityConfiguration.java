@@ -55,6 +55,10 @@ public class JwtSecurityConfiguration {
 		http.httpBasic();
 
 		http.csrf().disable();
+		
+		// https://www.baeldung.com/spring-security-cors-preflight
+		// bypassing the authorization checks for OPTIONS requests
+		http.cors();
 
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
