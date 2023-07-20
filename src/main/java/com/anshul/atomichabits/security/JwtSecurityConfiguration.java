@@ -52,7 +52,7 @@ public class JwtSecurityConfiguration {
 		http.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http.httpBasic();
+		http.httpBasic().disable();
 
 		http.csrf().disable();
 		
