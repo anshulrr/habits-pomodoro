@@ -16,7 +16,7 @@ import jakarta.persistence.OneToMany;
 @Entity(name = "tasks")
 public class Task {
 
-	Task() {
+	public Task() {
 
 	}
 
