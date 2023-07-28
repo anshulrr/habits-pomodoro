@@ -20,11 +20,14 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -39,6 +42,9 @@ public class JwtSecurityConfiguration {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private JwtAuthenticationFilter authenticationFilter;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -56,62 +62,24 @@ public class JwtSecurityConfiguration {
 
 		http.csrf().disable();
 		
-		// https://www.baeldung.com/spring-security-cors-preflight
 		// bypassing the authorization checks for OPTIONS requests
 		http.cors();
 
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+		
+		// filter for custom security context
+		http.addFilterBefore(authenticationFilter, BasicAuthenticationFilter.class);
 
 		return http.build();
 	}
 
-	@Bean
-	public KeyPair keyPair() {
-		try {
-			var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(2048);
-			return keyPairGenerator.generateKeyPair();
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	@Bean
-	public RSAKey rsaKey(KeyPair keyPair) {
-
-		return new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
-				.privateKey(keyPair.getPrivate())
-				.keyID(UUID.randomUUID().toString())
-				.build();
-	}
-
-	@Bean
-	public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey) {
-		var jwkSet = new JWKSet(rsaKey);
-
-		return (jwkSelector, context) -> jwkSelector.select(jwkSet);
-	}
-
-	@Bean
-	public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException {
-		return NimbusJwtDecoder
-				.withPublicKey(rsaKey.toRSAPublicKey())
-				.build();
-	}
-
-	@Bean
-	public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
-		return new NimbusJwtEncoder(jwkSource);
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(
-			UserDetailsService userDetailsService) {
-		var authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(userDetailsService);
-		return new ProviderManager(authenticationProvider);
-	}
-
+//	@Bean
+//	public JwtDecoder jwtDecoder() throws JOSEException {
+//		return NimbusJwtDecoder
+//				.withJwkSetUri(env.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri"))
+//				.build();
+//	}
+	
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -121,14 +89,5 @@ public class JwtSecurityConfiguration {
 						.allowedOrigins(env.getProperty("atomichabits.client.url"));
 			}
 		};
-	}
-
-	// required for default spring security Todo: why
-	@Bean
-	public UserDetailsService userDetailService(DataSource dataSource) {
-
-		var jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-
-		return jdbcUserDetailsManager;
 	}
 }

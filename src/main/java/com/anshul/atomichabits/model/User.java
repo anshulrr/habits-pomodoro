@@ -2,13 +2,13 @@ package com.anshul.atomichabits.model;
 
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -19,7 +19,7 @@ import jakarta.validation.constraints.Size;
 @Entity(name = "users")
 public class User {
 
-	protected User() {
+	public User() {
 	}
 
 	@Id
@@ -35,7 +35,7 @@ public class User {
 	@NotBlank(message = "Email is mandatory")
 	private String email;
 
-	@NotBlank(message = "Password is mandatory")
+//	@NotBlank(message = "Password is mandatory")
 	private String password;
 
 	// required for spring security
@@ -44,6 +44,10 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
 	private List<Project> projects;
+
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@JsonIgnore
+	private List<Authority> authorities;
 
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
@@ -99,12 +103,16 @@ public class User {
 		return projects;
 	}
 
-	//	public String getPassword() {
-	// return password;
-	//	}
+	public String getPassword() {
+		return password;
+	}
 
 	public List<Pomodoro> getPomodoros() {
 		return pomodoros;
+	}
+
+	public List<Authority> getAuthorities() {
+		return authorities;
 	}
 
 	// dt how  would we set multiple posts at a time	

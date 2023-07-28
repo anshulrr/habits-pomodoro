@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +24,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController
+@EnableMethodSecurity
 public class UserResource {
 
 	private UserRepository userRepository;
@@ -30,7 +34,9 @@ public class UserResource {
 	}
 
 	@GetMapping("/users")
-	public List<User> retrieveAllUsers() {
+	@PreAuthorize("hasAuthority('admin')")
+	public List<User> retrieveAllUsers(Authentication authetication) {
+//		System.out.println(authetication.getAuthorities());
 		return userRepository.findAll();
 	}
 

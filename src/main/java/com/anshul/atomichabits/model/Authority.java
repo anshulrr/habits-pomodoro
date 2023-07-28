@@ -9,6 +9,9 @@ import jakarta.persistence.ManyToOne;
 
 @Entity(name = "authorities")
 public class Authority {
+	
+	public Authority() {
+	}
 
 	@Id
 	@GeneratedValue
@@ -48,5 +51,10 @@ public class Authority {
 
 	public void setAuthority(String authority) {
 		this.authority = authority;
+	}
+
+	@Override
+	public String toString() {
+		return "Authority [id=" + id + ", user=" + user + ", authority=" + authority + "]";
 	}
 }
