@@ -36,19 +36,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		// get JWT token from http request
 		String token = getTokenFromRequest(request);
-//		System.out.println(request);
+		
+		// System.out.println(request);
+		// System.out.println("1: " + token);
 
-		System.out.println("1: " + token);
-
-//        // validate token
+        // decode token and set context holder
 		if (StringUtils.hasText(token)) {
-			System.out.println(jwtDecoder.decode(token).getClaims().get("email"));
+			// System.out.println(jwtDecoder.decode(token).getClaims().get("email"));
+			
+			String email = (String) jwtDecoder.decode(token).getClaims().get("email");
 
-//			String username = "anshul";
-			
-			String email = (String)jwtDecoder.decode(token).getClaims().get("email");
-			
-//			System.out.println(email);
+			// System.out.println(email);
 
 			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -66,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private String getTokenFromRequest(HttpServletRequest request) {
 
 		String bearerToken = request.getHeader("Authorization");
-		
-//		System.out.println("2: " + bearerToken);
+
+		// System.out.println("2: " + bearerToken);
 
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7, bearerToken.length());

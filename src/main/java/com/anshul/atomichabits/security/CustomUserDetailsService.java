@@ -1,7 +1,5 @@
 package com.anshul.atomichabits.security;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,45 +14,34 @@ import org.springframework.stereotype.Service;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
 
-
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
-    
-    private SignupService signup;
+	private UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository, SignupService s) {
-        this.userRepository = userRepository;
-        this.signup = s;
-    }
+	private SignupService signup;
 
-    @Override
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-          Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-          
-//          System.out.println(optional_user);
-          User user;
-          if (optional_user.isEmpty()) {
-        	  user = signup.saveUser(usernameOrEmail);
-          } else {
-        	  user = optional_user.get();
-          }
+	public CustomUserDetailsService(UserRepository userRepository, SignupService s) {
+		this.userRepository = userRepository;
+		this.signup = s;
+	}
 
-//          System.out.println("from custom user detail service: " + user);
-          
-          Set<String> roles = new HashSet<>(Arrays.asList());
-          
-//          System.out.println(user.getAuthorities());
-       
-          Set<GrantedAuthority> authorities = user
-        		  .getAuthorities()
-                  .stream()
-                  .map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
-           
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                user.getPassword(),
-                authorities);
-    }
+	@Override
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+		Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+
+		User user;
+		if (optional_user.isEmpty()) {
+			user = signup.saveUser(usernameOrEmail);
+		} else {
+			user = optional_user.get();
+		}
+
+        // System.out.println("from custom user detail service: " + user);
+
+		Set<GrantedAuthority> authorities = user.getAuthorities().stream()
+				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
+
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+	}
 }
