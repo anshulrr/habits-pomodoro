@@ -1,5 +1,7 @@
 package com.anshul.atomichabits.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +24,7 @@ public class Authority {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "username", referencedColumnName = "username")
+	@JsonIgnore
 	private User user;
 
 	private String authority;

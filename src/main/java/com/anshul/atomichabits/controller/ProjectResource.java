@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
-import com.anshul.atomichabits.exceptions.NotAuthorizedException;
-import com.anshul.atomichabits.exceptions.ProjectNotFoundException;
+import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -41,30 +39,21 @@ public class ProjectResource {
 
 	@GetMapping("/projects/{id}")
 	public ProjectDto retrieveProject(@PathVariable Long id, Principal principal) {
-		// Optional<Project> project = projectRepository.findById(id);
-		// 
-		// if (project.isEmpty())
-		// 	throw new ProjectNotFoundException("id:" + id);
-		// 
-		// if (!project.get().getUser().getUsername().equals(principal.getName()))
-		// 	throw new NotAuthorizedException("not authorized");
-
-		Optional<User> user = userRepository.findByUsername(principal.getName());
-		Optional<Project> project = projectRepository.findUserProjectById(user.get(), id);
-
-		return new ProjectDto(project.get());
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
+		if (projectEntry.isEmpty())
+			 	throw new ResourceNotFoundException("project id:" + id);
+		
+		return new ProjectDto(projectEntry.get());
 	}
 
 	@GetMapping("/projects")
 	public List<ProjectForList> retrieveProjectsOfUser(Principal principal,
 			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-		// TODO: how to avoid user query for user id
-		Optional<User> user = userRepository.findByUsername(principal.getName());
-
-		// System.out.println(principal + " " + principal.getClass());
+		Long user_id = Long.parseLong(principal.getName());
 
 		// TODO: using PageRequest
-		List<ProjectForList> projects = projectRepository.findUserProjects(user.get(), limit, offset);
+		List<ProjectForList> projects = projectRepository.findUserProjects(user_id, limit, offset);
 		// System.out.println(projects.get(0));
 
 		// TODO: remove unnecessary data of project categories
@@ -73,17 +62,20 @@ public class ProjectResource {
 
 	@GetMapping("/projects/count")
 	public Integer retrieveProjectsCountOfUser(Principal principal) {
-		Optional<User> user = userRepository.findByUsername(principal.getName());
-		return projectRepository.getUserProjectsCount(user.get().getId());
+		Long user_id = Long.parseLong(principal.getName());
+		return projectRepository.getUserProjectsCount(user_id);
 	}
 
 	@PostMapping("/projects")
 	public ProjectDto createProjectOfUser(@Valid @RequestBody ProjectDto projectDto,
 			Principal principal) {
-		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(user_id);
 
-		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(),
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id,
 				projectDto.getProjectCategoryId());
+		if (categoryEntry.isEmpty())
+			throw new ResourceNotFoundException("project category id:" + projectDto.getProjectCategoryId());
 
 		Project project = new Project();
 
@@ -91,10 +83,8 @@ public class ProjectResource {
 		project.setDescription(projectDto.getDescription());
 		project.setColor(projectDto.getColor());
 		project.setPomodoroLength(projectDto.getPomodoroLength());
-
-		project.setUser(user.get());
-		project.setProjectCategory(category.get());
-
+		project.setUser(userEntry.get());
+		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);
 
 		return new ProjectDto(project);
@@ -103,18 +93,13 @@ public class ProjectResource {
 	@PutMapping("/projects/{id}")
 	public Project updateProjectOfUser(@PathVariable Long id,
 			@Valid @RequestBody ProjectDto projectDto, Principal principal) {
-		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
 
-		Optional<Project> projectEntry = projectRepository.findById(id);
-
-		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user.get(),
+		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user_id,
 				projectDto.getProjectCategoryId());
-
 		if (projectEntry.isEmpty())
-			throw new ProjectNotFoundException("id:" + id);
-
-		if (!projectEntry.get().getUser().getUsername().equals(principal.getName()))
-			throw new NotAuthorizedException("not authorized");
+			throw new ResourceNotFoundException("project id:" + id);
 
 		// System.out.println(projectEntry + "" + projectDto + category);
 
@@ -122,9 +107,7 @@ public class ProjectResource {
 		projectEntry.get().setDescription(projectDto.getDescription());
 		projectEntry.get().setColor(projectDto.getColor());
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
-
 		projectEntry.get().setProjectCategory(category.get());
-
 		projectRepository.save(projectEntry.get());
 
 		// System.out.println(projectEntry);

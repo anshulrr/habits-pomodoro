@@ -36,7 +36,7 @@ public class UserResource {
 	@GetMapping("/users")
 	@PreAuthorize("hasAuthority('admin')")
 	public List<User> retrieveAllUsers(Authentication authetication) {
-//		System.out.println(authetication.getAuthorities());
+		// System.out.println(authetication.getAuthorities());
 		return userRepository.findAll();
 	}
 
@@ -52,14 +52,13 @@ public class UserResource {
 	@PutMapping("/users/change-password")
 	public ResponseEntity<User> createProjectOfUser(@Valid @RequestBody PasswordDto passwordDto,
 			Principal principal) {
-
+		Long user_id = Long.parseLong(principal.getName());
 		System.out.println(passwordDto.password());
 		
-		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Optional<User> userEntry = userRepository.findById(user_id);
 		
-		user.get().setPassword(passwordDto.password());
-		
-		userRepository.save(user.get());
+		userEntry.get().setPassword(passwordDto.password());
+		userRepository.save(userEntry.get());
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

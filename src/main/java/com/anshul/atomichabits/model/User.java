@@ -2,6 +2,8 @@ package com.anshul.atomichabits.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,7 +44,8 @@ public class User {
 	@Column(columnDefinition = "boolean default false")
 	private boolean enabled = false;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<Authority> authorities;
 
 	@Override
