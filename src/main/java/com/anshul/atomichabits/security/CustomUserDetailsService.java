@@ -32,7 +32,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		User user;
 		if (optional_user.isEmpty()) {
-			user = signup.saveUser(usernameOrEmail);
+			signup.saveUser(usernameOrEmail);
+			user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
 		} else {
 			user = optional_user.get();
 		}

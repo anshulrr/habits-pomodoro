@@ -8,12 +8,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "users_settings")
 public class UserSettings {
-
-	public UserSettings() {
-	}
 
 	@Id
 	@GeneratedValue
@@ -33,22 +36,4 @@ public class UserSettings {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public boolean isEnableStopWatch() {
-		return enableStopWatch;
-	}
-
-	public void setEnableStopWatch(boolean enableStopWatch) {
-		this.enableStopWatch = enableStopWatch;
-	}
-
-	@JsonIgnore
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 }
