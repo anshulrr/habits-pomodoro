@@ -2,8 +2,6 @@ package com.anshul.atomichabits.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,11 +25,12 @@ public class User {
 	@GeneratedValue
 	private Long id;
 
+	@Column(unique = true, nullable = false)
 	@NotBlank(message = "Username is mandatory")
 	@Size(min = 2, message = "Username should have atleast 2 characters")
-	@Column(unique = true)
 	private String username;
 
+	@Column(unique = true, nullable = false)
 	@Email
 	@NotBlank(message = "Email is mandatory")
 	private String email;
@@ -40,19 +39,11 @@ public class User {
 	private String password;
 
 	// required for spring security
-	private boolean enabled = true;
-
-	@OneToMany(mappedBy = "user")
-	@JsonIgnore
-	private List<Project> projects;
+	@Column(columnDefinition = "boolean default false")
+	private boolean enabled = false;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	@JsonIgnore
 	private List<Authority> authorities;
-
-	@OneToMany(mappedBy = "user")
-	@JsonIgnore
-	private List<Pomodoro> pomodoros;
 
 	@Override
 	public String toString() {
