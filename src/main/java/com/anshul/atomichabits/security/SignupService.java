@@ -1,8 +1,6 @@
 package com.anshul.atomichabits.security;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import com.anshul.atomichabits.jpa.AuthorityRepository;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
@@ -15,8 +13,8 @@ import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
-@RestController
-public class Signup {
+@Service
+public class SignupService {
 
 	private UserRepository userRepository;
 	private AuthorityRepository authorityRepository;
@@ -24,7 +22,7 @@ public class Signup {
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
 
-	public Signup(UserRepository r, AuthorityRepository a, ProjectCategoryRepository pc, ProjectRepository p, TaskRepository t) {
+	public SignupService(UserRepository r, AuthorityRepository a, ProjectCategoryRepository pc, ProjectRepository p, TaskRepository t) {
 		this.userRepository = r;
 		this.authorityRepository = a;
 		this.projectCategoryRepository = pc;
@@ -32,8 +30,12 @@ public class Signup {
 		this.taskRepository = t;
 	}
 
-	@PostMapping("/signup")
-	public String saveUser(@RequestBody User user) {
+	public User saveUser(String email) {
+		User user = new User();
+		user.setEmail(email);
+		user.setUsername(email);
+		user.setPassword("default");
+		
 		userRepository.save(user);
 
 		authorityRepository.save(new Authority(user, "user"));
@@ -41,7 +43,7 @@ public class Signup {
 		// Create few initial project categories for reference
 		createInitialUserData(user);
 
-		return "User created successfully";
+		return user;
 	}
 	
 	private void createInitialUserData(User user) {
@@ -96,5 +98,6 @@ public class Signup {
 		task.setDescription("Sample Task");
 		task.setPomodoroLength(0);
 		task.setStatus("added");
+		taskRepository.save(task);
 	}
 }
