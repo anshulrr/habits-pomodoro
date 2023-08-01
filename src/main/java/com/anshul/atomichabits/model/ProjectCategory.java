@@ -13,13 +13,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity(name = "project_categories")
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "level" }) })
 public class ProjectCategory {
-
-	public ProjectCategory() {
-	}
 
 	@Id
 	@GeneratedValue
@@ -28,10 +31,11 @@ public class ProjectCategory {
 	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false)
 	private Integer level;
 
-	//	@Column(columnDefinition = "varchar(255) default '00FFFF'")
-	//	private String color = "00FFFF";
+	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
+	private String color = "#00FFFF";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -40,47 +44,6 @@ public class ProjectCategory {
 	@OneToMany(mappedBy = "projectCategory")
 	@JsonIgnore
 	private List<Project> projects;
-
-	public ProjectCategory(Long id, String name, Integer level) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.level = level;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Integer getLevel() {
-		return level;
-	}
-
-	public void setLevel(Integer level) {
-		this.level = level;
-	}
-
-	@JsonIgnore
-	public User getUser() {
-		return user;
-	}
-
-	// dt what is use of this
-	public void setUser(User user) {
-		this.user = user;
-	}
 
 	@Override
 	public String toString() {

@@ -35,6 +35,7 @@ public class SignupService {
 		user.setEmail(email);
 		user.setUsername(email);
 		user.setPassword("default");
+		user.setEnabled(true);
 		
 		userRepository.save(user);
 

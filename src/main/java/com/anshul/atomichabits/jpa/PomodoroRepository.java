@@ -9,22 +9,21 @@ import org.springframework.data.jpa.repository.Query;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.model.Pomodoro;
-import com.anshul.atomichabits.model.User;
 
 import java.time.OffsetDateTime;
 
 public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 
-	@Query("select p from pomodoros p where p.user = ?1 and p.id = ?2")
-	public Optional<Pomodoro> findUserPomodoroById(User user, Long task_id);
+	@Query("select p from pomodoros p where p.user.id = ?1 and p.id = ?2")
+	public Optional<Pomodoro> findUserPomodoroById(Long user_id, Long task_id);
 
 	@Query("""
 			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.length length, 
 			p.task task, p.task.project project 
 			from pomodoros p 
-			where p.user = ?1 and p.status != 'completed'
+			where p.user.id = ?1 and p.status != 'completed'
 			""")
-	public Optional<PomodoroDto> findRunningPomodoro(User user);
+	public Optional<PomodoroDto> findRunningPomodoro(Long user_id);
 
 	@Query("""
 			select p.id id, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task

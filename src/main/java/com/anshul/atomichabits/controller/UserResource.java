@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 
-@RestController
+@Slf4j
 @EnableMethodSecurity
+@RestController
 public class UserResource {
 
 	private UserRepository userRepository;
@@ -36,7 +39,7 @@ public class UserResource {
 	@GetMapping("/users")
 	@PreAuthorize("hasAuthority('admin')")
 	public List<User> retrieveAllUsers(Authentication authetication) {
-//		System.out.println(authetication.getAuthorities());
+		log.trace("authorities: " + authetication.getAuthorities());
 		return userRepository.findAll();
 	}
 
@@ -52,14 +55,13 @@ public class UserResource {
 	@PutMapping("/users/change-password")
 	public ResponseEntity<User> createProjectOfUser(@Valid @RequestBody PasswordDto passwordDto,
 			Principal principal) {
-
-		System.out.println(passwordDto.password());
+		Long user_id = Long.parseLong(principal.getName());
+		log.trace(passwordDto.password());
 		
-		Optional<User> user = userRepository.findByUsername(principal.getName());
+		Optional<User> userEntry = userRepository.findById(user_id);
 		
-		user.get().setPassword(passwordDto.password());
-		
-		userRepository.save(user.get());
+		userEntry.get().setPassword(passwordDto.password());
+		userRepository.save(userEntry.get());
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
