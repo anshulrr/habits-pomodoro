@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -165,7 +166,7 @@ public class PomodoroResource {
 
 		if (runningPomodoroEntry.isPresent()) {
 			log.debug("running pomodoro: {}", runningPomodoroEntry);
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 		
 		// log.debug(pomodoro.toString() + task_id);
@@ -207,7 +208,7 @@ public class PomodoroResource {
 
 		// Extra check for sync pomodoro
 		if (pomodoroEntry.get().getStatus().equals("completed")) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
 		log.debug(status);
@@ -236,7 +237,7 @@ public class PomodoroResource {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
 		if (runningPomodoroEntry.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 		}
 
 		// Automatically update timeElapsed for pomodoro with status started
