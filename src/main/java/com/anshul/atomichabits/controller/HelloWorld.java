@@ -12,7 +12,7 @@ public class HelloWorld {
 
 	@GetMapping("/")
 	public String getResponse(Authentication authentication) {
-		log.debug("principal: " + authentication.getPrincipal());
+		log.trace("principal: " + authentication.getPrincipal());
 		return "Hello " + authentication.getName();
 	}
 }

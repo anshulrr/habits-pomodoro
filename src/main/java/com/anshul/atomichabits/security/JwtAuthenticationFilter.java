@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // decode token and set context holder
 		if (StringUtils.hasText(token)) {
 			String email = (String) jwtDecoder.decode(token).getClaims().get("email");
-			log.debug("email: " + email);
+			log.trace("email: " + email);
 
 			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private String getTokenFromRequest(HttpServletRequest request) {
 
 		String bearerToken = request.getHeader("Authorization");
-		log.debug("token: {}", bearerToken);
+		log.trace("token: {}", bearerToken);
 
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7, bearerToken.length());

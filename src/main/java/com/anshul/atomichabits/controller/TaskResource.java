@@ -54,19 +54,19 @@ public class TaskResource {
 	public List<TaskForList> retrieveProjectsOfUser(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status);
-		log.debug("tasks: {}", tasks);
+		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
 
 	@PostMapping("/projects/{project_id}/tasks")
 	public Task retrieveProjectsOfUser(@PathVariable Long project_id, @RequestBody Task task, Principal principal) {
-		// log.debug("task for entry: " + project_id + task);
+		// log.trace("task for entry: " + project_id + task);
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(user_id);
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, project_id);
 		if (projectEntry.isEmpty())
 		 	throw new ResourceNotFoundException("project id:" + project_id);
-		log.debug("found project: {}", projectEntry);
+		log.trace("found project: {}", projectEntry);
 
 		task.setUser(userEntry.get());
 		task.setProject(projectEntry.get());

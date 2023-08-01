@@ -56,7 +56,7 @@ public class ProjectResource {
 
 		// TODO: using PageRequest
 		List<ProjectForList> projects = projectRepository.findUserProjects(user_id, limit, offset);
-		log.debug("first project: {}", projects.get(0));
+		log.trace("first project: {}", projects.get(0));
 
 		// TODO: remove unnecessary data of project categories
 		return projects;
@@ -102,7 +102,7 @@ public class ProjectResource {
 				projectDto.getProjectCategoryId());
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);
-		log.debug("project for update: " + projectEntry + projectDto + category);
+		log.trace("project for update: " + projectEntry + projectDto + category);
 
 		projectEntry.get().setName(projectDto.getName());
 		projectEntry.get().setDescription(projectDto.getDescription());
@@ -110,7 +110,7 @@ public class ProjectResource {
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
 		projectEntry.get().setProjectCategory(category.get());
 		projectRepository.save(projectEntry.get());
-		log.debug("updated project: {}", projectEntry);
+		log.trace("updated project: {}", projectEntry);
 
 		return projectEntry.get();
 	}

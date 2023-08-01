@@ -39,7 +39,7 @@ public class UserResource {
 	@GetMapping("/users")
 	@PreAuthorize("hasAuthority('admin')")
 	public List<User> retrieveAllUsers(Authentication authetication) {
-		log.debug("authorities: " + authetication.getAuthorities());
+		log.trace("authorities: " + authetication.getAuthorities());
 		return userRepository.findAll();
 	}
 
@@ -56,7 +56,7 @@ public class UserResource {
 	public ResponseEntity<User> createProjectOfUser(@Valid @RequestBody PasswordDto passwordDto,
 			Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		log.debug(passwordDto.password());
+		log.trace(passwordDto.password());
 		
 		Optional<User> userEntry = userRepository.findById(user_id);
 		

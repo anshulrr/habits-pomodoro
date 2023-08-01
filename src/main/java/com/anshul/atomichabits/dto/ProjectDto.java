@@ -24,7 +24,7 @@ public class ProjectDto {
 		this.description = project.getDescription();
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
-		log.debug("mapping category id");
+		log.trace("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
 

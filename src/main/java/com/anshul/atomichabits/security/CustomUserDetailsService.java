@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		} else {
 			user = optional_user.get();
 		}
-        log.debug("from custom user detail service: " + user);
+        log.trace("from custom user detail service: " + user);
 
 		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
