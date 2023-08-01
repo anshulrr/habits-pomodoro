@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.TaskDto;
+import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
@@ -50,9 +51,10 @@ public class TaskResource {
 	}
 
 	@GetMapping("/projects/{project_id}/tasks")
-	public List<Task> retrieveProjectsOfUser(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public List<TaskForList> retrieveProjectsOfUser(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<Task> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status);
+		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status);
+		log.debug("tasks: {}", tasks);
 		return tasks;
 	}
 
