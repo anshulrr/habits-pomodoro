@@ -8,10 +8,12 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor
 @Getter
 @Setter
+@Slf4j
 public class ProjectDto {
 
 	// For entity to dto mapping
@@ -22,7 +24,7 @@ public class ProjectDto {
 		this.description = project.getDescription();
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
-		// System.out.println("mapping category id");
+		log.debug("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
 

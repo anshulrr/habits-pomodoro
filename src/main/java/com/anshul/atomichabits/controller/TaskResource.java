@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectRepository;
@@ -22,8 +23,10 @@ import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class TaskResource {
 
 	private UserRepository userRepository;
@@ -55,13 +58,13 @@ public class TaskResource {
 
 	@PostMapping("/projects/{project_id}/tasks")
 	public Task retrieveProjectsOfUser(@PathVariable Long project_id, @RequestBody Task task, Principal principal) {
-		// System.out.println("" + project_id + task);
+		// log.debug("task for entry: " + project_id + task);
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(user_id);
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, project_id);
 		if (projectEntry.isEmpty())
 		 	throw new ResourceNotFoundException("project id:" + project_id);
-		// System.out.println(project);
+		log.debug("found project: {}", projectEntry);
 
 		task.setUser(userEntry.get());
 		task.setProject(projectEntry.get());

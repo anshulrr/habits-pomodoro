@@ -15,7 +15,10 @@ import com.anshul.atomichabits.jpa.AuthorityRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
 	private UserRepository userRepository;
@@ -41,8 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		} else {
 			user = optional_user.get();
 		}
-
-        // System.out.println("from custom user detail service: " + user);
+        log.debug("from custom user detail service: " + user);
 
 		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());

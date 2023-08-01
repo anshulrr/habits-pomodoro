@@ -37,7 +37,7 @@ public class Task {
 
 	private LocalDate dueDate;
 
-	// added, completed
+	// added, archived, completed
 	@Column(columnDefinition = "varchar(255) default 'added'")
 	private String status = "added";
 
