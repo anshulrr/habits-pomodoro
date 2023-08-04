@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ class HelloWorldTest {
 				.accept(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(request)
+				.andExpect(status().is(200))
+				.andExpect(content().string("Hello"))
 				.andReturn();
 
 		assertEquals("Hello", result.getResponse().getContentAsString());
