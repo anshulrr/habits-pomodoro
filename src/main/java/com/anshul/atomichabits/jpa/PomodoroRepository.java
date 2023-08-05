@@ -28,10 +28,10 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	@Query("""
 			select p.id id, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task
 			from pomodoros p
-			where p.user.id = ?1 and p.startTime >= ?2 and p.status = 'completed' and p.task.project.projectCategory.id in (?3)
+			where p.user.id = ?1 and p.endTime >= ?2 and p.endTime <= ?3 and p.status = 'completed' and p.task.project.projectCategory.id in (?4)
 			order by p.id desc
 			""")
-	public List<PomodoroForList> findAllForToday(Long id, OffsetDateTime date, long[] categories);
+	public List<PomodoroForList> findAllForToday(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
 
 	//	@Query("select count(p) from pomodoros p where p.user.id = ?1 and p.status = 'completed'")
 	//	public int findAllCount(Long id, OffsetDateTime date);

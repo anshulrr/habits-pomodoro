@@ -51,10 +51,13 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam("include_categories") long[] categories) {
+	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam(defaultValue = "0") int offset, @RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id,
-				OffsetDateTime.now().with(LocalTime.MIN), categories);
+		OffsetDateTime date = OffsetDateTime.now().with(LocalTime.MIN);
+		date = date.plusDays(offset);
+		OffsetDateTime end = date.plusDays(1);
+		log.trace(date + " " + end);
+		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id, date, end, categories);
 		log.trace("first pomodoro: {}", pomodoros.size() != 0 ?  pomodoros.get(0).getId() : "nill");
 
 		return pomodoros;
