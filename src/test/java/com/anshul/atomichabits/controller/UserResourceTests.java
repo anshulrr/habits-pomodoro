@@ -1,24 +1,27 @@
 package com.anshul.atomichabits.controller;
 
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.test.context.support.WithMockUser;
+
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.anshul.atomichabits.business.UserService;
 import com.anshul.atomichabits.model.User;
@@ -37,7 +40,7 @@ public class UserResourceTests {
 	private JwtDecoder jwtDecoder;
 
 	@Test
-	@WithMockUser(username="1", authorities= {"admin"})
+	@WithMockUser(authorities= {"admin"})
 	void retrieveAllUsers_withAdminAuthority() throws Exception {
 
 		when(userService.retriveAllUsers()).thenReturn(
@@ -63,7 +66,7 @@ public class UserResourceTests {
 	}
 	
 	@Test
-	@WithMockUser(username="1", authorities= {"user"})
+	@WithMockUser(authorities= {"user"})
 	void retrieveAllUsers_withNonAdminAuthority() throws Exception {
 
 		RequestBuilder request = MockMvcRequestBuilders.get("/users")

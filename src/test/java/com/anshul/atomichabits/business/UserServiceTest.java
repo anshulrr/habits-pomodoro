@@ -1,16 +1,16 @@
 package com.anshul.atomichabits.business;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
@@ -34,5 +34,4 @@ class UserServiceTest {
 		
 		assertEquals("Ansh", users.get(0).getUsername());
 	}
-
 }
