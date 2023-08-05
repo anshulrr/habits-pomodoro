@@ -1,19 +1,12 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,10 +44,15 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam("include_categories") long[] categories) {
+	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam(defaultValue = "0") int offset, @RequestParam("include_categories") long[] categories, @RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id,
-				OffsetDateTime.now().with(LocalTime.MIN), categories);
+		
+		int timezone_offset = - ZonedDateTime.now(ZoneId.of(timezone)).getOffset().getTotalSeconds() / 60;;
+		OffsetDateTime date = OffsetDateTime.now(ZoneOffset.UTC).with(LocalTime.MIN);
+		date = date.plusDays(offset).plusMinutes(timezone_offset);
+		OffsetDateTime end = date.plusDays(1);
+		log.debug(date + " " + end);
+		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id, date, end, categories);
 		log.trace("first pomodoro: {}", pomodoros.size() != 0 ?  pomodoros.get(0).getId() : "nill");
 
 		return pomodoros;
@@ -62,28 +60,29 @@ public class PomodoroResource {
 
 	@GetMapping("/stats/projects-time")
 	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("limit") String limit,
-			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories, @RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
+		int timezone_offset = - ZonedDateTime.now(ZoneId.of(timezone)).getOffset().getTotalSeconds() / 60;;
 		List<Object> result;
 
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			OffsetDateTime monday = OffsetDateTime.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 					.with(LocalTime.MIN);
-			monday = monday.plusDays(7 * offset);
+			monday = monday.plusDays(7 * offset).plusMinutes(timezone_offset);
 			OffsetDateTime end = monday.plusDays(7);
-			log.trace(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
+			log.debug(OffsetDateTime.now(ZoneOffset.UTC).getDayOfWeek() + " " + monday + " " + end);
 			result = pomodoroRepository.findProjectsTime(user_id, monday, end, categories);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
+			OffsetDateTime first = OffsetDateTime.now(ZoneOffset.UTC).withDayOfMonth(1).with(LocalTime.MIN);
 			first = first.plusMonths(offset);
 			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
-			log.trace(first + " " + end);
-			result = pomodoroRepository.findProjectsTime(user_id, first, end, categories);
+			log.debug(first.plusMinutes(timezone_offset) + " " + end.plusMinutes(timezone_offset));
+			result = pomodoroRepository.findProjectsTime(user_id, first.plusMinutes(timezone_offset), end.plusMinutes(timezone_offset), categories);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now().with(LocalTime.MIN);
-			date = date.plusDays(offset);
+			OffsetDateTime date = OffsetDateTime.now(ZoneOffset.UTC).with(LocalTime.MIN);
+			date = date.plusDays(offset).plusMinutes(timezone_offset);
 			OffsetDateTime end = date.plusDays(1);
-			log.trace(date + " " + end);
+			log.debug(date + " " + end);
 			result = pomodoroRepository.findProjectsTime(user_id, date, end, categories);
 		}
 
@@ -92,28 +91,31 @@ public class PomodoroResource {
 
 	@GetMapping("/stats/tasks-time")
 	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("limit") String limit,
-			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories, @RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
+		int timezone_offset = - ZonedDateTime.now(ZoneId.of(timezone)).getOffset().getTotalSeconds() / 60;;
+		log.debug("" + timezone +  " " + timezone_offset);
+
 		List<Object> result;
 
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			OffsetDateTime monday = OffsetDateTime.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 					.with(LocalTime.MIN);
-			monday = monday.plusDays(7 * offset);
+			monday = monday.plusDays(7 * offset).plusMinutes(timezone_offset);
 			OffsetDateTime end = monday.plusDays(7);
-			log.trace(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
+			log.debug(OffsetDateTime.now(ZoneOffset.UTC).getDayOfWeek() + " " + monday + " " + end);
 			result = pomodoroRepository.findTasksTime(user_id, monday, end, categories);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now().withDayOfMonth(1).with(LocalTime.MIN);
+			OffsetDateTime first = OffsetDateTime.now(ZoneOffset.UTC).withDayOfMonth(1).with(LocalTime.MIN);
 			first = first.plusMonths(offset);
 			OffsetDateTime end = first.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
-			log.trace(first + " " + end);
-			result = pomodoroRepository.findTasksTime(user_id, first, end, categories);
+			log.debug(first.plusMinutes(timezone_offset) + " " + end.plusMinutes(timezone_offset));
+			result = pomodoroRepository.findTasksTime(user_id, first.plusMinutes(timezone_offset), end.plusMinutes(timezone_offset), categories);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now().with(LocalTime.MIN);
-			date = date.plusDays(offset);
+			OffsetDateTime date = OffsetDateTime.now(ZoneOffset.UTC).with(LocalTime.MIN);
+			date = date.plusDays(offset).plusMinutes(timezone_offset);
 			OffsetDateTime end = date.plusDays(1);
-			log.trace(date + " " + end);
+			log.debug(date + " " + end);
 			result = pomodoroRepository.findTasksTime(user_id, date, end, categories);
 		}
 
@@ -122,31 +124,31 @@ public class PomodoroResource {
 
 	@GetMapping("/stats/total-time")
 	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit,
-			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories) {
+			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories, @RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
+		int timezone_offset = - ZonedDateTime.now(ZoneId.of(timezone)).getOffset().getTotalSeconds() / 60;;
 		List<String[]> result;
 		log.trace(limit + " " + offset);
 
 		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+			OffsetDateTime monday = OffsetDateTime.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 					.plusDays(-14 * 7).with(LocalTime.MIN);
-			monday = monday.plusDays(15 * 7 * offset);
-			OffsetDateTime end = monday.plusDays(14 * 7).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-					.with(LocalTime.MAX);
-			log.trace(OffsetDateTime.now().getDayOfWeek() + " " + monday + " " + end);
-			result = pomodoroRepository.findTotalTimeWeekly(user_id, monday, end, categories);
+			monday = monday.plusDays(15 * 7 * offset).plusMinutes(timezone_offset);
+			OffsetDateTime end = monday.plusDays(15 * 7).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+			log.debug(OffsetDateTime.now(ZoneOffset.UTC).getDayOfWeek() + " " + monday + " " + end);
+			result = pomodoroRepository.findTotalTimeWeekly(user_id, monday, end, categories, timezone);
 		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now().plusMonths(-14).withDayOfMonth(1).with(LocalTime.MIN);
-			first = first.plusMonths(15 * offset);
-			OffsetDateTime end = first.plusMonths(14).with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
-			log.trace(first + " " + end);
-			result = pomodoroRepository.findTotalTimeMonthly(user_id, first, end, categories);
+			OffsetDateTime first = OffsetDateTime.now(ZoneOffset.UTC).plusMonths(-14).withDayOfMonth(1).with(LocalTime.MIN);
+			first = first.plusMonths(15 * offset).plusMinutes(timezone_offset);
+			OffsetDateTime end = first.plusMonths(15).with(TemporalAdjusters.lastDayOfMonth());
+			log.debug(first + " " + end);
+			result = pomodoroRepository.findTotalTimeMonthly(user_id, first, end, categories, timezone);
 		} else {
-			OffsetDateTime date = OffsetDateTime.now().plusDays(-14).with(LocalTime.MIN);
-			date = date.plusDays(15 * offset);
-			OffsetDateTime end = date.plusDays(14).with(LocalTime.MAX);
-			log.trace(date + " " + end);
-			result = pomodoroRepository.findTotalTimeDaily(user_id, date, end, categories);
+			OffsetDateTime date = OffsetDateTime.now(ZoneOffset.UTC).plusDays(-14).with(LocalTime.MIN);
+			date = date.plusDays(15 * offset).plusMinutes(timezone_offset);
+			OffsetDateTime end = date.plusDays(15);
+			log.debug(date + " " + end);
+			result = pomodoroRepository.findTotalTimeDaily(user_id, date, end, categories, timezone);
 		}
 		log.trace("total time result: {}", result);
 
@@ -193,6 +195,7 @@ public class PomodoroResource {
 			}
 		}
 		log.trace("pomodoro length: {}", pomodoro.getLength());
+		log.debug("pomodoro {}", pomodoro);
 
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}

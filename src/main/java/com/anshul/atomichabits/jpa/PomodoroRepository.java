@@ -28,10 +28,10 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	@Query("""
 			select p.id id, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task
 			from pomodoros p
-			where p.user.id = ?1 and p.startTime >= ?2 and p.status = 'completed' and p.task.project.projectCategory.id in (?3)
+			where p.user.id = ?1 and p.endTime >= ?2 and p.endTime <= ?3 and p.status = 'completed' and p.task.project.projectCategory.id in (?4)
 			order by p.id desc
 			""")
-	public List<PomodoroForList> findAllForToday(Long id, OffsetDateTime date, long[] categories);
+	public List<PomodoroForList> findAllForToday(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
 
 	//	@Query("select count(p) from pomodoros p where p.user.id = ?1 and p.status = 'completed'")
 	//	public int findAllCount(Long id, OffsetDateTime date);
@@ -55,39 +55,39 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public List<Object> findTasksTime(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
 
 	@Query(value = """
-			select to_char(p.end_time, 'DD'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'DD') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time, 'DD')
-			order by to_char(p.end_time, 'DD'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
-	public List<String[]> findTotalTimeDaily(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
+	public List<String[]> findTotalTimeDaily(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
 	@Query(value = """
-			select to_char(p.end_time, 'WW'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'WW') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time, 'WW')
-			order by to_char(p.end_time, 'WW'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
-	public List<String[]> findTotalTimeWeekly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
+	public List<String[]> findTotalTimeWeekly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
 	@Query(value = """
-			select to_char(p.end_time, 'MM'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'MM') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time, 'MM')
-			order by to_char(p.end_time, 'MM'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
-	public List<String[]> findTotalTimeMonthly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
+	public List<String[]> findTotalTimeMonthly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
 }
