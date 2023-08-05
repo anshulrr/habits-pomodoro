@@ -48,6 +48,14 @@ public class User {
 	@JsonIgnore
 	private List<Authority> authorities;
 
+	public User(
+			@NotBlank(message = "Username is mandatory") @Size(min = 2, message = "Username should have atleast 2 characters") String username,
+			@Email @NotBlank(message = "Email is mandatory") String email) {
+		super();
+		this.username = username;
+		this.email = email;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", email=" + email + "]";
