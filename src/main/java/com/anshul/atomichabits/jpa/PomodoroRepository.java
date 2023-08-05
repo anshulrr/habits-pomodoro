@@ -55,38 +55,38 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public List<Object> findTasksTime(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories);
 
 	@Query(value = """
-			select to_char(p.end_time at time zone 'ASIA/KOLKATA', 'DD'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'DD') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time at time zone 'ASIA/KOLKATA', 'DD')
-			order by to_char(p.end_time at time zone 'ASIA/KOLKATA', 'DD'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
 	public List<String[]> findTotalTimeDaily(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
 	@Query(value = """
-			select to_char(p.end_time at time zone 'ASIA/KOLKATA', 'WW'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'WW') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time at time zone 'ASIA/KOLKATA', 'WW')
-			order by to_char(p.end_time at time zone 'ASIA/KOLKATA', 'WW'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
 	public List<String[]> findTotalTimeWeekly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
 	@Query(value = """
-			select to_char(p.end_time at time zone 'ASIA/KOLKATA', 'MM'), sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
+			select to_char(p.end_time at time zone ?5, 'MM') as date, sum(p.time_elapsed) / 60 as time, pp.name as project, pp.color as color
 			from pomodoros as p
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
 			join project_categories as pc on pp.project_category_id = pc.id
 			where p.user_id=?1 and p.status='completed' and end_time >= ?2 and end_time <= ?3 and pc.id in (?4)
-			group by pp.name, pp.color, to_char(p.end_time at time zone 'ASIA/KOLKATA', 'MM')
-			order by to_char(p.end_time at time zone 'ASIA/KOLKATA', 'MM'), pp.name
+			group by pp.name, pp.color, date
+			order by date, pp.name
 			""", nativeQuery = true)
 	public List<String[]> findTotalTimeMonthly(Long id, OffsetDateTime date, OffsetDateTime end, long[] categories, String timezone);
 
