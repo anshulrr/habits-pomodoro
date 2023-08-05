@@ -47,5 +47,4 @@ public class UserResource {
 	}
 }
 
-record PasswordDto(@NotBlank String password) {
-}
+record PasswordDto(@NotBlank String password) {}
