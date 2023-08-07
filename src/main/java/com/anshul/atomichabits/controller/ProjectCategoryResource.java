@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +21,10 @@ import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class ProjectCategoryResource {
 
 	private UserRepository userRepository;
@@ -34,8 +38,7 @@ public class ProjectCategoryResource {
 	@GetMapping("/project-categories/{id}")
 	public ProjectCategory retrieveProject(@PathVariable Long id, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		Optional<ProjectCategory> categoryEntry = projectCategoryRepository
-				.findUserProjectCategoryById(user_id, id);
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
 
@@ -56,26 +59,38 @@ public class ProjectCategoryResource {
 	}
 
 	@PostMapping("/project-categories")
-	public ProjectCategory createProjectOfUser(@Valid @RequestBody ProjectCategory projectCategory,
+	public ResponseEntity<ProjectCategory> createProjectOfUser(@Valid @RequestBody ProjectCategory projectCategory,
 			Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
+		try {
+			Long user_id = Long.parseLong(principal.getName());
+			Optional<User> userEntry = userRepository.findById(user_id);
 
-		projectCategory.setUser(userEntry.get());
-		return projectCategoryRepository.save(projectCategory);
+			projectCategory.setUser(userEntry.get());
+			return new ResponseEntity<>(projectCategoryRepository.save(projectCategory), HttpStatus.OK);
+		} catch (DataIntegrityViolationException e) {
+			// TODO: handle exception
+			log.debug("" + e);
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		}
 	}
 
 	@PutMapping("/project-categories/{id}")
-	public ProjectCategory createProjectOfUser(@PathVariable Long id,
+	public ResponseEntity<ProjectCategory> createProjectOfUser(@PathVariable Long id,
 			@Valid @RequestBody ProjectCategory projectCategory, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
 
-		categoryEntry.get().setName(projectCategory.getName());
-		categoryEntry.get().setLevel(projectCategory.getLevel());
-		categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
-		return projectCategoryRepository.save(categoryEntry.get());
+		try {
+			categoryEntry.get().setName(projectCategory.getName());
+			categoryEntry.get().setLevel(projectCategory.getLevel());
+			categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
+			return new ResponseEntity<>(projectCategoryRepository.save(categoryEntry.get()), HttpStatus.OK);
+		} catch (DataIntegrityViolationException e) {
+			// TODO: handle exception
+			log.debug("" + e);
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		}
 	}
 }
