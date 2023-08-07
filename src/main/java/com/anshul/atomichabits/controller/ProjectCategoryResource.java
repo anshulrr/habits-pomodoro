@@ -75,6 +75,7 @@ public class ProjectCategoryResource {
 
 		categoryEntry.get().setName(projectCategory.getName());
 		categoryEntry.get().setLevel(projectCategory.getLevel());
+		categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
 		return projectCategoryRepository.save(categoryEntry.get());
 	}
 }

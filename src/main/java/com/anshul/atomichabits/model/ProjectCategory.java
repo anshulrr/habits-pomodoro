@@ -34,6 +34,9 @@ public class ProjectCategory {
 	@Column(nullable = false)
 	private Integer level;
 
+	@Column(columnDefinition = "boolean default true")
+	private boolean statsDefault;
+
 	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
 	private String color = "#00FFFF";
 
