@@ -2,7 +2,6 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.*;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,66 +43,50 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam("startDate") OffsetDateTime startDate,
-			@RequestParam("endDate") OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
 		log.debug(startDate + " " + endDate);
 		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id, startDate, endDate, categories);
-		log.trace("first pomodoro: {}", pomodoros.size() != 0 ?  pomodoros.get(0).getId() : "nill");
+		log.trace("first pomodoro: {}", pomodoros.size() != 0 ? pomodoros.get(0).getId() : "nill");
 		return pomodoros;
 	}
 
 	@GetMapping("/stats/projects-time")
-	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam("startDate") OffsetDateTime startDate,
-			@RequestParam("endDate") OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<Object> result = pomodoroRepository.findProjectsTime(user_id, startDate, endDate, categories);
 		return result;
 	}
 
 	@GetMapping("/stats/tasks-time")
-	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam("startDate") OffsetDateTime startDate,
-			@RequestParam("endDate") OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		log.debug("" + startDate +  " " + endDate);
+		log.debug("" + startDate + " " + endDate);
 		List<Object> result = pomodoroRepository.findTasksTime(user_id, startDate, endDate, categories);
 		return result;
 	}
 
 	@GetMapping("/stats/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam("limit") String limit,
-			@RequestParam("offset") int offset, @RequestParam("include_categories") long[] categories, @RequestParam(defaultValue = "UTC") String timezone) {
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam String limit,
+			@RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate,
+			@RequestParam("include_categories") long[] categories,
+			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
-		int timezone_offset = - ZonedDateTime.now(ZoneId.of(timezone)).getOffset().getTotalSeconds() / 60;;
-		List<String[]> result;
-		log.trace(limit + " " + offset);
 
-		if (limit.equals("weekly")) {
-			OffsetDateTime monday = OffsetDateTime.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-					.plusDays(-14 * 7).with(LocalTime.MIN);
-			monday = monday.plusDays(15 * 7 * offset).plusMinutes(timezone_offset);
-			OffsetDateTime end = monday.plusDays(15 * 7).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-			log.debug(OffsetDateTime.now(ZoneOffset.UTC).getDayOfWeek() + " " + monday + " " + end);
-			result = pomodoroRepository.findTotalTimeWeekly(user_id, monday, end, categories, timezone);
-		} else if (limit.equals("monthly")) {
-			OffsetDateTime first = OffsetDateTime.now(ZoneOffset.UTC).plusMonths(-14).withDayOfMonth(1).with(LocalTime.MIN);
-			first = first.plusMonths(15 * offset).plusMinutes(timezone_offset);
-			OffsetDateTime end = first.plusMonths(15).with(TemporalAdjusters.lastDayOfMonth());
-			log.debug(first + " " + end);
-			result = pomodoroRepository.findTotalTimeMonthly(user_id, first, end, categories, timezone);
-		} else {
-			OffsetDateTime date = OffsetDateTime.now(ZoneOffset.UTC).plusDays(-14).with(LocalTime.MIN);
-			date = date.plusDays(15 * offset).plusMinutes(timezone_offset);
-			OffsetDateTime end = date.plusDays(15);
-			log.debug(date + " " + end);
-			result = pomodoroRepository.findTotalTimeDaily(user_id, date, end, categories, timezone);
-		}
+		limit = "" + Character.toUpperCase(limit.charAt(0));
+		limit += limit;
+
+		List<String[]> result = pomodoroRepository.findTotalTime(user_id, startDate, endDate, categories, timezone,
+				limit);
 		log.trace("total time result: {}", result);
 
 		Map<String, List<String[]>> groupedResult = result.stream()
 				.collect(Collectors.groupingBy((element -> (String) element[2])));
 		log.trace("total time groupedResult: {}", groupedResult);
-		
+
 		return groupedResult;
 	}
 
@@ -118,12 +101,12 @@ public class PomodoroResource {
 			log.trace("running pomodoro: {}", runningPomodoroEntry);
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
-		
+
 		// log.trace(pomodoro.toString() + task_id);
 		Optional<User> userEntry = userRepository.findById(user_id);
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
 		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + task_id);
+			throw new ResourceNotFoundException("task id:" + task_id);
 
 		pomodoro.setUser(userEntry.get());
 		pomodoro.setTask(taskEntry.get());
@@ -155,7 +138,7 @@ public class PomodoroResource {
 			Principal principal) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
 		if (pomodoroEntry.isEmpty())
-		 	throw new ResourceNotFoundException("pomodoro id:" + id);
+			throw new ResourceNotFoundException("pomodoro id:" + id);
 
 		// Extra check for sync pomodoro
 		if (pomodoroEntry.get().getStatus().equals("completed")) {
@@ -197,8 +180,8 @@ public class PomodoroResource {
 			Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id,
 					runningPomodoroEntry.get().getId());
 			if (pomodoroEntry.isEmpty())
-			 	throw new ResourceNotFoundException("pomodoro id:" + runningPomodoroEntry.get().getId());
-			
+				throw new ResourceNotFoundException("pomodoro id:" + runningPomodoroEntry.get().getId());
+
 			OffsetDateTime startTime = pomodoroEntry.get().getStartTime();
 
 			Long timeElapsed = Duration.between(startTime, OffsetDateTime.now()).getSeconds();
