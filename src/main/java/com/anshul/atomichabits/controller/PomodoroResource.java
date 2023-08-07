@@ -1,8 +1,12 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
-import java.time.*;
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.time.Duration;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -26,6 +30,8 @@ import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -132,10 +138,9 @@ public class PomodoroResource {
 	}
 
 	//	getting request data as params
-	@PutMapping(value = "/pomodoros/{id}", params = { "timeElapsed", "status" })
+	@PutMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
-			@RequestParam("timeElapsed") String timeElapsed, @RequestParam("status") String status,
-			Principal principal) {
+			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -145,15 +150,15 @@ public class PomodoroResource {
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
-		log.trace(status);
-		pomodoroEntry.get().setStatus(status);
+		log.trace(pomodoroUpdateDto.status());
+		pomodoroEntry.get().setStatus(pomodoroUpdateDto.status());
 
-		if (status.equals("completed")) {
+		if (pomodoroUpdateDto.status().equals("completed")) {
 			pomodoroEntry.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
 		}
 
 		// Update the startTime, so that refresh api and sync logic works correctly
-		if (status.equals("started")) {
+		if (pomodoroUpdateDto.status().equals("started")) {
 			OffsetDateTime updatedStartTime = OffsetDateTime.now(ZoneOffset.UTC)
 					.minusSeconds(pomodoroEntry.get().getTimeElapsed());
 			log.trace(updatedStartTime + " : " + pomodoroEntry.get().getTimeElapsed());
@@ -161,7 +166,7 @@ public class PomodoroResource {
 		}
 
 		log.trace("" + pomodoroEntry.get());
-		pomodoroEntry.get().setTimeElapsed(Integer.valueOf(timeElapsed));
+		pomodoroEntry.get().setTimeElapsed(pomodoroUpdateDto.timeElapsed());
 
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoroEntry.get()), HttpStatus.OK);
 	}
@@ -200,3 +205,5 @@ public class PomodoroResource {
 		return new ResponseEntity<>(runningPomodoroEntry.get(), HttpStatus.OK);
 	}
 }
+
+record PomodoroUpdateDto(@Min(value = 0) Integer timeElapsed, @NotBlank String status) {}
