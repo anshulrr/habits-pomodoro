@@ -9,9 +9,11 @@ import com.anshul.atomichabits.model.*;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 public class UserSettingsResource {
 
 	private UserSettingsRepository userSettingsRepository;
@@ -20,6 +22,7 @@ public class UserSettingsResource {
 	public UserSettings retrieveProject(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		UserSettings userSettings = userSettingsRepository.findUserSettings(user_id);
+		log.debug("settings: {}", userSettings);
 		
 		return userSettings;
 	}
@@ -28,9 +31,11 @@ public class UserSettingsResource {
 	public UserSettings updateProjectOfUser(@Valid @RequestBody UserSettings settingsRequest, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		
+		// todo: request validation
 		UserSettings userSettings = userSettingsRepository.findUserSettings(user_id);
 		
 		userSettings.setPomodoroLength(settingsRequest.getPomodoroLength());
+		userSettings.setBreakLength(settingsRequest.getBreakLength());
 		
 		userSettings.setEnableStopwatch(settingsRequest.isEnableStopwatch());
 		userSettings.setEnableStopwatchAudio(settingsRequest.isEnableStopwatchAudio());

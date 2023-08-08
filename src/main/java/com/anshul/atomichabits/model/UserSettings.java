@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Setter
@@ -20,6 +22,9 @@ public class UserSettings {
 	// in minutes
 	@Column(columnDefinition = "integer default 25")
 	private Integer pomodoroLength = 25;
+	
+	@Column(columnDefinition = "integer default 5")
+	private Integer breakLength = 5;
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableStopwatch;
