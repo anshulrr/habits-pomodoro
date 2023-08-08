@@ -22,7 +22,10 @@ public class UserSettings {
 	private Integer pomodoroLength = 25;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableStopWatch;
+	private boolean enableStopwatch;
+
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableStopwatchAudio;
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartScale;
