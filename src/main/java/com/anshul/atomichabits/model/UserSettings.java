@@ -40,6 +40,9 @@ public class UserSettings {
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartMonthlyAverage;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableChartAdjustedWeeklyMonthlyAverage;
 
 	@Column(columnDefinition = "integer default 25")
 	private Integer chartScale = 25;
