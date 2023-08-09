@@ -22,32 +22,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
-import com.anshul.atomichabits.jpa.PomodoroRepository;
-import com.anshul.atomichabits.jpa.TaskRepository;
-import com.anshul.atomichabits.jpa.UserRepository;
+import com.anshul.atomichabits.jpa.*;
 import com.anshul.atomichabits.model.Pomodoro;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
+import com.anshul.atomichabits.model.UserSettings;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class PomodoroResource {
 
 	private UserRepository userRepository;
 	private PomodoroRepository pomodoroRepository;
 	private TaskRepository taskRepository;
-
-	public PomodoroResource(UserRepository u, PomodoroRepository p, TaskRepository t) {
-		this.userRepository = u;
-		this.pomodoroRepository = p;
-		this.taskRepository = t;
-	}
-
+	private UserSettingsRepository userSettingsRepository;
+	
 	@GetMapping("/pomodoros")
 	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
@@ -118,8 +114,9 @@ public class PomodoroResource {
 		pomodoro.setTask(taskEntry.get());
 		log.trace("pomodoro for entry: {}", pomodoro);
 
-		// TODO: get length from user settings
-		pomodoro.setLength(25);
+		// TODO: get length from user settings stored in auth context
+		UserSettings settings = userSettingsRepository.findUserSettings(user_id);
+		pomodoro.setLength(settings.getPomodoroLength());
 
 		Integer taskPomodoroLength = taskEntry.get().getPomodoroLength();
 		if (taskPomodoroLength != 0) {
