@@ -40,15 +40,18 @@ public class UserSettings {
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartMonthlyAverage;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableChartAdjustedWeeklyMonthlyAverage;
 
 	@Column(columnDefinition = "integer default 25")
 	private Integer chartScale = 25;
 
-	@Column(columnDefinition = "integer default 5")
-	private Integer chartWeeklyAverage = 5;
+	@Column(columnDefinition = "integer default 7")
+	private Integer chartWeeklyAverage = 7;
 
-	@Column(columnDefinition = "integer default 22")
-	private Integer chartMonthlyAverage = 22;
+	@Column(columnDefinition = "integer default 30")
+	private Integer chartMonthlyAverage = 30;
 
 	@PrimaryKeyJoinColumn	// to make sure only single mapping for user
 	@OneToOne(fetch = FetchType.LAZY)

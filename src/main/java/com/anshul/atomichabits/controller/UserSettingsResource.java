@@ -49,6 +49,8 @@ public class UserSettingsResource {
 		userSettings.setEnableChartMonthlyAverage(settingsRequest.isEnableChartMonthlyAverage());
 		userSettings.setChartMonthlyAverage(settingsRequest.getChartMonthlyAverage());
 		
+		userSettings.setEnableChartAdjustedWeeklyMonthlyAverage(settingsRequest.isEnableChartAdjustedWeeklyMonthlyAverage());
+		
 		return userSettingsRepository.save(userSettings);
 	}
 }
