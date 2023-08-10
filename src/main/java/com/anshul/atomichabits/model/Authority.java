@@ -2,12 +2,7 @@ package com.anshul.atomichabits.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +11,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity(name = "authorities")
+@Table(indexes= {
+		@Index(name="authorities_user_index", columnList="username")
+})
 public class Authority {
 
 	@Id
