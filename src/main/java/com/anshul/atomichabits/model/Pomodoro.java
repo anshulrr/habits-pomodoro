@@ -4,12 +4,7 @@ import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +13,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity(name = "pomodoros")
+@Table(indexes= {
+		@Index(name="pomodoros_end_time_index", columnList="endTime"),
+		@Index(name="pomodoros_status_index", columnList="status"),
+		@Index(name="pomodoros_task_index", columnList="task_id"),
+		@Index(name="pomodoros_user_index", columnList="user_id")
+})
 public class Pomodoro {
 
 	@Id

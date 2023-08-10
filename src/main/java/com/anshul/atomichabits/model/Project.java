@@ -4,13 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +13,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity(name = "projects")
+@Table(indexes= {
+		@Index(name="projects_status_index", columnList="status"),
+		@Index(name="projects_project_category_index", columnList="project_category_id"),
+		@Index(name="projects_user_index", columnList="user_id")
+})
 public class Project {
 
 	@Id
@@ -36,6 +35,10 @@ public class Project {
 	// in minutes
 	@Column(columnDefinition = "integer default 0")
 	private Integer pomodoroLength = 0;
+	
+	// added, archived
+	@Column(columnDefinition = "varchar(255) default 'added'")
+	private String status = "added";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
