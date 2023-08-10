@@ -1,8 +1,20 @@
 package com.anshul.atomichabits.model;
 
+import java.time.Instant;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,6 +64,12 @@ public class UserSettings {
 
 	@Column(columnDefinition = "integer default 30")
 	private Integer chartMonthlyAverage = 30;
+	
+	@CreationTimestamp
+	private Instant createdAt;
+	
+	@UpdateTimestamp
+	private Instant updatedAt;
 
 	@PrimaryKeyJoinColumn	// to make sure only single mapping for user
 	@OneToOne(fetch = FetchType.LAZY)

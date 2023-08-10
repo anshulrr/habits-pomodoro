@@ -1,6 +1,10 @@
 package com.anshul.atomichabits.model;
 
+import java.time.Instant;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -13,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,6 +48,12 @@ public class User {
 	// required for spring security
 	@Column(columnDefinition = "boolean default false")
 	private boolean enabled = false;
+	
+	@CreationTimestamp
+	private Instant createdAt;
+	
+	@UpdateTimestamp
+	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@JsonIgnore
