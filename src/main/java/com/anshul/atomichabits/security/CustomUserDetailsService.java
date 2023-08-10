@@ -39,6 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		User user;
 		if (optional_user.isEmpty()) {
+			log.info("first time user: {}", usernameOrEmail);
 			signup.saveUser(usernameOrEmail);
 			user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
 		} else {
@@ -48,7 +49,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
-
+		log.debug("from custom user detail service: " + authorities);
+		
 		return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getPassword(), authorities);
 	}
 }
