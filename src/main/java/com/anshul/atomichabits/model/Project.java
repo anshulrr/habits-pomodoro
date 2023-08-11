@@ -1,10 +1,23 @@
 package com.anshul.atomichabits.model;
 
+import java.time.Instant;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,6 +60,12 @@ public class Project {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private ProjectCategory projectCategory;
+	
+	@CreationTimestamp
+	private Instant createdAt;
+	
+	@UpdateTimestamp
+	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "project")
 	@JsonIgnore

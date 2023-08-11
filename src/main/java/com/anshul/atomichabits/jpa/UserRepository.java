@@ -9,7 +9,7 @@ import com.anshul.atomichabits.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 	
-	@Query("select u from users u where u.username = ?1 or u.email = ?1")
+	@Query("select u from users u where u.username = :name or u.email = :name")
 	public Optional<User> findByUsername(String name);
 	
 	public Optional<User> findByEmail(String email);

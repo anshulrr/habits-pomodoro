@@ -11,7 +11,7 @@ import com.anshul.atomichabits.model.Project;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-	@Query("select p, p.projectCategory from projects p where p.user.id = ?1 and p.id = ?2")
+	@Query("select p, p.projectCategory from projects p where p.user.id = :user_id and p.id = :project_id")
 	public Optional<Project> findUserProjectById(Long user_id, Long project_id);
 
 	//	@Query(value = "select * from projects where user_id = ?1 order by id limit ?2 offset ?3", nativeQuery = true)
@@ -27,12 +27,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	@Query("""
 			select p.id id, p.name name, p.color color, p.pomodoroLength pomodoroLength, p.projectCategory.name category 
 			from projects p 
-			where p.user.id = ?1 
+			where p.user.id = :user_id
 			order by p.projectCategory.level asc, id desc 
-			limit ?2 offset ?3
+			limit :limit offset :offset
 			""")
 	public List<ProjectForList> findUserProjects(Long user_id, int limit, int offset);
 
-	@Query(value = "select count(*) from projects where user_id = ?1", nativeQuery = true)
-	public Integer getUserProjectsCount(Long id);
+	@Query(value = "select count(*) from projects where user_id = :user_id", nativeQuery = true)
+	public Integer getUserProjectsCount(Long user_id);
 }
