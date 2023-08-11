@@ -10,12 +10,12 @@ import com.anshul.atomichabits.model.ProjectCategory;
 
 public interface ProjectCategoryRepository extends JpaRepository<ProjectCategory, Long> {
 
-	@Query("select p from project_categories p where p.user.id = ?1 and p.id = ?2")
+	@Query("select p from project_categories p where p.user.id = :user_id and p.id = :category_id")
 	public Optional<ProjectCategory> findUserProjectCategoryById(Long user_id, Long category_id);
 
-	@Query(value = "select * from project_categories where user_id = ?1 order by level limit ?2 offset ?3", nativeQuery = true)
+	@Query(value = "select * from project_categories where user_id = :user_id order by level limit :limit offset :offset", nativeQuery = true)
 	public List<ProjectCategory> findUserProjectCategories(Long user_id, int limit, int offset);
 
-	@Query(value = "select count(*) from project_categories where user_id = ?1", nativeQuery = true)
+	@Query(value = "select count(*) from project_categories where user_id = :user_id", nativeQuery = true)
 	public Integer getUserProjectCategoriesCount(Long user_id);
 }
