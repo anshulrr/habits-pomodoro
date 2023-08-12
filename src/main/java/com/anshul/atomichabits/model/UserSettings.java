@@ -71,7 +71,7 @@ public class UserSettings {
 	@UpdateTimestamp
 	private Instant updatedAt;
 
-	@PrimaryKeyJoinColumn	// to make sure only single mapping for user
+	// @PrimaryKeyJoinColumn	// to make sure only single mapping for user
 	@OneToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User user;
