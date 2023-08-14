@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import com.anshul.atomichabits.controller.PomodoroResource;
 import com.anshul.atomichabits.model.Pomodoro;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +24,10 @@ public class StartedState implements PomodoroState {
 		
 		// calculate and update timeElapsed
 		Long timeElapsed = Duration.between(pomodoro.getStartTime(), OffsetDateTime.now()).getSeconds();
-		if (timeElapsed < pomodoro.getLength() * 60) {
+		if (timeElapsed <= pomodoro.getLength() * 60) {
 			pomodoro.setTimeElapsed(Math.toIntExact(timeElapsed));
 		} else {
+			log.info("Pause: calculated timeElapsed: {}, pomodoro length: {}", timeElapsed, pomodoro.getLength() * 60);
 			pomodoro.setTimeElapsed(pomodoro.getLength() * 60);
 		}
 		log.debug("{}", pomodoro.getTimeElapsed());
@@ -43,9 +43,10 @@ public class StartedState implements PomodoroState {
 		
 		// calculate and update timeElapsed
 		Long timeElapsed = Duration.between(pomodoro.getStartTime(), OffsetDateTime.now()).getSeconds();
-		if (timeElapsed < pomodoro.getLength() * 60) {
+		if (timeElapsed <= pomodoro.getLength() * 60) {
 			pomodoro.setTimeElapsed(Math.toIntExact(timeElapsed));
 		} else {
+			log.info("Complete: calculated timeElapsed: {}, pomodoro length: {}", timeElapsed, pomodoro.getLength() * 60);
 			pomodoro.setTimeElapsed(pomodoro.getLength() * 60);
 		}
 		log.debug("{}", pomodoro.getTimeElapsed());
@@ -61,6 +62,8 @@ public class StartedState implements PomodoroState {
 	public void update(RunningPomodoro runningPomodoro) {
 		log.debug("from started state: update");
 		Pomodoro pomodoro = runningPomodoro.getPomodoro();
+		
+		// calculate and update timeElapsed
 		Long timeElapsed = Duration.between(pomodoro.getStartTime(), OffsetDateTime.now()).getSeconds();
 		if (timeElapsed < pomodoro.getLength() * 60) {
 			pomodoro.setTimeElapsed(Math.toIntExact(timeElapsed));

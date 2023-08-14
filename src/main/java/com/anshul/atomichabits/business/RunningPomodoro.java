@@ -1,15 +1,7 @@
 package com.anshul.atomichabits.business;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-
-import com.anshul.atomichabits.controller.PomodoroResource;
 import com.anshul.atomichabits.model.Pomodoro;
-import com.anshul.atomichabits.model.Task;
-import com.anshul.atomichabits.model.User;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

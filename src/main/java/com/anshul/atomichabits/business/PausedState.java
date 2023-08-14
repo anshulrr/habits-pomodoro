@@ -15,7 +15,7 @@ public class PausedState implements PomodoroState {
 		log.debug("from paused state: mark started");
 		Pomodoro pomodoro = runningPomodoro.getPomodoro();
 
-		// TODO: check if this step is necessary
+		// TODO: find better solution: needed for timeElapsed calculation in further state change
 		// Update the startTime, so that refresh api and sync logic works correctly
 		OffsetDateTime updatedStartTime = OffsetDateTime.now(ZoneOffset.UTC)
 				.minusSeconds(pomodoro.getTimeElapsed());
