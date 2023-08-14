@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
