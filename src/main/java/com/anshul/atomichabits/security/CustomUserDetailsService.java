@@ -49,7 +49,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
-		log.debug("from custom user detail service: " + authorities);
+		log.trace("from custom user detail service: " + authorities);
 		
 		return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getPassword(), authorities);
 	}

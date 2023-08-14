@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.business.RunningPomodoro;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
@@ -134,72 +135,41 @@ public class PomodoroResource {
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}
 
-	//	getting request data as params
 	@PutMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
+	public ResponseEntity<Pomodoro> updatePomodoro2(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
-
-		// Extra check for sync pomodoro
-		if (pomodoroEntry.get().getStatus().equals("completed")) {
-			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
-		}
-
-		log.trace(pomodoroUpdateDto.status());
-		pomodoroEntry.get().setStatus(pomodoroUpdateDto.status());
-
-		if (pomodoroUpdateDto.status().equals("completed")) {
-			pomodoroEntry.get().setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
-		}
-
-		// Update the startTime, so that refresh api and sync logic works correctly
-		if (pomodoroUpdateDto.status().equals("started")) {
-			OffsetDateTime updatedStartTime = OffsetDateTime.now(ZoneOffset.UTC)
-					.minusSeconds(pomodoroEntry.get().getTimeElapsed());
-			log.trace(updatedStartTime + " : " + pomodoroEntry.get().getTimeElapsed());
-			pomodoroEntry.get().setStartTime(updatedStartTime);
-		}
-
-		log.trace("" + pomodoroEntry.get());
-		pomodoroEntry.get().setTimeElapsed(pomodoroUpdateDto.timeElapsed());
-
-		return new ResponseEntity<>(pomodoroRepository.save(pomodoroEntry.get()), HttpStatus.OK);
+		log.debug("new pomodoro request: {}, pomodoro entry: {}", pomodoroUpdateDto, pomodoroEntry.get());
+		// TODO: log if timeElapsed calculated in front-end and back-end has large difference
+		
+		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
+		runningPomodoro.updateStatus(pomodoroUpdateDto.status());
+		
+		return new ResponseEntity<>(pomodoroRepository.save(runningPomodoro.getPomodoro()), HttpStatus.OK);
 	}
-
+	
 	@GetMapping("/pomodoros/running")
-	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
+	public ResponseEntity<PomodoroDto> getRunningPomodoro2(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
 		if (runningPomodoroEntry.isEmpty()) {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 		}
-
-		// Automatically update timeElapsed for pomodoro with status started
-		// Otherwise it will start again without considering actual time elapsed
-		if (runningPomodoroEntry.get().getStatus().equals("started")) {
-			Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id,
-					runningPomodoroEntry.get().getId());
-			if (pomodoroEntry.isEmpty())
-				throw new ResourceNotFoundException("pomodoro id:" + runningPomodoroEntry.get().getId());
-
-			OffsetDateTime startTime = pomodoroEntry.get().getStartTime();
-
-			Long timeElapsed = Duration.between(startTime, OffsetDateTime.now()).getSeconds();
-			log.trace("" + Duration.between(startTime, OffsetDateTime.now()).getSeconds());
-			if (timeElapsed < pomodoroEntry.get().getLength() * 60) {
-				pomodoroEntry.get().setTimeElapsed(Math.toIntExact(timeElapsed));
-			} else {
-				pomodoroEntry.get().setTimeElapsed(pomodoroEntry.get().getLength() * 60 - 3);
-			}
-			pomodoroRepository.save(pomodoroEntry.get());
-
-			Optional<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
-			return new ResponseEntity<>(updatedRunningPomodoroEntry.get(), HttpStatus.OK);
-		}
-
-		return new ResponseEntity<>(runningPomodoroEntry.get(), HttpStatus.OK);
+		log.debug("new get running pomodoro: {}", runningPomodoroEntry.get());
+		
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id,
+				runningPomodoroEntry.get().getId());
+		if (pomodoroEntry.isEmpty())
+			throw new ResourceNotFoundException("pomodoro id:" + runningPomodoroEntry.get().getId());
+		
+		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
+		runningPomodoro.updatePomodoroData();
+		pomodoroRepository.save(runningPomodoro.getPomodoro());
+		
+		Optional<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
+		return new ResponseEntity<>(updatedRunningPomodoroEntry.get(), HttpStatus.OK);
 	}
 }
 
