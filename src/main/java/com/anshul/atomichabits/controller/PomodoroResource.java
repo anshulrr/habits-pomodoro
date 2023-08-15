@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,17 +94,16 @@ public class PomodoroResource {
 
 	@PostMapping("/pomodoros")
 	public ResponseEntity<Pomodoro> createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
-			Principal principal) {
+			Principal principal) {	
 		Long user_id = Long.parseLong(principal.getName());
+		
 		//Check if there is any running pomodoro for the user
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
-
 		if (runningPomodoroEntry.isPresent()) {
 			log.trace("running pomodoro: {}", runningPomodoroEntry);
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
-		// log.trace(pomodoro.toString() + task_id);
 		Optional<User> userEntry = userRepository.findById(user_id);
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
 		if (taskEntry.isEmpty())
@@ -111,32 +111,75 @@ public class PomodoroResource {
 
 		pomodoro.setUser(userEntry.get());
 		pomodoro.setTask(taskEntry.get());
-		log.trace("pomodoro for entry: {}", pomodoro);
-
-		// TODO: get length from user settings stored in auth context
-		UserSettings settings = userSettingsRepository.findUserSettings(user_id);
-		pomodoro.setLength(settings.getPomodoroLength());
-
-		Integer taskPomodoroLength = taskEntry.get().getPomodoroLength();
-		if (taskPomodoroLength != 0) {
-			pomodoro.setLength(taskPomodoroLength);
-		} else {
-			Integer projectPomodoroLength = taskEntry.get().getProject().getPomodoroLength();
-			if (projectPomodoroLength != 0) {
-				log.trace("setting length: " + projectPomodoroLength);
-				pomodoro.setLength(projectPomodoroLength);
-			}
-		}
-		log.trace("pomodoro length: {}", pomodoro.getLength());
+		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
 		log.debug("pomodoro {}", pomodoro);
 
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}
 
+	@PostMapping("/pomodoros/past")
+	public ResponseEntity<Pomodoro> createPastPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
+			Principal principal) {	
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(user_id);
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+		if (taskEntry.isEmpty())
+			throw new ResourceNotFoundException("task id:" + task_id);
+
+		pomodoro.setUser(userEntry.get());
+		pomodoro.setTask(taskEntry.get());
+		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
+		pomodoro.setStatus("past");				
+		log.debug("pomodoro {}", pomodoro);
+		
+		if (pomodoro.getTimeElapsed() > pomodoro.getLength() * 60) {
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
+	}
+	
+	private Integer calculateAndSetPomodoroLength(Long user_id, Task task) {		
+		Integer length;
+		
+		// check task settings, then project settings, then user settings
+		Integer taskPomodoroLength = task.getPomodoroLength();
+		if (taskPomodoroLength != 0) {
+			length = taskPomodoroLength;
+		} else {
+			Integer projectPomodoroLength = task.getProject().getPomodoroLength();
+			if (projectPomodoroLength != 0) {
+				length = projectPomodoroLength;
+			} else {
+				// TODO: get length from user settings stored in auth context
+				UserSettings settings = userSettingsRepository.findUserSettings(user_id);
+				length = settings.getPomodoroLength();
+			}
+		}
+		
+		return length;
+	}
+	
+	@DeleteMapping("/pomodoros/past/{id}")
+	public ResponseEntity<Pomodoro> deletePastPomodoro(@PathVariable Long id, Principal principal) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
+		if (pomodoroEntry.isEmpty())
+			throw new ResourceNotFoundException("pomodoro id:" + id);
+		// allow deletion of past pomodoro only
+		if (!pomodoroEntry.get().getStatus().equals("past"))
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		
+		pomodoroEntry.get().setStatus("deleted");
+		
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoroEntry.get()), HttpStatus.OK);
+	}
+
 	@PutMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> updatePomodoro2(@PathVariable Long id,
+	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
 		log.debug("new pomodoro request: {}, pomodoro entry: {}", pomodoroUpdateDto, pomodoroEntry.get());
@@ -149,7 +192,7 @@ public class PomodoroResource {
 	}
 	
 	@GetMapping("/pomodoros/running")
-	public ResponseEntity<PomodoroDto> getRunningPomodoro2(Principal principal) {
+	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
 		if (runningPomodoroEntry.isEmpty()) {
