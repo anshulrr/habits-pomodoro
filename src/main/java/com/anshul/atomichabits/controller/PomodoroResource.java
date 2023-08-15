@@ -133,6 +133,49 @@ public class PomodoroResource {
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}
 
+	@PostMapping("/pomodoros/past")
+	public ResponseEntity<Pomodoro> createPastPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
+			Principal principal) {
+		Long user_id = Long.parseLong(principal.getName());
+
+		// log.trace(pomodoro.toString() + task_id);
+		Optional<User> userEntry = userRepository.findById(user_id);
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+		if (taskEntry.isEmpty())
+			throw new ResourceNotFoundException("task id:" + task_id);
+
+		pomodoro.setUser(userEntry.get());
+		pomodoro.setTask(taskEntry.get());
+		pomodoro.setStatus("completed");
+		log.trace("pomodoro for entry: {}", pomodoro);
+
+		// TODO: get length from user settings stored in auth context
+		UserSettings settings = userSettingsRepository.findUserSettings(user_id);
+		pomodoro.setLength(settings.getPomodoroLength());
+
+		Integer taskPomodoroLength = taskEntry.get().getPomodoroLength();
+		if (taskPomodoroLength != 0) {
+			pomodoro.setLength(taskPomodoroLength);
+		} else {
+			Integer projectPomodoroLength = taskEntry.get().getProject().getPomodoroLength();
+			if (projectPomodoroLength != 0) {
+				log.trace("setting length: " + projectPomodoroLength);
+				pomodoro.setLength(projectPomodoroLength);
+			}
+		}
+		
+		if (pomodoro.getTimeElapsed() > pomodoro.getLength() * 60) {
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		log.trace("pomodoro length: {}", pomodoro.getLength());
+		log.debug("pomodoro {}", pomodoro);
+		
+//		pomodoro.setTimeElapsed(pomodoro.getLength() * 60);
+
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
+	}
+
 	@PutMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> updatePomodoro2(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
