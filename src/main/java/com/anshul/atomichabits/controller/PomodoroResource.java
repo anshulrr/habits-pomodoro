@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -146,7 +147,7 @@ public class PomodoroResource {
 
 		pomodoro.setUser(userEntry.get());
 		pomodoro.setTask(taskEntry.get());
-		pomodoro.setStatus("completed");
+		pomodoro.setStatus("past");
 		log.trace("pomodoro for entry: {}", pomodoro);
 
 		// TODO: get length from user settings stored in auth context
@@ -175,10 +176,28 @@ public class PomodoroResource {
 
 		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
 	}
+	
+	@DeleteMapping("/pomodoros/past/{id}")
+	public ResponseEntity<Pomodoro> deletePastPomodoro(@PathVariable Long id, Principal principal) {
+		// TODO: user check
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
+		if (pomodoroEntry.isEmpty())
+			throw new ResourceNotFoundException("pomodoro id:" + id);
+		// allow deletion of past pomodoro only
+		if (!pomodoroEntry.get().getStatus().equals("past"))
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		
+		pomodoroEntry.get().setStatus("deleted");
+		
+		return new ResponseEntity<>(pomodoroRepository.save(pomodoroEntry.get()), HttpStatus.OK);
+	}
 
 	@PutMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> updatePomodoro2(@PathVariable Long id,
+	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
+		// TODO: user check
+		Long user_id = Long.parseLong(principal.getName());
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findById(id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -192,7 +211,7 @@ public class PomodoroResource {
 	}
 	
 	@GetMapping("/pomodoros/running")
-	public ResponseEntity<PomodoroDto> getRunningPomodoro2(Principal principal) {
+	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
 		if (runningPomodoroEntry.isEmpty()) {

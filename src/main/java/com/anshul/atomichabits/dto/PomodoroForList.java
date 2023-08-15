@@ -5,6 +5,8 @@ import java.time.OffsetDateTime;
 public interface PomodoroForList {
 
 	Long getId();
+	
+	String getStatus();
 
 	OffsetDateTime getStartTime();
 
