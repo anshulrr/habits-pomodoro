@@ -65,6 +65,12 @@ public class UserSettings {
 	@Column(columnDefinition = "integer default 30")
 	private Integer chartMonthlyAverage = 30;
 	
+	@Column(columnDefinition = "integer default 5")
+	private Integer pageProjectsCount = 5;
+	
+	@Column(columnDefinition = "integer default 5")
+	private Integer pageTasksCount = 5;
+	
 	@CreationTimestamp
 	private Instant createdAt;
 	
