@@ -51,6 +51,9 @@ public class UserSettingsResource {
 		
 		userSettings.setEnableChartAdjustedWeeklyMonthlyAverage(settingsRequest.isEnableChartAdjustedWeeklyMonthlyAverage());
 		
+		userSettings.setPageProjectsCount(settingsRequest.getPageProjectsCount());
+		userSettings.setPageTasksCount(settingsRequest.getPageTasksCount());
+		
 		return userSettingsRepository.save(userSettings);
 	}
 }
