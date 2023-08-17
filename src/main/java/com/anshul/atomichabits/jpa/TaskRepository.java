@@ -21,6 +21,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			where t.user_id = :user_id and t.project_id = :project_id and t.status = :status 
 			group by t.id
 			order by t.id desc
+			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<TaskForList> retrieveUserTasksByProjectId(Long user_id, Long project_id, String status);
+	public List<TaskForList> retrieveUserTasksByProjectId(Long user_id, Long project_id, String status, int limit, int offset);
+	
+	@Query(value = "select count(*) from tasks where user_id = :user_id and project_id = :project_id and status = :status", nativeQuery = true)
+	public Integer getProjectTasksCount(Long user_id, Long project_id, String status);
 }

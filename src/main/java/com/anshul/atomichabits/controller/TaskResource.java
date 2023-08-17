@@ -40,7 +40,7 @@ public class TaskResource {
 	}
 
 	@GetMapping("/projects/{project_id}/tasks/{task_id}")
-	public Task retrieveProject(@PathVariable Long project_id, @PathVariable Long task_id, Principal principal) {
+	public Task retrieveTask(@PathVariable Long project_id, @PathVariable Long task_id, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
 		if (taskEntry.isEmpty())
@@ -50,15 +50,21 @@ public class TaskResource {
 	}
 
 	@GetMapping("/projects/{project_id}/tasks")
-	public List<TaskForList> retrieveProjectsOfUser(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public List<TaskForList> retrieveTasks(Principal principal, @PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status);
+		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status, limit, offset);
 		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
 
+	@GetMapping("/projects/{project_id}/tasks/count")
+	public Integer retrieveTasksCountOfUserProject(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Long user_id = Long.parseLong(principal.getName());
+		return taskRepository.getProjectTasksCount(user_id, project_id, status);
+	}
+
 	@PostMapping("/projects/{project_id}/tasks")
-	public Task retrieveProjectsOfUser(@PathVariable Long project_id, @RequestBody Task task, Principal principal) {
+	public Task createTask(@PathVariable Long project_id, @RequestBody Task task, Principal principal) {
 		// log.trace("task for entry: " + project_id + task);
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(user_id);
@@ -73,7 +79,7 @@ public class TaskResource {
 	}
 
 	@PutMapping("/projects/{project_id}/tasks/{id}")
-	public Task retrieveProjectsOfUser(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, Principal principal) {
+	public Task updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
 		if (taskEntry.isEmpty())
