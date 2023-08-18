@@ -1,5 +1,7 @@
 package com.anshul.atomichabits.dto;
 
+import java.time.Instant;
+
 public interface CommentForList {
 
 	Long getId();
@@ -11,4 +13,6 @@ public interface CommentForList {
 	String getProject();
 	
 	String getTask();
+	
+	Instant getCreatedAt();
 }

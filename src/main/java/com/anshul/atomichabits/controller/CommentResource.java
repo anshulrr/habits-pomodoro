@@ -89,6 +89,8 @@ public class CommentResource {
 
 		comment.setUser(userEntry.get());
 		comment.setProjectCategory(categoryEntry.get());
+		
+		// TODO: return category name in the response
 		return commentRepository.save(comment);
 	}
 

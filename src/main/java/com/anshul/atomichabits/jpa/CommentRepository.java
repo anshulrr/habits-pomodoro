@@ -11,7 +11,7 @@ import com.anshul.atomichabits.model.Comment;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 	@Query(value = """
-			select c.*, pc.name category, p.name project, t.description task  
+			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task  
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
@@ -26,7 +26,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserCommentsCount(Long user_id, String status);
 	
 	@Query(value = """
-			select c.*, pc.name category, p.name project, t.description task 
+			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
@@ -41,7 +41,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserProjectCategoryCommentsCount(Long user_id, Long project_category_id, String status);
 	
 	@Query(value = """
-			select c.*, pc.name category, p.name project, t.description task 
+			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
@@ -56,7 +56,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserProjectCommentsCount(Long user_id, Long project_id, String status);
 	
 	@Query(value = """
-			select c.*, pc.name category, p.name project, t.description task 
+			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
@@ -71,7 +71,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserTaskCommentsCount(Long user_id, Long task_id, String status);
 
 	@Query(value = """
-			select c.*, pc.name category, p.name project, t.description task 
+			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
