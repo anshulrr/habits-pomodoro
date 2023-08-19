@@ -146,14 +146,17 @@ public class PomodoroResource {
 		Integer taskPomodoroLength = task.getPomodoroLength();
 		if (taskPomodoroLength != 0) {
 			length = taskPomodoroLength;
+			log.debug("task length {}", length);
 		} else {
 			Integer projectPomodoroLength = task.getProject().getPomodoroLength();
 			if (projectPomodoroLength != 0) {
 				length = projectPomodoroLength;
+				log.debug("project length {}", length);
 			} else {
 				// TODO: get length from user settings stored in auth context
 				UserSettings settings = userSettingsRepository.findUserSettings(user_id);
 				length = settings.getPomodoroLength();
+				log.debug("settings length {}", length);
 			}
 		}
 		

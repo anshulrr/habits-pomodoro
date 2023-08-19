@@ -53,6 +53,7 @@ public class UserSettingsResource {
 		
 		userSettings.setPageProjectsCount(settingsRequest.getPageProjectsCount());
 		userSettings.setPageTasksCount(settingsRequest.getPageTasksCount());
+		userSettings.setPageCommentsCount(settingsRequest.getPageCommentsCount());
 		
 		return userSettingsRepository.save(userSettings);
 	}

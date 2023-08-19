@@ -13,7 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+//import jakarta.persistence.PrimaryKeyJoinColumn;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -70,6 +70,9 @@ public class UserSettings {
 	
 	@Column(columnDefinition = "integer default 5")
 	private Integer pageTasksCount = 5;
+	
+	@Column(columnDefinition = "integer default 5")
+	private Integer pageCommentsCount = 5;
 	
 	@CreationTimestamp
 	private Instant createdAt;
