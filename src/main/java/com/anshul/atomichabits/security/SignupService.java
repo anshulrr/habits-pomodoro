@@ -106,8 +106,7 @@ public class SignupService {
 				Sample comment with some markup
 				- line 1
 				  - line 2
-				
-				[Google Search Page](https://www.google.com/)
+				  - [Google Search Page](https://www.google.com/)
 				""");
 		commentRepository.save(comment);
 		
