@@ -78,9 +78,14 @@ public class PomodoroResource {
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
 
-		limit = "" + Character.toUpperCase(limit.charAt(0));
-		limit += limit;
-
+		if (limit.equals("daily")) {
+			limit = "DD";
+		} else if (limit.equals("weekly")) {
+			limit = "IW";
+		} else if (limit.equals("monthly")) {
+			limit = "MM";
+		}
+		
 		List<String[]> result = pomodoroRepository.findTotalTime(user_id, startDate, endDate, categories, timezone,
 				limit);
 		log.trace("total time result: {}", result);
