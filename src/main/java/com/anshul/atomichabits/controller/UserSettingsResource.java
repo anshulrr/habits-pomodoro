@@ -55,6 +55,9 @@ public class UserSettingsResource {
 		userSettings.setPageTasksCount(settingsRequest.getPageTasksCount());
 		userSettings.setPageCommentsCount(settingsRequest.getPageCommentsCount());
 		
+		userSettings.setTasksChartType(settingsRequest.getTasksChartType());
+		userSettings.setProjectsChartType(settingsRequest.getProjectsChartType());
+		
 		return userSettingsRepository.save(userSettings);
 	}
 }

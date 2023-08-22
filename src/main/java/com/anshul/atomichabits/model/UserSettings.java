@@ -74,6 +74,14 @@ public class UserSettings {
 	@Column(columnDefinition = "integer default 5")
 	private Integer pageCommentsCount = 5;
 	
+	// bar, doughnut
+	@Column(columnDefinition = "varchar(255) default 'doughnut'")
+	private String tasksChartType = "doughnut";
+	
+	// bar, doughnut
+	@Column(columnDefinition = "varchar(255) default 'bar'")
+	private String projectsChartType = "bar";
+	
 	@CreationTimestamp
 	private Instant createdAt;
 	
