@@ -7,11 +7,13 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.dto.CommentForList;
+import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
@@ -26,6 +28,9 @@ import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +67,27 @@ public class CommentResource {
 
 		comment.setUser(userEntry.get());
 		return commentRepository.save(comment);
+	}
+	
+	@GetMapping("/comments/{id}")
+	public Comment getComment(@PathVariable Long id, Principal principal) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		if (commentEntry.isEmpty())
+		 	throw new ResourceNotFoundException("comment id:" + id);
+
+		return commentEntry.get();
+	}
+
+	@PutMapping("/comments/{id}")
+	public Comment updateComment(@PathVariable Long id, @Valid @RequestBody CommentUpdateDto commentDto, Principal principal) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		if (commentEntry.isEmpty())
+		 	throw new ResourceNotFoundException("comment id:" + id);
+
+		commentEntry.get().setDescription(commentDto.description());
+		return commentRepository.save(commentEntry.get());
 	}
 
 	@GetMapping("/project-categories/{category_id}/comments")
@@ -184,3 +210,5 @@ public class CommentResource {
 		return commentRepository.save(comment);
 	}
 }
+
+record CommentUpdateDto(@NotBlank String description) {}

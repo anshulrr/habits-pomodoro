@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.jpa;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,9 @@ import com.anshul.atomichabits.dto.CommentForList;
 import com.anshul.atomichabits.model.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+	
+	@Query("select c from comments c where c.user.id = :user_id and c.id = :id")
+	public Optional<Comment> findUserCommentById(Long user_id, Long id);
 
 	@Query(value = """
 			select c.*, c.created_at createdAt, pc.name category, p.name project, t.description task  
