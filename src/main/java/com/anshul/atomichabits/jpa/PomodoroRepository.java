@@ -29,7 +29,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task
 			from pomodoros p
 			where p.user.id = :user_id and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
-			order by p.id desc
+			order by p.endTime desc
 			""")
 	public List<PomodoroForList> findAllForToday(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
 
