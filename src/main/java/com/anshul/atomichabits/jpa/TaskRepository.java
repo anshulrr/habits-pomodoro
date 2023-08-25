@@ -17,8 +17,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Query(value = """
 			select t.*, t.pomodoro_length pomodoroLength, sum(p.time_elapsed) pomodorosTimeElapsed
 			from tasks t
-			left join pomodoros p on t.id = p.task_id
-			where t.user_id = :user_id and t.project_id = :project_id and t.status = :status 
+			left join pomodoros p on t.id = p.task_id and p.status in ('completed', 'past') 
+			where t.user_id = :user_id and t.project_id = :project_id and t.status = :status
 			group by t.id
 			order by t.id desc
 			limit :limit offset :offset
