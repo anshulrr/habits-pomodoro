@@ -4,6 +4,7 @@ import com.anshul.atomichabits.model.Project;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class ProjectDto {
 		this.description = project.getDescription();
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
+		this.priority = project.getPriority();
 		log.trace("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
@@ -41,6 +43,10 @@ public class ProjectDto {
 	@NotNull
 	@PositiveOrZero
 	private Integer pomodoroLength;
+	
+	@NotNull
+	@Positive
+	private Integer priority;
 	
 	private Long projectCategoryId;
 	

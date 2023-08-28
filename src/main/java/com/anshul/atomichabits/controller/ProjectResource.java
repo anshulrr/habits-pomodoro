@@ -85,6 +85,7 @@ public class ProjectResource {
 		project.setDescription(projectDto.getDescription());
 		project.setColor(projectDto.getColor());
 		project.setPomodoroLength(projectDto.getPomodoroLength());
+		project.setPriority(projectDto.getPriority());
 		project.setUser(userEntry.get());
 		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);
@@ -108,6 +109,7 @@ public class ProjectResource {
 		projectEntry.get().setDescription(projectDto.getDescription());
 		projectEntry.get().setColor(projectDto.getColor());
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
+		projectEntry.get().setPriority(projectDto.getPriority());
 		projectEntry.get().setProjectCategory(category.get());
 		projectRepository.save(projectEntry.get());
 		log.trace("updated project: {}", projectEntry);

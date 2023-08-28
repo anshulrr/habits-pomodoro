@@ -10,6 +10,8 @@ public interface ProjectForList {
 
 	Integer getPomodoroLength();
 	
+	Integer getPriority();
+	
 	String getCategory();
 }
 
