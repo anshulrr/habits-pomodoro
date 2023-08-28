@@ -20,7 +20,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			left join pomodoros p on t.id = p.task_id and p.status in ('completed', 'past') 
 			where t.user_id = :user_id and t.project_id = :project_id and t.status = :status
 			group by t.id
-			order by t.id desc
+			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
 	public List<TaskForList> retrieveUserTasksByProjectId(Long user_id, Long project_id, String status, int limit, int offset);
