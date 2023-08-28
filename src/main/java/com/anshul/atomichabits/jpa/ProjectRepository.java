@@ -25,10 +25,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	//		limit ?2 offset ?3
 	//		""", nativeQuery = true)
 	@Query("""
-			select p.id id, p.name name, p.color color, p.pomodoroLength pomodoroLength, p.projectCategory.name category 
+			select p.id id, p.name name, p.color color, p.priority priority, p.pomodoroLength pomodoroLength, p.projectCategory.name category 
 			from projects p 
 			where p.user.id = :user_id
-			order by p.projectCategory.level asc, id desc 
+			order by p.projectCategory.level asc, p.priority asc, id desc 
 			limit :limit offset :offset
 			""")
 	public List<ProjectForList> findUserProjects(Long user_id, int limit, int offset);

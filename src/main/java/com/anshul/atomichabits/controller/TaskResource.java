@@ -88,6 +88,7 @@ public class TaskResource {
 		taskEntry.get().setDescription(taskDto.description());
 		taskEntry.get().setPomodoroLength(taskDto.pomodoroLength());
 		taskEntry.get().setStatus(taskDto.status());
+		taskEntry.get().setPriority(taskDto.priority());
 		return taskRepository.save(taskEntry.get());
 	}
 }

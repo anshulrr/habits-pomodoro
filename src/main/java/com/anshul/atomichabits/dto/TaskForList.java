@@ -10,5 +10,7 @@ public interface TaskForList {
 	
 	Integer getPomodoroLength();
 	
+	Integer getPriority();
+	
 	String getPomodorosTimeElapsed();
 }

@@ -52,6 +52,9 @@ public class Project {
 	// added, archived
 	@Column(columnDefinition = "varchar(255) default 'added'")
 	private String status = "added";
+	
+	@Column(columnDefinition = "integer default 1")
+	private Integer priority;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
