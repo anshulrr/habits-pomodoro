@@ -47,7 +47,7 @@ public class Task {
 	@Column(columnDefinition = "integer default 0")
 	private Integer pomodoroLength;
 
-	private LocalDate dueDate;
+	private Instant dueDate;
 
 	// added, archived, completed
 	@Column(columnDefinition = "varchar(255) default 'added'")

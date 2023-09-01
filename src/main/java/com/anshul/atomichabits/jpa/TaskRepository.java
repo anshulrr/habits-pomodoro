@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Optional<Task> findUserTaskById(Long user_id, Long id);
 
 	@Query(value = """
-			select t.*, t.pomodoro_length pomodoroLength, sum(p.time_elapsed) pomodorosTimeElapsed
+			select t.*, t.due_date dueDate, t.pomodoro_length pomodoroLength, sum(p.time_elapsed) pomodorosTimeElapsed
 			from tasks t
 			left join pomodoros p on t.id = p.task_id and p.status in ('completed', 'past') 
 			where t.user_id = :user_id and t.project_id = :project_id and t.status = :status
