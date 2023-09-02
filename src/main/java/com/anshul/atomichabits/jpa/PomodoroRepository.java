@@ -26,7 +26,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public Optional<PomodoroDto> findRunningPomodoro(Long user_id);
 
 	@Query("""
-			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task
+			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task, p.task.project.color color
 			from pomodoros p
 			where p.user.id = :user_id and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
 			order by p.endTime desc, p.id desc

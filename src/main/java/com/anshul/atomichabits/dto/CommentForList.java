@@ -11,6 +11,8 @@ public interface CommentForList {
 	String getCategory();
 	
 	String getProject();
+
+	String getColor();
 	
 	String getTask();
 	
