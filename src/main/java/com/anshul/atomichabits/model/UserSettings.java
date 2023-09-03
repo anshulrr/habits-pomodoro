@@ -43,6 +43,12 @@ public class UserSettings {
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableStopwatchAudio;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableAutoStartBreak;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableAutoTimerFullscreen;
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartScale;

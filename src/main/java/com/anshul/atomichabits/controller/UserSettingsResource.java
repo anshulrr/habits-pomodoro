@@ -39,6 +39,9 @@ public class UserSettingsResource {
 		
 		userSettings.setEnableStopwatch(settingsRequest.isEnableStopwatch());
 		userSettings.setEnableStopwatchAudio(settingsRequest.isEnableStopwatchAudio());
+
+		userSettings.setEnableAutoStartBreak(settingsRequest.isEnableAutoStartBreak());
+		userSettings.setEnableAutoTimerFullscreen(settingsRequest.isEnableAutoTimerFullscreen());
 		
 		userSettings.setEnableChartScale(settingsRequest.isEnableChartScale());
 		userSettings.setChartScale(settingsRequest.getChartScale());
