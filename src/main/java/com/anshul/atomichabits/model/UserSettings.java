@@ -47,7 +47,7 @@ public class UserSettings {
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableAutoStartBreak;
 	
-	@Column(columnDefinition = "boolean default false")
+	@Column(columnDefinition = "boolean default true")
 	private boolean enableAutoTimerFullscreen;
 
 	@Column(columnDefinition = "boolean default false")
