@@ -54,15 +54,15 @@ public class TaskResource {
 
 	@GetMapping("/tasks")
 	public List<TaskForList> retrieveTasks(Principal principal, 
-			@RequestParam Long projectId, 
+			@RequestParam(required = false) Long projectId, 
 			@RequestParam(defaultValue = "added") String status, 
-			@RequestParam(defaultValue = "") Instant startDate, 
-			@RequestParam(defaultValue = "") Instant endDate,
+			@RequestParam(required = false) Instant startDate, 
+			@RequestParam(required = false) Instant endDate,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<TaskForList> tasks;
-		if (projectId != -1) {			
+		if (projectId != null) {			
 			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, projectId, status, limit, offset);
 		} else {
 			tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
@@ -73,14 +73,14 @@ public class TaskResource {
 
 	@GetMapping("/tasks/count")
 	public Integer retrieveTasksCountOfUserProject(Principal principal, 
-			@RequestParam Long projectId, 
-			@RequestParam(defaultValue = "") Instant startDate, 
-			@RequestParam(defaultValue = "") Instant endDate,
+			@RequestParam(required = false) Long projectId, 
+			@RequestParam(required = false) Instant startDate, 
+			@RequestParam(required = false) Instant endDate,
 			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
 		Integer count = 0;
 		log.debug("{} {} {}", status, startDate, endDate);
-		if (projectId != -1) {	
+		if (projectId != null) {	
 			count = taskRepository.getProjectTasksCount(user_id, projectId, status);
 		} else {
 			count = taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
@@ -117,24 +117,6 @@ public class TaskResource {
 		taskEntry.get().setPriority(taskDto.priority());
 		return taskRepository.save(taskEntry.get());
 	}
-
-//	@GetMapping("/tasks")
-//	public List<TaskForList> retrieveFilteredTasks(Principal principal, 
-//			@RequestParam(defaultValue = "added") String status, 
-//			@RequestParam OffsetDateTime startDate, 
-//			@RequestParam OffsetDateTime endDate,
-//			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-//		Long user_id = Long.parseLong(principal.getName());
-//		List<TaskForList> tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
-//		log.trace("tasks: {}", tasks);
-//		return tasks;
-//	}
-//
-//	@GetMapping("/tasks/count")
-//	public Integer retrieveFilteredTasksCount(Principal principal, @RequestParam(defaultValue = "added") String status, @RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate) {
-//		Long user_id = Long.parseLong(principal.getName());
-//		return taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
-//	}
 }
 
 record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}
