@@ -2,6 +2,7 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -55,8 +56,8 @@ public class TaskResource {
 	public List<TaskForList> retrieveTasks(Principal principal, 
 			@RequestParam Long projectId, 
 			@RequestParam(defaultValue = "added") String status, 
-			@RequestParam(defaultValue = "") OffsetDateTime startDate, 
-			@RequestParam(defaultValue = "") OffsetDateTime endDate,
+			@RequestParam(defaultValue = "") Instant startDate, 
+			@RequestParam(defaultValue = "") Instant endDate,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
@@ -73,8 +74,8 @@ public class TaskResource {
 	@GetMapping("/tasks/count")
 	public Integer retrieveTasksCountOfUserProject(Principal principal, 
 			@RequestParam Long projectId, 
-			@RequestParam(defaultValue = "") OffsetDateTime startDate, 
-			@RequestParam(defaultValue = "") OffsetDateTime endDate,
+			@RequestParam(defaultValue = "") Instant startDate, 
+			@RequestParam(defaultValue = "") Instant endDate,
 			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
 		Integer count = 0;
