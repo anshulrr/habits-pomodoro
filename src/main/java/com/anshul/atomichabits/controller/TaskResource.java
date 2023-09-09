@@ -1,6 +1,8 @@
+
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,8 +41,8 @@ public class TaskResource {
 		this.taskRepository = t;
 	}
 
-	@GetMapping("/projects/{project_id}/tasks/{task_id}")
-	public Task retrieveTask(@PathVariable Long project_id, @PathVariable Long task_id, Principal principal) {
+	@GetMapping("/tasks/{task_id}")
+	public Task retrieveTask(Principal principal, @PathVariable Long task_id) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
 		if (taskEntry.isEmpty())
@@ -49,28 +51,50 @@ public class TaskResource {
 		return taskEntry.get();
 	}
 
-	@GetMapping("/projects/{project_id}/tasks")
-	public List<TaskForList> retrieveTasks(Principal principal, @PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	@GetMapping("/tasks")
+	public List<TaskForList> retrieveTasks(Principal principal, 
+			@RequestParam Long projectId, 
+			@RequestParam(defaultValue = "added") String status, 
+			@RequestParam(defaultValue = "") OffsetDateTime startDate, 
+			@RequestParam(defaultValue = "") OffsetDateTime endDate,
+			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(user_id, project_id, status, limit, offset);
+		List<TaskForList> tasks;
+		if (projectId != -1) {			
+			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, projectId, status, limit, offset);
+		} else {
+			tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
+		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
 
-	@GetMapping("/projects/{project_id}/tasks/count")
-	public Integer retrieveTasksCountOfUserProject(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	@GetMapping("/tasks/count")
+	public Integer retrieveTasksCountOfUserProject(Principal principal, 
+			@RequestParam Long projectId, 
+			@RequestParam(defaultValue = "") OffsetDateTime startDate, 
+			@RequestParam(defaultValue = "") OffsetDateTime endDate,
+			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
-		return taskRepository.getProjectTasksCount(user_id, project_id, status);
+		Integer count = 0;
+		log.debug("{} {} {}", status, startDate, endDate);
+		if (projectId != -1) {	
+			count = taskRepository.getProjectTasksCount(user_id, projectId, status);
+		} else {
+			count = taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
+		}
+		return count;
 	}
 
-	@PostMapping("/projects/{project_id}/tasks")
-	public Task createTask(@PathVariable Long project_id, @RequestBody Task task, Principal principal) {
-		// log.trace("task for entry: " + project_id + task);
+	@PostMapping("/tasks")
+	public Task createTask(Principal principal, @RequestParam Long projectId, @RequestBody Task task) {
+		// log.trace("task for entry: " + projectId + task);
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, project_id);
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, projectId);
 		if (projectEntry.isEmpty())
-		 	throw new ResourceNotFoundException("project id:" + project_id);
+		 	throw new ResourceNotFoundException("project id:" + projectId);
 		log.trace("found project: {}", projectEntry);
 
 		task.setUser(userEntry.get());
@@ -78,8 +102,8 @@ public class TaskResource {
 		return taskRepository.save(task);
 	}
 
-	@PutMapping("/projects/{project_id}/tasks/{id}")
-	public Task updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, Principal principal) {
+	@PutMapping("/tasks/{id}")
+	public Task updateTask(Principal principal, @PathVariable Long id, @Valid @RequestBody TaskDto taskDto) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
 		if (taskEntry.isEmpty())
@@ -92,4 +116,24 @@ public class TaskResource {
 		taskEntry.get().setPriority(taskDto.priority());
 		return taskRepository.save(taskEntry.get());
 	}
+
+//	@GetMapping("/tasks")
+//	public List<TaskForList> retrieveFilteredTasks(Principal principal, 
+//			@RequestParam(defaultValue = "added") String status, 
+//			@RequestParam OffsetDateTime startDate, 
+//			@RequestParam OffsetDateTime endDate,
+//			@RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+//		Long user_id = Long.parseLong(principal.getName());
+//		List<TaskForList> tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
+//		log.trace("tasks: {}", tasks);
+//		return tasks;
+//	}
+//
+//	@GetMapping("/tasks/count")
+//	public Integer retrieveFilteredTasksCount(Principal principal, @RequestParam(defaultValue = "added") String status, @RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate) {
+//		Long user_id = Long.parseLong(principal.getName());
+//		return taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
+//	}
 }
+
+record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}

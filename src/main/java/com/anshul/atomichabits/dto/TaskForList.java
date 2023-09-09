@@ -17,4 +17,10 @@ public interface TaskForList {
 	Integer getPriority();
 	
 	String getPomodorosTimeElapsed();
+	
+	String getProjectId();
+	
+	String getProject();
+	
+	String getColor();
 }
