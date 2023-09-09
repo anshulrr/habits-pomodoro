@@ -20,10 +20,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			sum(p.timeElapsed) pomodorosTimeElapsed, 
 			pr project
 			from tasks t
-			left join t.pomodoros p 
+			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past')
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.project.id = :project_id and t.status = :status
-			and p.status in ('completed', 'past')
 			group by t.id, pr.id
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
@@ -38,10 +37,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			sum(p.timeElapsed) pomodorosTimeElapsed, 
 			pr project
 			from tasks t
-			left join t.pomodoros p 
+			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past') 
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and dueDate >= :start and dueDate <= :end
-			and p.status in ('completed', 'past')
 			group by t.id, pr.id
 			order by t.dueDate desc, t.priority asc, t.id desc
 			limit :limit offset :offset
