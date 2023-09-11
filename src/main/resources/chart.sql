@@ -80,3 +80,17 @@ select date_trunc('day', end_time) as daily, avg(sum(time_elapsed)/60) over (ord
 from pomodoros 
 where status='completed'
 group by daily;
+
+
+-- Task list
+select t.id id, t.priority priority, t.description description, t.status status, t.dueDate dueDate, t.pomodoroLength pomodoroLength, 
+sum(p.timeElapsed) pomodorosTimeElapsed, 
+pr project
+from tasks t
+left join t.pomodoros p 
+join projects pr on t.project.id = pr.id
+where t.user.id = :user_id and t.project.id = :project_id and t.status = :status
+and p.status in ('completed', 'past')
+group by t.id, pr.id
+order by t.priority asc, t.id desc
+limit :limit offset :offset
