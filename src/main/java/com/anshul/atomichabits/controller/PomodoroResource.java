@@ -203,6 +203,7 @@ public class PomodoroResource {
 	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
+		// Todo: handle if more than one entry found
 		if (runningPomodoroEntry.isEmpty()) {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 		}
