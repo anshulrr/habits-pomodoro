@@ -22,12 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomUserDetailsService implements UserDetailsService {
 
 	private UserRepository userRepository;
-	
+
 	private AuthorityRepository authorityRepository;
 
 	private SignupService signup;
 
-	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository, SignupService s) {
+	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository,
+			SignupService s) {
 		this.userRepository = userRepository;
 		this.authorityRepository = authorityRepository;
 		this.signup = s;
@@ -35,22 +36,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+		Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail);
 
 		User user;
 		if (optional_user.isEmpty()) {
 			log.info("first time user: {}", usernameOrEmail);
 			signup.saveUser(usernameOrEmail);
-			user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
+			user = userRepository.findByUsernameOrEmail(usernameOrEmail).get();
 		} else {
 			user = optional_user.get();
 		}
-        log.trace("from custom user detail service: " + user);
+		log.trace("from custom user detail service: " + user);
 
 		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
 		log.trace("from custom user detail service: " + authorities);
-		
-		return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getPassword(), authorities);
+
+		return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getPassword(),
+				authorities);
 	}
 }
