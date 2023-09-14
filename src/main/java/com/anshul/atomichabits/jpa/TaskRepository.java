@@ -41,7 +41,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and dueDate >= :start and dueDate <= :end
 			group by t.id, pr.id
-			order by t.dueDate desc, t.priority asc, t.id desc
+			order by t.dueDate asc, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
 	public List<TaskForList> retrieveFilteredTasks(Long user_id, String status, Instant start, Instant end, int limit, int offset);
