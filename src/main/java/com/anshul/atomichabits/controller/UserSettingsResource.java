@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.anshul.atomichabits.dto.UserSettingsRequestDto;
 import com.anshul.atomichabits.jpa.*;
 import com.anshul.atomichabits.model.*;
 
@@ -19,7 +20,7 @@ public class UserSettingsResource {
 	private UserSettingsRepository userSettingsRepository;
 
 	@GetMapping("/user-settings")
-	public UserSettings retrieveProject(Principal principal) {
+	public UserSettings retrieveUserSettings(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		UserSettings userSettings = userSettingsRepository.findUserSettings(user_id);
 		log.debug("settings: {}", userSettings);
@@ -28,10 +29,9 @@ public class UserSettingsResource {
 	}
 	
 	@PutMapping("/user-settings")
-	public UserSettings updateProjectOfUser(@Valid @RequestBody UserSettings settingsRequest, Principal principal) {
+	public UserSettings updateUserSettings(@Valid @RequestBody UserSettingsRequestDto settingsRequest, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
 		
-		// todo: request validation
 		UserSettings userSettings = userSettingsRepository.findUserSettings(user_id);
 		
 		userSettings.setPomodoroLength(settingsRequest.getPomodoroLength());
