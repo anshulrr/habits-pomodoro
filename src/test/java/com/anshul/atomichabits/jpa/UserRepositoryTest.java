@@ -1,6 +1,6 @@
 package com.anshul.atomichabits.jpa;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,11 +18,16 @@ class UserRepositoryTest {
 
 	@Autowired
 	private UserRepository repository;
+
+	@Test
+	void findByEmail() {
+		Optional<User> userEntry = repository.findByUsernameOrEmail("ajay@xyz.com");
+		assertEquals("Ajay", userEntry.get().getUsername());
+	}
 	
 	@Test
-	void findAll() {
-		List<User> users = repository.findAll();
-		assertEquals(3, users.size());
+	void findByUsername() {
+		Optional<User> userEntry = repository.findByUsernameOrEmail("Ajay");
+		assertEquals("Ajay", userEntry.get().getUsername());
 	}
-
 }

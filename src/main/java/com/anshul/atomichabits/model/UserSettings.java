@@ -80,11 +80,11 @@ public class UserSettings {
 	@Column(columnDefinition = "integer default 5")
 	private Integer pageCommentsCount = 5;
 	
+	// TODO: use enum
 	// bar, doughnut
 	@Column(columnDefinition = "varchar(255) default 'doughnut'")
 	private String tasksChartType = "doughnut";
 	
-	// bar, doughnut
 	@Column(columnDefinition = "varchar(255) default 'bar'")
 	private String projectsChartType = "bar";
 	
