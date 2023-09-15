@@ -28,7 +28,7 @@ class UserServiceTest {
 	private UserRepository userRepositoryMock;
 
 	@Test
-	void retrieve() {
+	void retrieveAllUsers() {
 		when(userRepositoryMock.findAll()).thenReturn(
 				Arrays.asList(new User("Samay", "samay@xyz.com"))
 				);
@@ -40,7 +40,6 @@ class UserServiceTest {
 	
 	@Test
 	void udpatePassword() {
-		
 		when(userRepositoryMock.findById(1L)).thenReturn(
 				Optional.of(new User("Samay", "samay@xyz.com"))
 				);
