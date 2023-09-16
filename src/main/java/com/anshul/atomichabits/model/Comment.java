@@ -44,6 +44,8 @@ public class Comment {
 	// added, deleted
 	@Column(columnDefinition = "varchar(255) default 'added'")
 	private String status = "added";
+	
+	private Instant reviseDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

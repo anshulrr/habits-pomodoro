@@ -16,5 +16,7 @@ public interface CommentForList {
 	
 	String getTask();
 	
+	Instant getReviseDate();
+	
 	Instant getCreatedAt();
 }

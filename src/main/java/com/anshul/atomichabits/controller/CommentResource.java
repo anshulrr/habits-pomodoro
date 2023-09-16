@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.dto.CommentForList;
-import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
@@ -29,7 +29,6 @@ import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +86,7 @@ public class CommentResource {
 		 	throw new ResourceNotFoundException("comment id:" + id);
 
 		commentEntry.get().setDescription(commentDto.description());
+		commentEntry.get().setReviseDate(commentDto.reviseDate());
 		return commentRepository.save(commentEntry.get());
 	}
 
@@ -211,4 +211,4 @@ public class CommentResource {
 	}
 }
 
-record CommentUpdateDto(@NotBlank String description) {}
+record CommentUpdateDto(@NotBlank String description, Instant reviseDate) {}
