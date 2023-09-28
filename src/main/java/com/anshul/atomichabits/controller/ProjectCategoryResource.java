@@ -27,9 +27,6 @@ public class ProjectCategoryResource {
 	@Autowired
 	private ProjectCategoryService projectCategoryService;
 	
-	public ProjectCategoryResource() {
-	}
-
 	@GetMapping("/project-categories/{id}")
 	public ProjectCategory retrieveProjectCategory(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
