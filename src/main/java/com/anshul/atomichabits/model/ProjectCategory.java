@@ -69,4 +69,12 @@ public class ProjectCategory {
 	public String toString() {
 		return "Project Category [id=" + id + ", name=" + name + ", level=" + level + "]";
 	}
+
+	// constructor used in unit tests	
+	public ProjectCategory(Long id, String name, User user) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.user = user;
+	}
 }
