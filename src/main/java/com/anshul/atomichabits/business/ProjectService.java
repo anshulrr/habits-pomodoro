@@ -72,11 +72,12 @@ public class ProjectService {
 	
 	public Project updateProject(Long user_id, Long id, ProjectDto projectDto) {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
-
-		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user_id,
-				projectDto.getProjectCategoryId());
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);
+		
+		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user_id,
+				projectDto.getProjectCategoryId());
+		
 		log.trace("project for update: " + projectEntry + projectDto + category);
 
 		projectEntry.get().setName(projectDto.getName());

@@ -79,4 +79,13 @@ public class Project {
 		return "Project [id=" + id + ", name=" + name + ", description=" + description + ", color=" + color
 				+ ", pomodoroLength=" + pomodoroLength + ", projectCategory=" + projectCategory.getName() + "]";
 	}
+
+	// constructor used in unit tests	
+	public Project(Long id, String name, User user, ProjectCategory projectCategory) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.user = user;
+		this.projectCategory = projectCategory;
+	}
 }
