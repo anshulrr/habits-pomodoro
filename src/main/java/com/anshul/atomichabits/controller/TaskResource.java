@@ -7,6 +7,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +22,11 @@ import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectRepository;
+import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
+import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
@@ -35,6 +40,9 @@ public class TaskResource {
 	private UserRepository userRepository;
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
+	
+	@Autowired
+	private TagRepository tagRepository;
 
 	public TaskResource(UserRepository u, ProjectRepository p, TaskRepository t) {
 		this.userRepository = u;
@@ -116,6 +124,22 @@ public class TaskResource {
 		taskEntry.get().setStatus(taskDto.status());
 		taskEntry.get().setPriority(taskDto.priority());
 		return taskRepository.save(taskEntry.get());
+	}
+	
+	@PostMapping("/tasks/{id}/tags")
+	public ResponseEntity<Task> addTag(Principal principal, @PathVariable Long id, @RequestBody Tag tagRequest) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
+		if (taskEntry.isEmpty())
+		 	throw new ResourceNotFoundException("task id:" + id);
+		
+		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagRequest.getId());
+		if (tagEntry.isEmpty())
+			throw new ResourceNotFoundException("tag id:" + tagRequest.getId());
+		
+		taskEntry.get().getTags().add(tagEntry.get());
+		
+	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
 	}
 }
 
