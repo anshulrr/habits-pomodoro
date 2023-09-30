@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -126,18 +127,34 @@ public class TaskResource {
 		return taskRepository.save(taskEntry.get());
 	}
 	
-	@PostMapping("/tasks/{id}/tags")
-	public ResponseEntity<Task> addTag(Principal principal, @PathVariable Long id, @RequestBody Tag tagRequest) {
+	@PostMapping("/tasks/{id}/tags/{tagId}")
+	public ResponseEntity<Task> addTag(Principal principal, @PathVariable Long id, @PathVariable Long tagId) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException("task id:" + id);
 		
-		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagRequest.getId());
+		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagId);
 		if (tagEntry.isEmpty())
-			throw new ResourceNotFoundException("tag id:" + tagRequest.getId());
+			throw new ResourceNotFoundException("tag id:" + tagId);
 		
 		taskEntry.get().getTags().add(tagEntry.get());
+		
+	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping("/tasks/{id}/tags/{tagId}")
+	public ResponseEntity<Task> deleteTag(Principal principal, @PathVariable Long id, @PathVariable Long tagId) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
+		if (taskEntry.isEmpty())
+		 	throw new ResourceNotFoundException("task id:" + id);
+		
+		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagId);
+		if (tagEntry.isEmpty())
+			throw new ResourceNotFoundException("tag id:" + tagId);
+		
+		taskEntry.get().getTags().remove(tagEntry.get());
 		
 	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
 	}
