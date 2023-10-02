@@ -149,8 +149,16 @@ public class TaskResource {
 		
 	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
 	}
+	
+	@GetMapping("/tasks/tags")
+	public List<Object> retrieveTasksTags(Principal principal, 
+			@RequestParam("taskIds") long[] taskIds) {
+		return taskRepository.findTaskTagsByIds(taskIds);
+	}
 }
 
 record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}
 
 record MapTagsRequest(List<Long> tagIds) {}
+
+//record TaskTagsRequest(List<Long> taskIds) {}

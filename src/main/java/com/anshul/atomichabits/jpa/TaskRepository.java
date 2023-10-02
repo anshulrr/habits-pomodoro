@@ -72,4 +72,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 				where t.user.id = :user_id and tags.id = :tag_id and status = :status
 			""")
 	public Integer getTagsTasksCount(Long user_id, Long tag_id, String status);
+	
+	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
+	public List<Object> findTaskTagsByIds(long[] ids);
 }
