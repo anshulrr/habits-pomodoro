@@ -37,7 +37,7 @@ public class Tag {
 	private Long id;
 
 	@Column(nullable = false)
-	private String title;
+	private String name;
 
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;
@@ -65,14 +65,14 @@ public class Tag {
 
 	@Override
 	public String toString() {
-		return "Tag [id=" + id + ", title=" + title + ", priority=" + priority + "]";
+		return "Tag [id=" + id + ", name=" + name + ", priority=" + priority + "]";
 	}
 
 	// constructor used in unit tests	
 	public Tag(Long id, String title, User user) {
 		super();
 		this.id = id;
-		this.title = title;
+		this.name = title;
 		this.user = user;
 	}
 }

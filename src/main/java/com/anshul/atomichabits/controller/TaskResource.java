@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,12 +68,15 @@ public class TaskResource {
 			@RequestParam(defaultValue = "added") String status, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<TaskForList> tasks;
 		if (projectId != null) {			
 			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, projectId, status, limit, offset);
+		} else if (tagId != null) {
+			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, tagId, status, limit, offset);
 		} else {
 			tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
 		}
@@ -85,12 +89,15 @@ public class TaskResource {
 			@RequestParam(required = false) Long projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
 		Integer count = 0;
 		log.debug("{} {} {}", status, startDate, endDate);
 		if (projectId != null) {	
 			count = taskRepository.getProjectTasksCount(user_id, projectId, status);
+		} else if (tagId != null) {
+			count = taskRepository.getTagsTasksCount(user_id, tagId, status);
 		} else {
 			count = taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
 		}
@@ -127,37 +134,23 @@ public class TaskResource {
 		return taskRepository.save(taskEntry.get());
 	}
 	
-	@PostMapping("/tasks/{id}/tags/{tagId}")
-	public ResponseEntity<Task> addTag(Principal principal, @PathVariable Long id, @PathVariable Long tagId) {
+	@PostMapping("/tasks/{id}/tags")
+	public ResponseEntity<Task> addTag(Principal principal, 
+			@PathVariable Long id, 
+			@RequestBody MapTagsRequest request) {
 		Long user_id = Long.parseLong(principal.getName());
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException("task id:" + id);
 		
-		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagId);
-		if (tagEntry.isEmpty())
-			throw new ResourceNotFoundException("tag id:" + tagId);
+		Set<Tag> tags = tagRepository.findUserTagByIds(user_id, request.tagIds());
 		
-		taskEntry.get().getTags().add(tagEntry.get());
-		
-	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
-	}
-	
-	@DeleteMapping("/tasks/{id}/tags/{tagId}")
-	public ResponseEntity<Task> deleteTag(Principal principal, @PathVariable Long id, @PathVariable Long tagId) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
-		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + id);
-		
-		Optional<Tag> tagEntry = tagRepository.findUserTagById(user_id, tagId);
-		if (tagEntry.isEmpty())
-			throw new ResourceNotFoundException("tag id:" + tagId);
-		
-		taskEntry.get().getTags().remove(tagEntry.get());
+		taskEntry.get().setTags(tags);
 		
 	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
 	}
 }
 
 record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}
+
+record MapTagsRequest(List<Long> tagIds) {}

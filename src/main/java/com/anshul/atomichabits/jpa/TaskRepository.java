@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.anshul.atomichabits.dto.TaskForList;
+import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -48,4 +49,27 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = "select count(*) from tasks where user_id = :user_id and status = :status and due_date >= :start and due_date <= :end", nativeQuery = true)
 	public Integer getFilteredTasksCount(Long user_id, String status, Instant start, Instant end);
+	
+	@Query(value = """
+			select t.id id, t.priority priority, t.description description, t.status status, t.dueDate dueDate, t.pomodoroLength pomodoroLength, 
+			sum(p.timeElapsed) pomodorosTimeElapsed, 
+			pr project
+			from tasks t
+			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past')
+			join projects pr on t.project.id = pr.id
+			join t.tags tags
+			where t.user.id = :user_id and t.status = :status and tags.id = :tagId
+			group by t.id, pr.id
+			order by t.dueDate asc, t.priority asc, t.id asc
+			limit :limit offset :offset
+			""")
+	public List<TaskForList> findTasksByUserIdAndTagsId(Long user_id, Long tagId, String status, int limit, int offset);
+	
+	@Query(value = """
+				select count(*) 
+				from tasks t
+				join t.tags tags 
+				where t.user.id = :user_id and tags.id = :tag_id and status = :status
+			""")
+	public Integer getTagsTasksCount(Long user_id, Long tag_id, String status);
 }

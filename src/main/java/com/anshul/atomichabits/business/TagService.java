@@ -49,7 +49,7 @@ public class TagService {
 		if (tagEntry.isEmpty())
 			throw new ResourceNotFoundException("project tag id:" + id);
 		
-		tagEntry.get().setTitle(tag.getTitle());
+		tagEntry.get().setName(tag.getName());
 		tagEntry.get().setColor(tag.getColor());
 		tagEntry.get().setPriority(tag.getPriority());
 		return tagRepository.save(tagEntry.get());
