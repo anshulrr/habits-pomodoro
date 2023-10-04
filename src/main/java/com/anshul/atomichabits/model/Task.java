@@ -1,8 +1,8 @@
 package com.anshul.atomichabits.model;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,6 +18,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.CascadeType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,6 +67,15 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Project project;
+	
+	@ManyToMany(cascade = {
+	        CascadeType.ALL
+	    })
+	@JoinTable(
+	  name = "tasks_tags", 
+	  joinColumns = @JoinColumn(name = "task_id"), 
+	  inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	private Set<Tag> tags;
 	
 	@CreationTimestamp
 	private Instant createdAt;

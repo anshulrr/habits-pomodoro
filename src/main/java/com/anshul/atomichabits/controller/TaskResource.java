@@ -6,7 +6,11 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +23,11 @@ import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectRepository;
+import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
+import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
@@ -35,6 +41,9 @@ public class TaskResource {
 	private UserRepository userRepository;
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
+	
+	@Autowired
+	private TagRepository tagRepository;
 
 	public TaskResource(UserRepository u, ProjectRepository p, TaskRepository t) {
 		this.userRepository = u;
@@ -58,12 +67,15 @@ public class TaskResource {
 			@RequestParam(defaultValue = "added") String status, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<TaskForList> tasks;
 		if (projectId != null) {			
 			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, projectId, status, limit, offset);
+		} else if (tagId != null) {
+			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, tagId, status, limit, offset);
 		} else {
 			tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
 		}
@@ -76,12 +88,15 @@ public class TaskResource {
 			@RequestParam(required = false) Long projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
 		Integer count = 0;
 		log.debug("{} {} {}", status, startDate, endDate);
 		if (projectId != null) {	
 			count = taskRepository.getProjectTasksCount(user_id, projectId, status);
+		} else if (tagId != null) {
+			count = taskRepository.getTagsTasksCount(user_id, tagId, status);
 		} else {
 			count = taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
 		}
@@ -117,6 +132,32 @@ public class TaskResource {
 		taskEntry.get().setPriority(taskDto.priority());
 		return taskRepository.save(taskEntry.get());
 	}
+	
+	@PostMapping("/tasks/{id}/tags")
+	public ResponseEntity<Task> addTag(Principal principal, 
+			@PathVariable Long id, 
+			@RequestBody MapTagsRequest request) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
+		if (taskEntry.isEmpty())
+		 	throw new ResourceNotFoundException("task id:" + id);
+		
+		Set<Tag> tags = tagRepository.findUserTagByIds(user_id, request.tagIds());
+		
+		taskEntry.get().setTags(tags);
+		
+	    return new ResponseEntity<>(taskRepository.save(taskEntry.get()), HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/tasks/tags")
+	public List<Object> retrieveTasksTags(Principal principal, 
+			@RequestParam("taskIds") long[] taskIds) {
+		return taskRepository.findTaskTagsByIds(taskIds);
+	}
 }
 
 record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}
+
+record MapTagsRequest(List<Long> tagIds) {}
+
+//record TaskTagsRequest(List<Long> taskIds) {}
