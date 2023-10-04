@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.anshul.atomichabits.dto.TaskForList;
-import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
