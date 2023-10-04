@@ -221,6 +221,17 @@ public class PomodoroResource {
 		Optional<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
 		return new ResponseEntity<>(updatedRunningPomodoroEntry.get(), HttpStatus.OK);
 	}
+	
+	@GetMapping("tasks/pomodoros/time-elapsed")
+	public List<Object> retrieveTaskTodaysTimeElapsed(Principal principal, 
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate,
+			@RequestParam("taskIds") long[] taskIds) {
+		Long user_id = Long.parseLong(principal.getName());
+		log.debug(startDate + " " + endDate);
+		List<Object> pomodoros = pomodoroRepository.findTaskTodaysTimeElapsed(user_id, startDate, endDate, taskIds);
+		return pomodoros;
+	}
 }
 
 record PomodoroUpdateDto(@Min(value = 0) Integer timeElapsed, @NotBlank String status) {}
