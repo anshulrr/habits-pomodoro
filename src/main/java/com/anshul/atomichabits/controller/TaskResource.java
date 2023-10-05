@@ -154,6 +154,17 @@ public class TaskResource {
 			@RequestParam("taskIds") long[] taskIds) {
 		return taskRepository.findTaskTagsByIds(taskIds);
 	}
+	
+	@GetMapping("tasks/pomodoros/time-elapsed")
+	public List<Object> retrieveTasksTimeElapsed(Principal principal, 
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate,
+			@RequestParam("taskIds") long[] taskIds) {
+		Long user_id = Long.parseLong(principal.getName());
+		log.debug(startDate + " " + endDate);
+		List<Object> tasksTimeElapsed = taskRepository.findTasksTimeElapsed(user_id, startDate, endDate, taskIds);
+		return tasksTimeElapsed;
+	}
 }
 
 record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}

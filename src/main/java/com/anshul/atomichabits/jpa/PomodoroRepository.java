@@ -33,15 +33,6 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			""")
 	public List<PomodoroForList> findAllForToday(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
 	
-	@Query("""
-			select p.task.id taskId, sum(p.timeElapsed) timeElapsed
-			from pomodoros p
-			where p.user.id = :user_id and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.id in :ids
-			group by p.task.id
-			""")
-	public List<Object> findTaskTodaysTimeElapsed(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] ids);
-	
-
 	//	@Query("select count(p) from pomodoros p where p.user.id = ?1 and p.status = 'completed'")
 	//	public int findAllCount(Long id, OffsetDateTime date);
 
