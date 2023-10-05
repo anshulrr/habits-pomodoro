@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.jpa;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +18,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.dueDate dueDate, t.pomodoroLength pomodoroLength, 
-			sum(p.timeElapsed) pomodorosTimeElapsed, 
 			pr project
 			from tasks t
-			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past')
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.project.id = :project_id and t.status = :status
 			group by t.id, pr.id
@@ -34,10 +33,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.dueDate dueDate, t.pomodoroLength pomodoroLength, 
-			sum(p.timeElapsed) pomodorosTimeElapsed, 
 			pr project
 			from tasks t
-			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past') 
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and dueDate >= :start and dueDate <= :end
 			group by t.id, pr.id
@@ -51,10 +48,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.dueDate dueDate, t.pomodoroLength pomodoroLength, 
-			sum(p.timeElapsed) pomodorosTimeElapsed, 
 			pr project
 			from tasks t
-			left join t.pomodoros p on p.task.id = t.id and p.status in ('completed', 'past')
 			join projects pr on t.project.id = pr.id
 			join t.tags tags
 			where t.user.id = :user_id and t.status = :status and tags.id = :tagId
@@ -74,4 +69,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
 	public List<Object> findTaskTagsByIds(long[] ids);
+	
+	@Query("""
+			select p.task.id taskId, sum(p.timeElapsed) timeElapsed
+			from pomodoros p
+			where p.user.id = :user_id and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.id in :ids
+			group by p.task.id
+			""")
+	public List<Object> findTasksTimeElapsed(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] ids);
 }

@@ -32,7 +32,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			order by p.endTime desc, p.id desc
 			""")
 	public List<PomodoroForList> findAllForToday(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
-
+	
 	//	@Query("select count(p) from pomodoros p where p.user.id = ?1 and p.status = 'completed'")
 	//	public int findAllCount(Long id, OffsetDateTime date);
 
