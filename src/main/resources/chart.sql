@@ -94,3 +94,11 @@ and p.status in ('completed', 'past')
 group by t.id, pr.id
 order by t.priority asc, t.id desc
 limit :limit offset :offset
+
+-- comments schema update
+update comments set type_id=user_id;
+update comments set type_id=project_category_id and type='project_category' where project_category_id is not null;
+update comments set type_id=project_id and type='project' where project_id is not null;
+update comments set type_id=task_id and type='task' where task_id is not null;
+update comments set type_id=pomodoro_id and type='pomodoro' where pomodoro_id is not null;
+

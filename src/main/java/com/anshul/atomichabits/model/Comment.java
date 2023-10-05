@@ -45,6 +45,13 @@ public class Comment {
 	@Column(columnDefinition = "varchar(255) default 'added'")
 	private String status = "added";
 	
+	// user, project_category, project, task, pomodoro
+	@Column(columnDefinition = "varchar(255) default 'user'")
+	private String type = "user";
+	
+//	@Column(nullable = true)
+	private Long typeId;
+	
 	private Instant reviseDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)

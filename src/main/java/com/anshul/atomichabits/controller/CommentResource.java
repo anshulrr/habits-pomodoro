@@ -46,17 +46,32 @@ public class CommentResource {
 	private CommentRepository commentRepository;
 
 	@GetMapping("/comments")
-	public List<CommentForList> retrieveComments(Principal principal, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrieveComments(Principal principal, 
+			@RequestParam(defaultValue = "user", required = false) String type, 
+			@RequestParam(required = false) Long type_id, 
+			@RequestParam(defaultValue = "added") String status, 
+			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserComments(user_id, status, limit, offset);
+		if (type.equals("user")) {
+			type_id = user_id;
+		}
+		log.debug("{} {}", type_id, type);
+		List<CommentForList> comments = commentRepository.retrieveUserComments(user_id, type, type_id, status, limit, offset);
 		log.trace("comments: {}", comments);
 		return comments;
 	}
 
 	@GetMapping("comments/count")
-	public Integer retrieveCommentsCount(@RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrieveCommentsCount(Principal principal, 
+			@RequestParam(defaultValue = "user") String type, 
+			@RequestParam(required = false) Long type_id, 
+			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserCommentsCount(user_id, status);
+		if (type.equals("user")) {
+			type_id = user_id;
+		}
+		return commentRepository.getUserCommentsCount(user_id, type, type_id, status);
 	}
 
 	@PostMapping("/comments")
@@ -182,7 +197,7 @@ public class CommentResource {
 	@GetMapping("/pomodoros/{pomodoro_id}/comments")
 	public List<CommentForList> retrievePomodoroComments(Principal principal, @PathVariable Long pomodoro_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserPomodoroComments(user_id, pomodoro_id, status, limit, offset);
+		List<CommentForList> comments = commentRepository.retrieveUserPomodoroComments(user_id, "pomodoro", pomodoro_id, status, limit, offset);
 		log.trace("comments: {}", comments);
 		return comments;
 	}
@@ -190,7 +205,7 @@ public class CommentResource {
 	@GetMapping("/pomodoros/{pomodoro_id}/comments/count")
 	public Integer retrievePomodoroCommentsCount(@PathVariable Long pomodoro_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserPomodoroCommentsCount(user_id, pomodoro_id, status);
+		return commentRepository.getUserPomodoroCommentsCount(user_id, "pomodoro", pomodoro_id, status);
 	}
 
 	@PostMapping("/pomodoros/{pomodoro_id}/comments")
@@ -203,6 +218,8 @@ public class CommentResource {
 		log.debug("found pomodoro: {}, task: {}", pomodoroEntry, pomodoroEntry.get().getTask());
 
 		comment.setUser(userEntry.get());
+		comment.setType("pomodoro");
+		comment.setTypeId(pomodoroEntry.get().getId());
 		comment.setPomodoro(pomodoroEntry.get());
 		comment.setTask(pomodoroEntry.get().getTask());
 		comment.setProject(pomodoroEntry.get().getTask().getProject());
