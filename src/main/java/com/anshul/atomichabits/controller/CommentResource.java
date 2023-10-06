@@ -46,17 +46,23 @@ public class CommentResource {
 	private CommentRepository commentRepository;
 
 	@GetMapping("/comments")
-	public List<CommentForList> retrieveComments(Principal principal, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrieveComments(Principal principal, 
+			@RequestParam(defaultValue = "added") String status, 
+			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserComments(user_id, status, limit, offset);
+		List<CommentForList> comments = commentRepository.retrieveUserComments(user_id, status, limit, offset, categoryIds);
 		log.trace("comments: {}", comments);
 		return comments;
 	}
 
 	@GetMapping("comments/count")
-	public Integer retrieveCommentsCount(@RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrieveCommentsCount(Principal principal, 
+			@RequestParam(defaultValue = "added") String status,
+			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserCommentsCount(user_id, status);
+		return commentRepository.getUserCommentsCount(user_id, status, categoryIds);
 	}
 
 	@PostMapping("/comments")

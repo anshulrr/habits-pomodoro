@@ -21,13 +21,17 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			left join projects p on c.project_id = p.id
 			left join tasks t on c.task_id = t.id
 			where c.user_id = :user_id and c.status = :status
+			and c.project_category_id in :categoryIds 
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserComments(Long user_id, String status, int limit, int offset);
+	public List<CommentForList> retrieveUserComments(Long user_id, String status, int limit, int offset, long[] categoryIds);
 	
-	@Query(value = "select count(*) from comments where user_id = :user_id and status = :status", nativeQuery = true)
-	public Integer getUserCommentsCount(Long user_id, String status);
+	@Query(value = """
+			select count(*) from comments 
+			where user_id = :user_id and status = :status and project_category_id in :categoryIds
+			""", nativeQuery = true)
+	public Integer getUserCommentsCount(Long user_id, String status, long[] categoryIds);
 	
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
