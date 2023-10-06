@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.anshul.atomichabits.dto.CommentForList;
 import com.anshul.atomichabits.model.Comment;
@@ -93,4 +94,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	
 	@Query(value = "select count(*) from comments where user_id = :user_id and pomodoro_id = :pomodoro_id and status = :status", nativeQuery = true)
 	public Integer getUserPomodoroCommentsCount(Long user_id, Long pomodoro_id, String status);
+	
+	@Modifying
+	@Query(value = "update comments set project_category_id = :category_id where user_id = :user_id and project_id = :project_id", nativeQuery = true)
+	public void updateCommentsCategory(Long user_id, Long project_id, Long category_id);
 }
