@@ -50,11 +50,11 @@ public class CommentResource {
 			@RequestParam(defaultValue = "added") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
-			@RequestParam(defaultValue = "false") boolean withReviseDate,
+			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<CommentForList> comments;
-		if (withReviseDate == true) {
+		if (filterWithReviseDate == true) {
 			comments = commentRepository.retrieveUserCommentsWithReviseDate(user_id, status, limit, offset, categoryIds);
 		} else {			
 			comments = commentRepository.retrieveUserComments(user_id, status, limit, offset, categoryIds);
@@ -66,10 +66,10 @@ public class CommentResource {
 	@GetMapping("comments/count")
 	public Integer retrieveCommentsCount(Principal principal, 
 			@RequestParam(defaultValue = "added") String status,
-			@RequestParam(defaultValue = "false") boolean withReviseDate,
+			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
-		if (withReviseDate == true) {
+		if (filterWithReviseDate == true) {
 			return commentRepository.getUserCommentsWithReviseDateCount(user_id, status, categoryIds);
 		} else {
 			return commentRepository.getUserCommentsCount(user_id, status, categoryIds);
