@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -248,6 +247,12 @@ public class CommentResource {
 		commentEntry.get().setTags(tags);
 		
 	    return new ResponseEntity<>(commentRepository.save(commentEntry.get()), HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/comments/tags")
+	public List<Object> retrieveCommentsTags(Principal principal, 
+			@RequestParam("commentIds") long[] commentIds) {
+		return commentRepository.findCommentsTagsByIds(commentIds);
 	}
 }
 
