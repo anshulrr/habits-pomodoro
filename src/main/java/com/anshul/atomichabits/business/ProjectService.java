@@ -5,10 +5,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
+import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -30,6 +32,9 @@ public class ProjectService {
 	
 	@Autowired
 	private ProjectCategoryRepository projectCategoryRepository;
+
+	@Autowired 
+	private CommentRepository commentRepository;
 	
 	public ProjectDto retriveProject(Long user_id, Long id) {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
@@ -70,6 +75,7 @@ public class ProjectService {
 		return new ProjectDto(project);
 	}
 	
+	@Transactional
 	public Project updateProject(Long user_id, Long id, ProjectDto projectDto) {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
 		if (projectEntry.isEmpty())
@@ -79,6 +85,13 @@ public class ProjectService {
 				projectDto.getProjectCategoryId());
 		
 		log.trace("project for update: " + projectEntry + projectDto + category);
+		
+		if (projectEntry.get().getProjectCategory().getId() != category.get().getId()) {			
+			// handle comments table for category update
+			// @Transactional and @Modifying is required for update query
+			// TODO: check if better solution is possible
+			commentRepository.updateCommentsCategory(user_id, id, category.get().getId());
+		}
 
 		projectEntry.get().setName(projectDto.getName());
 		projectEntry.get().setDescription(projectDto.getDescription());
