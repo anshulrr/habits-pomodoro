@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.model;
 
 import java.time.Instant;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,8 +11,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
@@ -66,6 +71,15 @@ public class Comment {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Pomodoro pomodoro;
+	
+	@ManyToMany(cascade = {
+	        CascadeType.ALL
+	    })
+	@JoinTable(
+	  name = "comments_tags", 
+	  joinColumns = @JoinColumn(name = "comment_id"), 
+	  inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	private Set<Tag> tags;
 	
 	@CreationTimestamp
 	private Instant createdAt;

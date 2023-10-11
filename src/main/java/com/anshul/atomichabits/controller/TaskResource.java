@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
+import com.anshul.atomichabits.jpa.CommentRepository;
+import com.anshul.atomichabits.jpa.PomodoroRepository;
+import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
@@ -32,24 +35,18 @@ import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class TaskResource {
 
 	private UserRepository userRepository;
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
-	
-	@Autowired
 	private TagRepository tagRepository;
-
-	public TaskResource(UserRepository u, ProjectRepository p, TaskRepository t) {
-		this.userRepository = u;
-		this.projectRepository = p;
-		this.taskRepository = t;
-	}
 
 	@GetMapping("/tasks/{task_id}")
 	public Task retrieveTask(Principal principal, @PathVariable Long task_id) {

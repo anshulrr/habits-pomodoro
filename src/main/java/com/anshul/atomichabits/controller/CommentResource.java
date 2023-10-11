@@ -4,7 +4,10 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +22,14 @@ import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
+import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Comment;
 import com.anshul.atomichabits.model.Pomodoro;
 import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.ProjectCategory;
+import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
@@ -44,6 +49,7 @@ public class CommentResource {
 	private TaskRepository taskRepository;
 	private PomodoroRepository pomodoroRepository;
 	private CommentRepository commentRepository;
+	private TagRepository tagRepository;
 
 	@GetMapping("/comments")
 	public List<CommentForList> retrieveComments(Principal principal, 
@@ -225,6 +231,28 @@ public class CommentResource {
 		comment.setProject(pomodoroEntry.get().getTask().getProject());
 		comment.setProjectCategory(pomodoroEntry.get().getTask().getProject().getProjectCategory());
 		return commentRepository.save(comment);
+	}
+
+	@PostMapping("/comments/{id}/tags")
+	public ResponseEntity<Comment> addTag(Principal principal, 
+			@PathVariable Long id, 
+			@RequestBody MapTagsRequest request) {
+		Long user_id = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		if (commentEntry.isEmpty())
+		 	throw new ResourceNotFoundException("comment id:" + id);
+		
+		Set<Tag> tags = tagRepository.findUserTagByIds(user_id, request.tagIds());
+		
+		commentEntry.get().setTags(tags);
+		
+	    return new ResponseEntity<>(commentRepository.save(commentEntry.get()), HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/comments/tags")
+	public List<Object> retrieveCommentsTags(Principal principal, 
+			@RequestParam("commentIds") long[] commentIds) {
+		return commentRepository.findCommentsTagsByIds(commentIds);
 	}
 }
 
