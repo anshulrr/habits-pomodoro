@@ -1,6 +1,5 @@
 package com.anshul.atomichabits.business;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 
 import com.anshul.atomichabits.dto.TaskDto;
+import com.anshul.atomichabits.dto.TaskFilter;
 import com.anshul.atomichabits.dto.TaskForList;
 
 import com.anshul.atomichabits.jpa.ProjectRepository;
@@ -44,28 +44,28 @@ public class TaskService {
 		return taskEntry.get();
 	}
 	
-	public List<TaskForList> retrieveAllTasks(Long user_id, int limit, int offset, Long projectId, Instant startDate, Instant endDate, Long tagId, String status) {
+	public List<TaskForList> retrieveAllTasks(Long user_id, int limit, int offset, TaskFilter filter, String status) {
 		List<TaskForList> tasks;
-		if (projectId != null) {			
-			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, projectId, status, limit, offset);
-		} else if (tagId != null) {
-			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, tagId, status, limit, offset);
+		if (filter.projectId() != null) {			
+			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, filter.projectId(), status, limit, offset);
+		} else if (filter.tagId() != null) {
+			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, filter.tagId(), status, limit, offset);
 		} else {
-			tasks = taskRepository.retrieveFilteredTasks(user_id, status, startDate, endDate, limit, offset);
+			tasks = taskRepository.retrieveFilteredTasks(user_id, status, filter.startDate(), filter.endDate(), limit, offset);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
 	
-	public Integer retrieveTasksCount(Long user_id, Long projectId, Instant startDate, Instant endDate, Long tagId, String status) {
+	public Integer retrieveTasksCount(Long user_id, TaskFilter filter, String status) {
 		Integer count = 0;
-		log.debug("{} {} {}", status, startDate, endDate);
-		if (projectId != null) {	
-			count = taskRepository.getProjectTasksCount(user_id, projectId, status);
-		} else if (tagId != null) {
-			count = taskRepository.getTagsTasksCount(user_id, tagId, status);
+		log.debug("{} {} {}", status, filter.startDate(), filter.endDate());
+		if (filter.projectId() != null) {	
+			count = taskRepository.getProjectTasksCount(user_id, filter.projectId(), status);
+		} else if (filter.tagId() != null) {
+			count = taskRepository.getTagsTasksCount(user_id, filter.tagId(), status);
 		} else {
-			count = taskRepository.getFilteredTasksCount(user_id, status, startDate, endDate);
+			count = taskRepository.getFilteredTasksCount(user_id, status, filter.startDate(), filter.endDate());
 		}
 		return count;
 	}

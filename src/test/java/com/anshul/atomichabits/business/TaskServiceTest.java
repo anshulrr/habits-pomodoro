@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.anshul.atomichabits.dto.TaskDto;
+import com.anshul.atomichabits.dto.TaskFilter;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
@@ -104,11 +105,12 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllProjectTasks() {
 		String status = "added";
+		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null);
 		
 		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, PROJECT_ID, null, null, null, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -116,11 +118,12 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllTagTasks() {
 		String status = "added";
+		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null);
 		
 		when(taskRepositoryMock.findTasksByUserIdAndTagsId(USER_ID, TAG_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, null, null, null, TAG_ID, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -130,11 +133,12 @@ class TaskServiceTest {
 		String status = "added";
 		Instant startDate = Instant.now(); 
 		Instant endDate = Instant.now();
+		TaskFilter filter = new TaskFilter(null, null, startDate, endDate);
 		
 		when(taskRepositoryMock.retrieveFilteredTasks(USER_ID, status, startDate, endDate, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, null, startDate, endDate, null, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -142,11 +146,12 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllProjectTasksCount() {
 		String status = "added";
+		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null);
 		
 		when(taskRepositoryMock.getProjectTasksCount(USER_ID, PROJECT_ID, status))
 			.thenReturn(1);
 		
-		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, PROJECT_ID, null, null, null, status);
+		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
 		
 		assertEquals(1, tasksCount);
 	}
@@ -154,11 +159,12 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllTagsTasksCount() {
 		String status = "added";
+		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null);
 		
 		when(taskRepositoryMock.getTagsTasksCount(USER_ID, TAG_ID, status))
 			.thenReturn(2);
 		
-		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, null, null, null, TAG_ID, status);
+		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
 		
 		assertEquals(2, tasksCount);
 	}
@@ -168,11 +174,12 @@ class TaskServiceTest {
 		String status = "added";
 		Instant startDate = Instant.now(); 
 		Instant endDate = Instant.now();
+		TaskFilter filter = new TaskFilter(null, null, startDate, endDate);
 		
 		when(taskRepositoryMock.getFilteredTasksCount(USER_ID, status, startDate, endDate))
 			.thenReturn(3);
 		
-		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, null, startDate, endDate, null, status);
+		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
 		
 		assertEquals(3, tasksCount);
 	}

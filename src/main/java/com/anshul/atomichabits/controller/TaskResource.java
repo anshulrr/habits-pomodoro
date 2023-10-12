@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.anshul.atomichabits.business.TaskService;
 import com.anshul.atomichabits.dto.TaskDto;
+import com.anshul.atomichabits.dto.TaskFilter;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.model.Task;
 
@@ -38,14 +40,15 @@ public class TaskResource {
 	@GetMapping("/tasks")
 	public List<TaskForList> retrieveTasks(Principal principal, 
 			@RequestParam(required = false) Long projectId, 
-			@RequestParam(defaultValue = "added") String status, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) Long tagId,
+			@RequestParam(defaultValue = "added") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		return taskService.retrieveAllTasks(user_id, limit, offset, projectId, startDate, endDate, tagId, status);
+		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
+		return taskService.retrieveAllTasks(user_id, limit, offset, filter, status);
 	}
 
 	@GetMapping("/tasks/count")
@@ -56,7 +59,8 @@ public class TaskResource {
 			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "added") String status) {
 		Long user_id = Long.parseLong(principal.getName());
-		return taskService.retrieveTasksCount(user_id, projectId, startDate, endDate, tagId, status);
+		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
+		return taskService.retrieveTasksCount(user_id, filter, status);
 	}
 
 	@PostMapping("/tasks")
@@ -94,7 +98,5 @@ public class TaskResource {
 		return taskService.retrieveTasksTimeElapsed(user_id, startDate, endDate, taskIds);
 	}
 }
-
-record TaskFilter(OffsetDateTime startDate, OffsetDateTime endDate) {}
 
 record MapTagsRequest(List<Long> tagIds) {}
