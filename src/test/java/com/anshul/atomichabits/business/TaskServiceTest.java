@@ -12,26 +12,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.anshul.atomichabits.dto.ProjectDto;
-import com.anshul.atomichabits.dto.ProjectForList;
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
+import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.ProjectCategory;
+import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
 import com.anshul.atomichabits.model.User;
 
@@ -52,6 +55,9 @@ class TaskServiceTest {
 	
 	@Mock
 	private TaskRepository taskRepositoryMock;
+	
+	@Mock
+	private TagRepository tagRepositoryMock;
 	
 	static User user;
 	static ProjectCategory category;
@@ -222,5 +228,54 @@ class TaskServiceTest {
 			taskService.updateTask(USER_ID, nil_task_id, taskDtoRequest);
 	    });
 	    assertEquals("task id:" + nil_task_id, exception.getMessage());
+	}
+	
+	@Test
+	void addTag() {
+		Task task = new Task(TASK_ID, "Test Task", user, project);
+		
+		Tag tag = new Tag(TAG_ID, "Test Tag", user);
+		
+		List<Long> tagIds = new ArrayList<>();
+		tagIds.add(TAG_ID);
+		
+		Set<Tag> tags = new HashSet<>();
+		tags.add(tag);
+		
+		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
+			.thenReturn(Optional.of(task));
+		
+		when(tagRepositoryMock.findUserTagByIds(USER_ID, tagIds))
+		.thenReturn(tags);
+		
+		taskService.addTag(USER_ID, TASK_ID, tagIds);
+		
+		assertEquals(task.getTags(), tags);
+	}
+	
+	@Test
+	void retrieveTasksTags() {
+		long[] taskIds = new long[]{ TASK_ID };
+		
+		when(taskRepositoryMock.findTaskTagsByIds(taskIds))
+			.thenReturn(new ArrayList<Object>());
+		
+		List<Object> result = taskService.retrieveTasksTags(taskIds);
+		
+		assertEquals(result.size(), 0);
+	}
+	
+	@Test
+	void retrieveTasksTimeElapsed() {
+		long[] taskIds = new long[]{ TASK_ID };
+		OffsetDateTime startDate = OffsetDateTime.now(); 
+		OffsetDateTime endDate = OffsetDateTime.now();
+		
+		when(taskRepositoryMock.findTasksTimeElapsed(USER_ID, startDate, endDate, taskIds))
+			.thenReturn(new ArrayList<Object>());
+		
+		List<Object> result = taskService.retrieveTasksTimeElapsed(USER_ID, startDate, endDate, taskIds);
+		
+		assertEquals(result.size(), 0);
 	}
 }
