@@ -2,11 +2,8 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,213 +16,93 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.anshul.atomichabits.business.RunningPomodoro;
+import com.anshul.atomichabits.business.PomodoroService;
+import com.anshul.atomichabits.business.StatsService;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
-import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
-import com.anshul.atomichabits.jpa.*;
+import com.anshul.atomichabits.dto.PomodoroUpdateDto;
 import com.anshul.atomichabits.model.Pomodoro;
-import com.anshul.atomichabits.model.Task;
-import com.anshul.atomichabits.model.User;
-import com.anshul.atomichabits.model.UserSettings;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Slf4j
 @AllArgsConstructor
 public class PomodoroResource {
 
-	private UserRepository userRepository;
-	private PomodoroRepository pomodoroRepository;
-	private TaskRepository taskRepository;
-	private UserSettingsRepository userSettingsRepository;
+	private PomodoroService pomodoroService;
+	private StatsService statsService;
 	
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, @RequestParam OffsetDateTime startDate,
-			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, 
+			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		log.debug(startDate + " " + endDate);
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id, startDate, endDate, categories);
-		log.trace("first pomodoro: {}", pomodoros.size() != 0 ? pomodoros.get(0).getId() : "nill");
-		return pomodoros;
+		return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
 	}
 
 	@GetMapping("/stats/projects-time")
-	public List<Object> retrieveProjectPomodoros(Principal principal, @RequestParam OffsetDateTime startDate,
-			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveProjectPomodoros(Principal principal, 
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, 
+			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<Object> result = pomodoroRepository.findProjectsTime(user_id, startDate, endDate, categories);
-		return result;
+		return statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories);
 	}
 
 	@GetMapping("/stats/tasks-time")
-	public List<Object> retrieveTaskPomodoros(Principal principal, @RequestParam OffsetDateTime startDate,
-			@RequestParam OffsetDateTime endDate, @RequestParam("include_categories") long[] categories) {
+	public List<Object> retrieveTaskPomodoros(Principal principal, 
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, 
+			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		log.debug("" + startDate + " " + endDate);
-		List<Object> result = pomodoroRepository.findTasksTime(user_id, startDate, endDate, categories);
-		return result;
+		return statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories);
 	}
 
 	@GetMapping("/stats/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, @RequestParam String limit,
-			@RequestParam OffsetDateTime startDate, @RequestParam OffsetDateTime endDate,
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, 
+			@RequestParam String limit,
+			@RequestParam OffsetDateTime startDate, 
+			@RequestParam OffsetDateTime endDate,
 			@RequestParam("include_categories") long[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
-
-		if (limit.equals("daily")) {
-			limit = "DD";
-		} else if (limit.equals("weekly")) {
-			limit = "IW";
-		} else if (limit.equals("monthly")) {
-			limit = "MM";
-		}
-		
-		List<String[]> result = pomodoroRepository.findTotalTime(user_id, startDate, endDate, categories, timezone,
-				limit);
-		log.trace("total time result: {}", result);
-
-		Map<String, List<String[]>> groupedResult = result.stream()
-				.collect(Collectors.groupingBy((element -> (String) element[2])));
-		log.trace("total time groupedResult: {}", groupedResult);
-
-		return groupedResult;
+		return statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone);
 	}
 
 	@PostMapping("/pomodoros")
-	public ResponseEntity<Pomodoro> createPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
-			Principal principal) {	
+	public ResponseEntity<Pomodoro> createPomodoro(Principal principal, 
+			@RequestParam Long task_id,
+			@Valid @RequestBody Pomodoro pomodoro) {	
 		Long user_id = Long.parseLong(principal.getName());
-		
-		//Check if there is any running pomodoro for the user
-		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(user_id);
-		if (runningPomodoros.size() != 0) {
-			log.trace("running pomodoro: {}", runningPomodoros.get(0));
-			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
-		}
-
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
-		if (taskEntry.isEmpty())
-			throw new ResourceNotFoundException("task id:" + task_id);
-
-		pomodoro.setUser(userEntry.get());
-		pomodoro.setTask(taskEntry.get());
-		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
-		log.debug("pomodoro {}", pomodoro);
-
-		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
+		return new ResponseEntity<>(pomodoroService.createPomodoro(user_id, task_id, pomodoro), HttpStatus.OK);
 	}
 
 	@PostMapping("/pomodoros/past")
-	public ResponseEntity<Pomodoro> createPastPomodoro(@Valid @RequestBody Pomodoro pomodoro, @RequestParam Long task_id,
-			Principal principal) {	
+	public ResponseEntity<Pomodoro> createPastPomodoro(Principal principal, 
+			@RequestParam Long task_id,
+			@Valid @RequestBody Pomodoro pomodoro) {	
 		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
-		if (taskEntry.isEmpty())
-			throw new ResourceNotFoundException("task id:" + task_id);
-
-		pomodoro.setUser(userEntry.get());
-		pomodoro.setTask(taskEntry.get());
-		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
-		pomodoro.setStatus("past");				
-		log.debug("pomodoro {}", pomodoro);
-		
-		if (pomodoro.getTimeElapsed() > pomodoro.getLength() * 60) {
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-		
-		return new ResponseEntity<>(pomodoroRepository.save(pomodoro), HttpStatus.OK);
-	}
-	
-	private Integer calculateAndSetPomodoroLength(Long user_id, Task task) {		
-		Integer length;
-		
-		// check task settings, then project settings, then user settings
-		Integer taskPomodoroLength = task.getPomodoroLength();
-		if (taskPomodoroLength != 0) {
-			length = taskPomodoroLength;
-			log.debug("task length {}", length);
-		} else {
-			Integer projectPomodoroLength = task.getProject().getPomodoroLength();
-			if (projectPomodoroLength != 0) {
-				length = projectPomodoroLength;
-				log.debug("project length {}", length);
-			} else {
-				// TODO: get length from user settings stored in auth context
-				UserSettings settings = userSettingsRepository.findUserSettings(user_id);
-				length = settings.getPomodoroLength();
-				log.debug("settings length {}", length);
-			}
-		}
-		
-		return length;
+		return new ResponseEntity<>(pomodoroService.createPastPomodoro(user_id, task_id, pomodoro), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/pomodoros/past/{id}")
-	public ResponseEntity<Pomodoro> deletePastPomodoro(@PathVariable Long id, Principal principal) {
+	public ResponseEntity<Pomodoro> deletePastPomodoro(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
-		if (pomodoroEntry.isEmpty())
-			throw new ResourceNotFoundException("pomodoro id:" + id);
-		// allow deletion of past pomodoro only
-		if (!pomodoroEntry.get().getStatus().equals("past"))
-			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-		
-		pomodoroEntry.get().setStatus("deleted");
-		
-		return new ResponseEntity<>(pomodoroRepository.save(pomodoroEntry.get()), HttpStatus.OK);
+		return new ResponseEntity<>(pomodoroService.deletePastPomodoro(user_id, id), HttpStatus.OK);
 	}
 
 	@PutMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
-		if (pomodoroEntry.isEmpty())
-			throw new ResourceNotFoundException("pomodoro id:" + id);
-		log.debug("new pomodoro request: {}, pomodoro entry: {}", pomodoroUpdateDto, pomodoroEntry.get());
-		// TODO: log if timeElapsed calculated in front-end and back-end has large difference
-		
-		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
-		runningPomodoro.updateStatus(pomodoroUpdateDto.status());
-		
-		return new ResponseEntity<>(pomodoroRepository.save(runningPomodoro.getPomodoro()), HttpStatus.OK);
+		return new ResponseEntity<>(pomodoroService.updatePomodoro(user_id, id, pomodoroUpdateDto), HttpStatus.OK);
 	}
 	
 	@GetMapping("/pomodoros/running")
 	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		List<PomodoroDto> runningPomodoros = pomodoroRepository.findRunningPomodoros(user_id);
-		if (runningPomodoros.size() == 0) {
-			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-		} else if (runningPomodoros.size() > 1) {
-			// handle if more than one entry found
-			// TODO: find better solution
-			log.info("multiple pomodoros found: {}", runningPomodoros.size());
-			for (int i = 1; i < runningPomodoros.size(); i++) {
-				pomodoroRepository.deleteById(runningPomodoros.get(i).getId());
-			}
-		}
-		
-		// update pomodoro data for running pomodoro
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id,
-				runningPomodoros.get(0).getId());
-		
-		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
-		runningPomodoro.updatePomodoroData();
-		pomodoroRepository.save(runningPomodoro.getPomodoro());
-		
-		List<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoros(user_id);
-		return new ResponseEntity<>(updatedRunningPomodoroEntry.get(0), HttpStatus.OK);
+		return new ResponseEntity<>(pomodoroService.getRunningPomodoro(user_id), HttpStatus.OK);
 	}
 }
-
-record PomodoroUpdateDto(@Min(value = 0) Integer timeElapsed, @NotBlank String status) {}
