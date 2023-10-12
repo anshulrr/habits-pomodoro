@@ -92,4 +92,13 @@ public class Task {
 		return "Task [id=" + id + ", description=" + description + ", pomodoros count=" + estimatedPomodorosCount
 				+ ", dueDate=" + dueDate + ", status=" + status + ", user=" + user.getEmail() + "]";
 	}
+	
+	// constructor used in unit tests	
+	public Task(Long id, String description, User user, Project project) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.user = user;
+		this.project = project;
+	}
 }
