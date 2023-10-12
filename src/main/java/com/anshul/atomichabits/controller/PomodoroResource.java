@@ -2,6 +2,7 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -103,9 +104,9 @@ public class PomodoroResource {
 		Long user_id = Long.parseLong(principal.getName());
 		
 		//Check if there is any running pomodoro for the user
-		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
-		if (runningPomodoroEntry.isPresent()) {
-			log.trace("running pomodoro: {}", runningPomodoroEntry);
+		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(user_id);
+		if (runningPomodoros.size() != 0) {
+			log.trace("running pomodoro: {}", runningPomodoros.get(0));
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
@@ -202,24 +203,28 @@ public class PomodoroResource {
 	@GetMapping("/pomodoros/running")
 	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
 		Long user_id = Long.parseLong(principal.getName());
-		Optional<PomodoroDto> runningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
-		// Todo: handle if more than one entry found
-		if (runningPomodoroEntry.isEmpty()) {
+		List<PomodoroDto> runningPomodoros = pomodoroRepository.findRunningPomodoros(user_id);
+		if (runningPomodoros.size() == 0) {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+		} else if (runningPomodoros.size() > 1) {
+			// handle if more than one entry found
+			// TODO: find better solution
+			log.info("multiple pomodoros found: {}", runningPomodoros.size());
+			for (int i = 1; i < runningPomodoros.size(); i++) {
+				pomodoroRepository.deleteById(runningPomodoros.get(i).getId());
+			}
 		}
-		log.debug("new get running pomodoro: {}", runningPomodoroEntry.get());
 		
+		// update pomodoro data for running pomodoro
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id,
-				runningPomodoroEntry.get().getId());
-		if (pomodoroEntry.isEmpty())
-			throw new ResourceNotFoundException("pomodoro id:" + runningPomodoroEntry.get().getId());
+				runningPomodoros.get(0).getId());
 		
 		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
 		runningPomodoro.updatePomodoroData();
 		pomodoroRepository.save(runningPomodoro.getPomodoro());
 		
-		Optional<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoro(user_id);
-		return new ResponseEntity<>(updatedRunningPomodoroEntry.get(), HttpStatus.OK);
+		List<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoros(user_id);
+		return new ResponseEntity<>(updatedRunningPomodoroEntry.get(0), HttpStatus.OK);
 	}
 }
 
