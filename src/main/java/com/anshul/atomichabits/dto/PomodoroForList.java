@@ -14,6 +14,8 @@ public interface PomodoroForList {
 
 	Integer getTimeElapsed();
 
+	Long getTaskId();
+	
 	String getTask();
 	
 	String getColor();
