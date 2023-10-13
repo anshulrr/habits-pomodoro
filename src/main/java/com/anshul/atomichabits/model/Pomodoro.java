@@ -71,4 +71,17 @@ public class Pomodoro {
 				+ ", useremail=" + user.getEmail() + "]";
 	}
 
+	// constructor used in unit tests
+	public Pomodoro(Long id, OffsetDateTime startTime, OffsetDateTime endTime, Integer timeElapsed, String status,
+			Task task, User user) {
+		super();
+		this.id = id;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.timeElapsed = timeElapsed;
+		this.status = status;
+		this.task = task;
+		this.user = user;
+	}
+
 }
