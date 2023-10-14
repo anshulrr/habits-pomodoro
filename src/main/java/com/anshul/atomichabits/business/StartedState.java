@@ -14,6 +14,7 @@ public class StartedState implements PomodoroState {
 	@Override
 	public void markStarted(RunningPomodoro runningPomodoro) {
 		log.debug("from started state: mark started");
+		update(runningPomodoro);
 		// do nothing
 	}
 

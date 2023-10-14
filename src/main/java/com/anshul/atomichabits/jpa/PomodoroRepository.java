@@ -22,11 +22,12 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			p.task task, p.task.project project 
 			from pomodoros p 
 			where p.user.id = :user_id and p.status in ('started', 'paused')
+			order by id desc
 			""")
-	public Optional<PomodoroDto> findRunningPomodoro(Long user_id);
+	public List<PomodoroDto> findRunningPomodoros(Long user_id);
 
 	@Query("""
-			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.description task, p.task.project.color color
+			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.id taskId, p.task.description task, p.task.project.color color
 			from pomodoros p
 			where p.user.id = :user_id and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
 			order by p.endTime desc, p.id desc
