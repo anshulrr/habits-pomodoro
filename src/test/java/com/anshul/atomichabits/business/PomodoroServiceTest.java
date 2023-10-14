@@ -184,6 +184,23 @@ class PomodoroServiceTest {
 	}
 	
 	@Test
+	void deleteCompletedPastPomodoro() {
+		OffsetDateTime startDate = OffsetDateTime.now(); 
+		OffsetDateTime endDate = OffsetDateTime.now(); 
+		Integer timeElapsed = 1200;
+		String status = "completed";
+		Pomodoro pomodoro = new Pomodoro(POMODORO_ID, startDate, endDate, timeElapsed, status, null, null);
+		
+		when(pomodoroRepositoryMock.findUserPomodoroById(USER_ID, POMODORO_ID))
+			.thenReturn(Optional.of(pomodoro));
+		
+		Exception exception = assertThrows(ResponseStatusException.class, () -> {
+			pomodoroService.deletePastPomodoro(USER_ID, POMODORO_ID);
+	    });
+	    assertEquals("401 UNAUTHORIZED", exception.getMessage());
+	}
+	
+	@Test
 	void updatePomodoro() {
 		OffsetDateTime startDate = OffsetDateTime.now(); 
 		Pomodoro pomodoro = new Pomodoro(POMODORO_ID, startDate, null, 0, "started", task, user);
@@ -231,7 +248,7 @@ class PomodoroServiceTest {
 	}
 	
 	@Test
-	void getRunningPomodoto() {
+	void getRunningPomodoro() {
 		OffsetDateTime startDate = OffsetDateTime.now(); 
 		Pomodoro pomodoro = new Pomodoro(POMODORO_ID, startDate, null, 0, "started", task, user);
 		List<PomodoroDto> runningPomodoros = new ArrayList<PomodoroDto>();

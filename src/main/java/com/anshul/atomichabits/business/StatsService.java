@@ -38,8 +38,7 @@ public class StatsService {
 			limit = "MM";
 		}
 		
-		List<String[]> result = pomodoroRepository.findTotalTime(user_id, startDate, endDate, categories, timezone,
-				limit);
+		List<String[]> result = pomodoroRepository.findTotalTime(user_id, startDate, endDate, categories, timezone, limit);
 		log.trace("total time result: {}", result);
 
 		Map<String, List<String[]>> groupedResult = result.stream()
