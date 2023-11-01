@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.anshul.atomichabits.business.UserService;
 import com.anshul.atomichabits.jpa.AuthorityRepository;
-import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,28 +21,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-	private UserRepository userRepository;
+	private UserService userService;
 
 	private AuthorityRepository authorityRepository;
 
 	private SignupService signup;
 
-	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository,
-			SignupService s) {
-		this.userRepository = userRepository;
+	public CustomUserDetailsService(UserService userService, AuthorityRepository authorityRepository, SignupService s) {
+		this.userService = userService;
 		this.authorityRepository = authorityRepository;
 		this.signup = s;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail);
+		Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);
 
 		User user;
 		if (optional_user.isEmpty()) {
 			log.info("first time user: {}", usernameOrEmail);
 			signup.saveUser(usernameOrEmail);
-			user = userRepository.findByUsernameOrEmail(usernameOrEmail).get();
+			user = userService.getUserByUsernameOrEmail(usernameOrEmail).get();
 		} else {
 			user = optional_user.get();
 		}
