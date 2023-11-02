@@ -41,9 +41,11 @@ public class Authority {
 	private String authority;
 	
 	@CreationTimestamp
+	@JsonIgnore
 	private Instant createdAt;
 	
 	@UpdateTimestamp
+	@JsonIgnore
 	private Instant updatedAt;
 
 	public Authority(User user, String authority) {

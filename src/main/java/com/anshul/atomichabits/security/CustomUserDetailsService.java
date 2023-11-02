@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.anshul.atomichabits.business.AuthorityService;
 import com.anshul.atomichabits.business.UserService;
-import com.anshul.atomichabits.jpa.AuthorityRepository;
 import com.anshul.atomichabits.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	private UserService userService;
 
-	private AuthorityRepository authorityRepository;
+	private AuthorityService authorityService;
 
 	private SignupService signup;
 
-	public CustomUserDetailsService(UserService userService, AuthorityRepository authorityRepository, SignupService s) {
+	public CustomUserDetailsService(UserService userService, AuthorityService authorityService, SignupService s) {
 		this.userService = userService;
-		this.authorityRepository = authorityRepository;
+		this.authorityService = authorityService;
 		this.signup = s;
 	}
 
@@ -47,7 +47,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		}
 		log.trace("from custom user detail service: " + user);
 
-		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
+		Set<GrantedAuthority> authorities = authorityService.getAuthorities(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
 		log.trace("from custom user detail service: " + authorities);
 
