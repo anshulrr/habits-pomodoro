@@ -56,9 +56,11 @@ public class ProjectCategory {
 	private User user;
 	
 	@CreationTimestamp
+	@JsonIgnore
 	private Instant createdAt;
 	
 	@UpdateTimestamp
+	@JsonIgnore
 	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "projectCategory")

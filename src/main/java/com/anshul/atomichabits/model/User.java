@@ -50,9 +50,11 @@ public class User {
 	private boolean enabled = false;
 	
 	@CreationTimestamp
+	@JsonIgnore
 	private Instant createdAt;
 	
 	@UpdateTimestamp
+	@JsonIgnore
 	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

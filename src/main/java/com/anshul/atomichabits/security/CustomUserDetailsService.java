@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.anshul.atomichabits.jpa.AuthorityRepository;
-import com.anshul.atomichabits.jpa.UserRepository;
+import com.anshul.atomichabits.business.AuthorityService;
+import com.anshul.atomichabits.business.UserService;
 import com.anshul.atomichabits.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,34 +21,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-	private UserRepository userRepository;
+	private UserService userService;
 
-	private AuthorityRepository authorityRepository;
+	private AuthorityService authorityService;
 
 	private SignupService signup;
 
-	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository,
-			SignupService s) {
-		this.userRepository = userRepository;
-		this.authorityRepository = authorityRepository;
+	public CustomUserDetailsService(UserService userService, AuthorityService authorityService, SignupService s) {
+		this.userService = userService;
+		this.authorityService = authorityService;
 		this.signup = s;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		Optional<User> optional_user = userRepository.findByUsernameOrEmail(usernameOrEmail);
+		Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);
 
 		User user;
 		if (optional_user.isEmpty()) {
 			log.info("first time user: {}", usernameOrEmail);
 			signup.saveUser(usernameOrEmail);
-			user = userRepository.findByUsernameOrEmail(usernameOrEmail).get();
+			user = userService.getUserByUsernameOrEmail(usernameOrEmail).get();
 		} else {
 			user = optional_user.get();
 		}
 		log.trace("from custom user detail service: " + user);
 
-		Set<GrantedAuthority> authorities = authorityRepository.findByUser(user).stream()
+		Set<GrantedAuthority> authorities = authorityService.getAuthorities(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());
 		log.trace("from custom user detail service: " + authorities);
 

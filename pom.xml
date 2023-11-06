@@ -90,7 +90,13 @@
 			<version>1.18.28</version><!--$NO-MVN-MAN-VER$-->
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+    	
+  	</dependencies>
 
 	<build>
 		<plugins>
