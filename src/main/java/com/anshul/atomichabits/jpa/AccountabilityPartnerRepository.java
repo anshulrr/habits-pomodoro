@@ -3,6 +3,7 @@ package com.anshul.atomichabits.jpa;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.anshul.atomichabits.dto.UserForList;
@@ -15,4 +16,8 @@ public interface AccountabilityPartnerRepository extends JpaRepository<Accountab
 	
 	@Query("select a.subject.id id, a.subject.email email from accountability_partners a where a.partner.id = :user_id")
 	public List<UserForList> getSubjects(Long user_id);
+	
+	@Modifying
+	@Query("delete from accountability_partners a where a.subject.id = :user_id and a.partner.id = :partner_id")
+	public void deletePartner(Long user_id, Long partner_id);
 }

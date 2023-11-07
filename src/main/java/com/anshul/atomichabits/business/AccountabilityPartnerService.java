@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.anshul.atomichabits.dto.UserForList;
 import com.anshul.atomichabits.jpa.AccountabilityPartnerRepository;
@@ -39,5 +40,10 @@ public class AccountabilityPartnerService {
 		accountabilityPartner.setPartner(partnerEntry.get());
 		
 		return accountablityPartnerRepository.save(accountabilityPartner);
+	}
+	
+	@Transactional
+	public void deletePartner(Long user_id, Long partner_id) {
+		accountablityPartnerRepository.deletePartner(user_id, partner_id);
 	}
 }
