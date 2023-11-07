@@ -35,40 +35,61 @@ public class PomodoroResource {
 	
 	@GetMapping("/pomodoros")
 	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {	
+			return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
+		} else {
+			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
+		}
 	}
 
 	@GetMapping("/stats/projects-time")
 	public List<Object> retrieveProjectPomodoros(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {	
+			return statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories);
+		} else {
+			// TODO: check if subject is mapped
+			return statsService.retrieveProjectPomodoros(subjectId, startDate, endDate, categories);
+		}
 	}
 
 	@GetMapping("/stats/tasks-time")
 	public List<Object> retrieveTaskPomodoros(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {
+			return statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories);
+		} else {
+			return statsService.retrieveTaskPomodoros(subjectId, startDate, endDate, categories);
+		}
 	}
 
 	@GetMapping("/stats/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, 
+	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal,
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
 			@RequestParam OffsetDateTime endDate,
 			@RequestParam("include_categories") long[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone);
+		if (subjectId == null) {
+			return statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone);
+		} else {
+			return statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone);
+		}
 	}
 
 	@PostMapping("/pomodoros")

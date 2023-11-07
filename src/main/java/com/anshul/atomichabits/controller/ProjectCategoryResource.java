@@ -37,10 +37,16 @@ public class ProjectCategoryResource {
 
 	@GetMapping("/project-categories")
 	public List<ProjectCategory> retrieveProjectCategoriesOfUser(Principal principal,
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
-		return projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset);
+		if (subjectId == null) {			
+			return projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset);
+		} else {
+			// TODO: check if subject is mapped			
+			return projectCategoryService.retrieveAllProjectCategories(subjectId, limit, offset);
+		}
 	}
 
 	@GetMapping("/project-categories/count")
