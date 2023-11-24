@@ -39,6 +39,10 @@ public class ProjectCategoryService {
 		return projectCategoryRepository.findUserProjectCategories(user_id, limit, offset);
 	}
 	
+	public List<ProjectCategory> retrieveSubjectProjectCategories(Long subjectId, Integer limit, Integer offset) {
+		return projectCategoryRepository.findSubjectProjectCategories(subjectId, limit, offset);
+	}
+	
 	public Integer retrieveAllProjectCategoriesCount(Long user_id) {
 		return projectCategoryRepository.getUserProjectCategoriesCount(user_id);
 	}
@@ -62,6 +66,7 @@ public class ProjectCategoryService {
 		categoryEntry.get().setName(projectCategory.getName());
 		categoryEntry.get().setLevel(projectCategory.getLevel());
 		categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
+		categoryEntry.get().setVisibleToPartners(projectCategory.isVisibleToPartners());
 		return projectCategoryRepository.save(categoryEntry.get());
 	}	
 }

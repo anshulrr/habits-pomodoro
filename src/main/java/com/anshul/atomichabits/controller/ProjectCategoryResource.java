@@ -45,7 +45,7 @@ public class ProjectCategoryResource {
 			return projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset);
 		} else {
 			// TODO: check if subject is mapped			
-			return projectCategoryService.retrieveAllProjectCategories(subjectId, limit, offset);
+			return projectCategoryService.retrieveSubjectProjectCategories(subjectId, limit, offset);
 		}
 	}
 

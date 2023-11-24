@@ -47,6 +47,9 @@ public class ProjectCategory {
 
 	@Column(columnDefinition = "boolean default true")
 	private boolean statsDefault = true;
+	
+	@Column(columnDefinition = "boolean default true")
+	private boolean visibleToPartners = true;
 
 	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
 	private String color = "#00FFFF";

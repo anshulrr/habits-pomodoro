@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +54,6 @@ public class AccountabilityPartnerResource {
 	@DeleteMapping("/accountability-partners/{id}")
 	public ResponseEntity<Boolean> deletePartner(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
-		System.out.println(user_id + " " + id);
 		accountabilityPartnerService.deletePartner(user_id, id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
