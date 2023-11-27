@@ -47,10 +47,10 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public List<Object> findProjectsTime(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
 
 	@Query("""
-			select sum(p.timeElapsed) / 60 as time, p.task.description as task, p.task.project.color as color
+			select sum(p.timeElapsed) / 60 as time, p.task.description as task, p.task.project.color as color, p.task.project.name as project
 			from pomodoros as p
 			where p.user.id = :user_id and p.status in ('completed', 'past') and endTime >= :start and endTime <= :end and p.task.project.projectCategory.id in (:categories)
-			group by p.task.description, p.task.project.color
+			group by p.task.description, p.task.project.color, p.task.project.name
 			order by sum(p.timeElapsed) desc
 			""")
 	public List<Object> findTasksTime(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
