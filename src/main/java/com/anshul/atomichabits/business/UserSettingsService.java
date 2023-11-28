@@ -49,6 +49,8 @@ public class UserSettingsService {
 		userSettings.setTasksChartType(settingsRequest.getTasksChartType());
 		userSettings.setProjectsChartType(settingsRequest.getProjectsChartType());
 		
+		userSettings.setHomePageDefaultList(settingsRequest.getHomePageDefaultList());
+		
 		return userSettingsRepository.save(userSettings);
 	}
 }

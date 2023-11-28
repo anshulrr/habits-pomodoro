@@ -88,6 +88,10 @@ public class UserSettings {
 	@Column(columnDefinition = "varchar(255) default 'bar'")
 	private String projectsChartType = "bar";
 	
+	// projects, tags, filters
+	@Column(columnDefinition = "varchar(10) default 'projects'")
+	private String homePageDefaultList = "projects";
+	
 	@CreationTimestamp
 	private Instant createdAt;
 	
