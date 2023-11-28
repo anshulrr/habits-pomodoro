@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.business.PomodoroService;
 import com.anshul.atomichabits.business.StatsService;
+import com.anshul.atomichabits.dto.TotalChartProjectData;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.dto.PomodoroUpdateDto;
@@ -77,7 +78,7 @@ public class PomodoroResource {
 	}
 
 	@GetMapping("/stats/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal,
+	public Map<String, TotalChartProjectData> retrieveTotalPomodoros(Principal principal,
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
