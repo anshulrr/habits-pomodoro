@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.anshul.atomichabits.dto.UserSettingsRequestDto;
+import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.UserSettingsRepository;
 import com.anshul.atomichabits.model.UserSettings;
 
@@ -15,6 +16,10 @@ public class UserSettingsService {
 	
 	public UserSettings retriveUserSettings(Long user_id) {
 		UserSettings userSettings = userSettingsRepository.findUserSettings(user_id);
+		
+		if (userSettings == null) {
+			throw new ResourceNotFoundException("user not found");
+		}
 		
 		return userSettings;
 	}

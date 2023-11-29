@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
 
@@ -26,7 +27,10 @@ public class UserService {
 	
 	@Cacheable(value = "user", key = "#username")
 	public Optional<User> getUserByUsernameOrEmail(String username) {
-	  return userRepository.findByUsernameOrEmail(username);
+		Optional<User> userEntry = userRepository.findByUsernameOrEmail(username);
+		if (userEntry.isEmpty())
+			throw new ResourceNotFoundException("user: " + username);
+	  return userEntry;
 	}
 	
 	public boolean updatePassword(Long user_id, String password) {

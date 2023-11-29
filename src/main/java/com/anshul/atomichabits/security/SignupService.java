@@ -27,7 +27,7 @@ public class SignupService {
 		user.setPassword("default");
 		user.setEnabled(true);
 		
-		userRepository.save(user);
+		User savedUser = userRepository.save(user);
 
 		authorityRepository.save(new Authority(user, "user"));
 		
@@ -36,7 +36,7 @@ public class SignupService {
 		// Create few initial project categories for reference
 		createInitialUserData(user);
 
-		return user;
+		return savedUser;
 	}
 	
 	private void createInitialUserData(User user) {

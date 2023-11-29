@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.anshul.atomichabits.business.AuthorityService;
 import com.anshul.atomichabits.business.UserService;
+import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +36,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);
-
-		User user;
-		if (optional_user.isEmpty()) {
-			log.info("first time user: {}", usernameOrEmail);
-			signup.saveUser(usernameOrEmail);
-			user = userService.getUserByUsernameOrEmail(usernameOrEmail).get();
-		} else {
+		User user = null;
+		try {			
+			Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);		
 			user = optional_user.get();
+		} catch (ResourceNotFoundException e) {
+			log.info("first time user: {}", usernameOrEmail);
+			user = signup.saveUser(usernameOrEmail);
 		}
 		log.trace("from custom user detail service: " + user);
 
