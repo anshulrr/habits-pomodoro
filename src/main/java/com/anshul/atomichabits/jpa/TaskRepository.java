@@ -53,8 +53,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join projects pr on t.project.id = pr.id
 			join t.tags tags
 			where t.user.id = :user_id and t.status = :status and tags.id = :tagId
-			group by t.id, pr.id
-			order by t.dueDate asc, t.priority asc, t.id asc
+			group by t.id, pr.id, pr.projectCategory.level
+			order by t.dueDate asc, pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
 	public List<TaskForList> findTasksByUserIdAndTagsId(Long user_id, Long tagId, String status, int limit, int offset);
