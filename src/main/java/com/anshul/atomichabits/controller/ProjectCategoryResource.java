@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +18,8 @@ import com.anshul.atomichabits.business.ProjectCategoryService;
 import com.anshul.atomichabits.model.ProjectCategory;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Slf4j
 public class ProjectCategoryResource {
 	
 	@Autowired
@@ -44,7 +41,7 @@ public class ProjectCategoryResource {
 		if (subjectId == null) {			
 			return projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset);
 		} else {
-			// TODO: check if subject is mapped			
+			// TODO: check if subject is mapped
 			return projectCategoryService.retrieveSubjectProjectCategories(subjectId, limit, offset);
 		}
 	}
@@ -59,13 +56,7 @@ public class ProjectCategoryResource {
 	public ResponseEntity<ProjectCategory> createProjectCategoryOfUser(Principal principal, 
 			@Valid @RequestBody ProjectCategory projectCategory) {
 		Long user_id = Long.parseLong(principal.getName());
-		try {
-			return new ResponseEntity<>(projectCategoryService.createProjectCategory(user_id, projectCategory), HttpStatus.OK);
-		} catch (DataIntegrityViolationException e) {
-			// TODO: handle exception
-			log.debug("" + e);
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-		}
+		return new ResponseEntity<>(projectCategoryService.createProjectCategory(user_id, projectCategory), HttpStatus.OK);
 	}
 
 	@PutMapping("/project-categories/{id}")
@@ -73,12 +64,6 @@ public class ProjectCategoryResource {
 			@PathVariable Long id,
 			@Valid @RequestBody ProjectCategory projectCategory) {
 		Long user_id = Long.parseLong(principal.getName());
-		try {
-			return new ResponseEntity<>(projectCategoryService.updateProjectCategory(user_id, id, projectCategory), HttpStatus.OK);
-		} catch (DataIntegrityViolationException e) {
-			// TODO: handle exception
-			log.debug("" + e);
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-		}
+		return new ResponseEntity<>(projectCategoryService.updateProjectCategory(user_id, id, projectCategory), HttpStatus.OK);
 	}
 }
