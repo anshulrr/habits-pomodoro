@@ -2,8 +2,6 @@ package com.anshul.atomichabits.dto;
 
 import java.time.Instant;
 
-import com.anshul.atomichabits.model.Project;
-
 public interface TaskForList {
 
 	Long getId();
@@ -18,5 +16,14 @@ public interface TaskForList {
 	
 	Integer getPriority();
 	
-	Project getProject();
+	ProjectSummary getProject();
+	
+	interface ProjectSummary {
+		
+		String getName();
+		
+		String getColor();
+		
+		Integer getPomodoroLength();
+	}
 }
