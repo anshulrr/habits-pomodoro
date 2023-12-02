@@ -17,6 +17,9 @@ public interface AccountabilityPartnerRepository extends JpaRepository<Accountab
 	@Query("select a.subject.id id, a.subject.email email from accountability_partners a where a.partner.id = :user_id")
 	public List<UserForList> getSubjects(Long user_id);
 	
+	@Query("select count(*) from accountability_partners a where a.partner.id = :user_id and a.subject.id = :subject_id")
+	public int getSubject(Long user_id, Long subject_id);
+	
 	@Modifying
 	@Query("delete from accountability_partners a where a.subject.id = :user_id and a.partner.id = :partner_id")
 	public void deletePartner(Long user_id, Long partner_id);

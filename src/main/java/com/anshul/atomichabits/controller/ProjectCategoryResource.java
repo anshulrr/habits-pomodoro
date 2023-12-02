@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.ProjectCategoryService;
 import com.anshul.atomichabits.model.ProjectCategory;
 
@@ -25,6 +26,9 @@ public class ProjectCategoryResource {
 	@Autowired
 	private ProjectCategoryService projectCategoryService;
 	
+	@Autowired
+	private AccountabilityPartnerService accountabilityPartnerService;
+	
 	@GetMapping("/project-categories/{id}")
 	public ProjectCategory retrieveProjectCategory(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
@@ -33,16 +37,20 @@ public class ProjectCategoryResource {
 	}
 
 	@GetMapping("/project-categories")
-	public List<ProjectCategory> retrieveProjectCategoriesOfUser(Principal principal,
+	public ResponseEntity<List<ProjectCategory>> retrieveProjectCategoriesOfUser(Principal principal,
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
 		if (subjectId == null) {			
-			return projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset);
+			return new ResponseEntity<>(projectCategoryService.retrieveAllProjectCategories(user_id, limit, offset), HttpStatus.OK);
 		} else {
-			// TODO: check if subject is mapped
-			return projectCategoryService.retrieveSubjectProjectCategories(subjectId, limit, offset);
+			// TODO: move this check to filter or intercepter
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {				
+				return new ResponseEntity<>(projectCategoryService.retrieveSubjectProjectCategories(subjectId, limit, offset), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
 		}
 	}
 

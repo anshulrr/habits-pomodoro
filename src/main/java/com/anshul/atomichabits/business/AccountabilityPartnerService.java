@@ -30,6 +30,10 @@ public class AccountabilityPartnerService {
 		return accountablityPartnerRepository.getSubjects(user_id);
 	}
 	
+	public boolean isSubject(Long user_id, Long subject_id) {
+		return accountablityPartnerRepository.getSubject(user_id, subject_id) != 0;
+	}
+	
 	public AccountabilityPartner addPartner(Long user_id, String email) {
 		AccountabilityPartner accountabilityPartner = new AccountabilityPartner();
 		
