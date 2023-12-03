@@ -49,7 +49,7 @@ public class Task {
 
 	// in minutes
 	@Column(columnDefinition = "integer default 0")
-	private Integer pomodoroLength;
+	private Integer pomodoroLength = 0;
 
 	private Instant dueDate;
 
@@ -58,7 +58,7 @@ public class Task {
 	private String status = "added";
 	
 	@Column(columnDefinition = "integer default 1")
-	private Integer priority;
+	private Integer priority = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

@@ -18,6 +18,7 @@ public class SignupService {
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
 	private CommentRepository commentRepository;
+	private TagRepository tagRepository;
 
 	public User saveUser(String email) {
 		User user = new User();
@@ -26,7 +27,7 @@ public class SignupService {
 		user.setPassword("default");
 		user.setEnabled(true);
 		
-		userRepository.save(user);
+		User savedUser = userRepository.save(user);
 
 		authorityRepository.save(new Authority(user, "user"));
 		
@@ -35,7 +36,7 @@ public class SignupService {
 		// Create few initial project categories for reference
 		createInitialUserData(user);
 
-		return user;
+		return savedUser;
 	}
 	
 	private void createInitialUserData(User user) {
@@ -44,6 +45,23 @@ public class SignupService {
 		Task task = createInitialTask(user, project);
 		
 		createInitialComments(user, project_category, project, task);
+		
+		createInitialTags(user);
+	}
+	
+	private void createInitialTags(User user) {
+		Tag tag1= new Tag();
+		tag1.setName("daily");
+		tag1.setColor("#00c0f0");
+		tag1.setUser(user);
+		tagRepository.save(tag1);
+		
+		Tag tag2= new Tag();
+		tag2.setName("imp");
+		tag2.setColor("#046134");
+		tag2.setPriority(2);
+		tag2.setUser(user);
+		tagRepository.save(tag2);
 	}
 
 	private ProjectCategory createInitialProjectCategories(User user) {

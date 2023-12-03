@@ -54,7 +54,7 @@ public class Project {
 	private String status = "added";
 	
 	@Column(columnDefinition = "integer default 1")
-	private Integer priority;
+	private Integer priority = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

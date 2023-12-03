@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.PomodoroService;
 import com.anshul.atomichabits.business.StatsService;
+import com.anshul.atomichabits.dto.TotalChartProjectData;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.dto.PomodoroUpdateDto;
@@ -25,50 +27,89 @@ import com.anshul.atomichabits.model.Pomodoro;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 @AllArgsConstructor
 public class PomodoroResource {
 
 	private PomodoroService pomodoroService;
 	private StatsService statsService;
+	private AccountabilityPartnerService accountabilityPartnerService;
 	
 	@GetMapping("/pomodoros")
 	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {	
+			return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
+		} else {
+			log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
+		}
 	}
 
 	@GetMapping("/stats/projects-time")
-	public List<Object> retrieveProjectPomodoros(Principal principal, 
+	public ResponseEntity<List<Object>> retrieveProjectPomodoros(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {	
+			return new ResponseEntity<>(statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrieveProjectPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+			} else {
+				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
 	}
 
 	@GetMapping("/stats/tasks-time")
-	public List<Object> retrieveTaskPomodoros(Principal principal, 
+	public ResponseEntity<List<Object>> retrieveTaskPomodoros(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories);
+		if (subjectId == null) {
+			return new ResponseEntity<>(statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrieveTaskPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+			} else {
+				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
 	}
 
 	@GetMapping("/stats/total-time")
-	public Map<String, List<String[]>> retrieveTotalPomodoros(Principal principal, 
+	public ResponseEntity<Map<String, TotalChartProjectData>> retrieveTotalPomodoros(Principal principal,
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
 			@RequestParam OffsetDateTime endDate,
 			@RequestParam("include_categories") long[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone);
+		if (subjectId == null) {
+			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			} else {
+				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
 	}
 
 	@PostMapping("/pomodoros")

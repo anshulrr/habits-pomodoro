@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Index;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -27,10 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity(name = "project_categories")
-@Table(uniqueConstraints = { 
-		@UniqueConstraint(columnNames = { "user_id", "level" }) 
-},
-indexes= {
+@Table(indexes= {
 		@Index(name="project_categories_user_index", columnList="user_id")
 })
 public class ProjectCategory {
@@ -47,6 +43,9 @@ public class ProjectCategory {
 
 	@Column(columnDefinition = "boolean default true")
 	private boolean statsDefault = true;
+	
+	@Column(columnDefinition = "boolean default true")
+	private boolean visibleToPartners = true;
 
 	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
 	private String color = "#00FFFF";

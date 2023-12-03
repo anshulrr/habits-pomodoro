@@ -19,4 +19,6 @@ public interface PomodoroForList {
 	String getTask();
 	
 	String getColor();
+	
+	String getProjectId();
 }
