@@ -2,7 +2,6 @@ package com.anshul.atomichabits.business;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 public class StatsService {
 
 	private PomodoroRepository pomodoroRepository;
+	
+	public List<Object> retrieveProjectCategoriesPomodoros(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
+		List<Object> result = pomodoroRepository.findProjectCategoriesTime(user_id, startDate, endDate, categories);
+		return result;
+	}
 	
 	public List<Object> retrieveProjectPomodoros(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
 		List<Object> result = pomodoroRepository.findProjectsTime(user_id, startDate, endDate, categories);
