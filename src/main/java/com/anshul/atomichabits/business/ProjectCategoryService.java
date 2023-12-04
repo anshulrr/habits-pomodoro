@@ -65,6 +65,7 @@ public class ProjectCategoryService {
 
 		categoryEntry.get().setName(projectCategory.getName());
 		categoryEntry.get().setLevel(projectCategory.getLevel());
+		categoryEntry.get().setColor(projectCategory.getColor());
 		categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
 		categoryEntry.get().setVisibleToPartners(projectCategory.isVisibleToPartners());
 		return projectCategoryRepository.save(categoryEntry.get());
