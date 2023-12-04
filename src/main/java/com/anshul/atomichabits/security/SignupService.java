@@ -96,6 +96,7 @@ public class SignupService {
 		projectCategory4.setColor("919191");
 		projectCategory4.setLevel(4);
 		projectCategory4.setStatsDefault(false);
+		projectCategory4.setVisibleToPartners(false);
 		projectCategoryRepository.save(projectCategory4);
 		
 		return project_category;
