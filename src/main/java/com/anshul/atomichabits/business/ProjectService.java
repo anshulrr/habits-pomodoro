@@ -48,6 +48,10 @@ public class ProjectService {
 		// TODO: using PageRequest
 		return projectRepository.findUserProjects(user_id, limit, offset);
 	}
+
+	public List<ProjectForList> retrieveCategoryProjects(Long user_id, Long category_id) {
+		return projectRepository.findCategoryProjects(user_id, category_id);
+	}
 	
 	public Integer retrieveProjectsCount(Long user_id) {
 		return projectRepository.getUserProjectsCount(user_id);

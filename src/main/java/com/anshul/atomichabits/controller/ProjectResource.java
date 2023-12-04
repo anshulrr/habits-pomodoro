@@ -34,9 +34,14 @@ public class ProjectResource {
 	@GetMapping("/projects")
 	public List<ProjectForList> retrieveProjectsOfUser(Principal principal,
 			@RequestParam(defaultValue = "10") int limit, 
-			@RequestParam(defaultValue = "0") int offset) {
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) Long categoryId) {
 		Long user_id = Long.parseLong(principal.getName());
-		return projectService.retrieveAllProjects(user_id, limit, offset);
+		if (categoryId == null) {			
+			return projectService.retrieveAllProjects(user_id, limit, offset);
+		} else {
+			return projectService.retrieveCategoryProjects(user_id, categoryId);
+		}
 	}
 
 	@GetMapping("/projects/count")

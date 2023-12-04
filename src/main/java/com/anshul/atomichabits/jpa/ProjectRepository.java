@@ -32,6 +32,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 			limit :limit offset :offset
 			""")
 	public List<ProjectForList> findUserProjects(Long user_id, int limit, int offset);
+	
+	@Query("""
+			select p.id id, p.name name
+			from projects p 
+			where p.user.id = :user_id and p.projectCategory.id = :category_id
+			order by p.priority asc, id desc 
+			""")
+	public List<ProjectForList> findCategoryProjects(Long user_id, Long category_id);
 
 	@Query(value = "select count(*) from projects where user_id = :user_id", nativeQuery = true)
 	public Integer getUserProjectsCount(Long user_id);
