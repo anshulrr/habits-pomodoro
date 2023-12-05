@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.ProjectService;
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
@@ -25,6 +28,9 @@ public class ProjectResource {
 	@Autowired
 	private ProjectService projectService;
 
+	@Autowired
+	private AccountabilityPartnerService accountabilityPartnerService;
+
 	@GetMapping("/projects/{id}")
 	public ProjectDto retrieveProject(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
@@ -32,15 +38,23 @@ public class ProjectResource {
 	}
 
 	@GetMapping("/projects")
-	public List<ProjectForList> retrieveProjectsOfUser(Principal principal,
+	public ResponseEntity<List<ProjectForList>> retrieveProjectsOfUser(Principal principal,
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(required = false) Long categoryId) {
 		Long user_id = Long.parseLong(principal.getName());
+		if (subjectId != null) {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {
+				user_id = subjectId;
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
 		if (categoryId == null) {			
-			return projectService.retrieveAllProjects(user_id, limit, offset);
+			return new ResponseEntity<>(projectService.retrieveAllProjects(user_id, limit, offset), HttpStatus.OK);
 		} else {
-			return projectService.retrieveCategoryProjects(user_id, categoryId);
+			return new ResponseEntity<>(projectService.retrieveCategoryProjects(user_id, categoryId), HttpStatus.OK);
 		}
 	}
 
