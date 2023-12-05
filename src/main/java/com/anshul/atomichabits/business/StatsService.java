@@ -74,6 +74,8 @@ public class StatsService {
 			result = pomodoroRepository.findCategoryPomodorosCount(user_id, typeId, startDate, endDate, timezone);
 		} else if (type.equals("project")) {
 			result = pomodoroRepository.findProjectPomodorosCount(user_id, typeId, startDate, endDate, timezone);
+		} else if (type.equals("task")) {
+			result = pomodoroRepository.findTaskPomodorosCount(user_id, typeId, startDate, endDate, timezone);
 		}
 		return result;
 	}

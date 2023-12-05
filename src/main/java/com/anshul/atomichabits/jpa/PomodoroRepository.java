@@ -105,4 +105,15 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by pomodoro_date
 			""", nativeQuery = true)
 	public List<Object> findProjectPomodorosCount(Long user_id, Long project_id, OffsetDateTime start, OffsetDateTime end, String timezone);
+	
+	@Query(value = """
+			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			from pomodoros as p 
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			join project_categories as pc on pp.project_category_id = pc.id
+			where p.user_id = :user_id and t.id = :task_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			group by pomodoro_date
+			""", nativeQuery = true)
+	public List<Object> findTaskPomodorosCount(Long user_id, Long task_id, OffsetDateTime start, OffsetDateTime end, String timezone);
 }
