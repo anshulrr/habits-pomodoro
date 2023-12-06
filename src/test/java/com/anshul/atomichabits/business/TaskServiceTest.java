@@ -210,7 +210,7 @@ class TaskServiceTest {
 		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
 			.thenReturn(Optional.of(task));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 5, status);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 5, status);
 		
 		taskService.updateTask(USER_ID, TASK_ID, taskDtoRequest);
 		
@@ -229,7 +229,7 @@ class TaskServiceTest {
 		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
 			.thenReturn(Optional.ofNullable(null));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 5, status);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 5, status);
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			taskService.updateTask(USER_ID, nil_task_id, taskDtoRequest);
