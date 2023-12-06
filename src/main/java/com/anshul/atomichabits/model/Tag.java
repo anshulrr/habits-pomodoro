@@ -42,8 +42,8 @@ public class Tag {
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;
 
-	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
-	private String color = "#00FFFF";
+	@Column(columnDefinition = "varchar(255) default '#818181'")
+	private String color = "#818181";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

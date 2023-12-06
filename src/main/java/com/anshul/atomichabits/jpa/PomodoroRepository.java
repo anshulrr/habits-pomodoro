@@ -38,6 +38,15 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	//	public int findAllCount(Long id, OffsetDateTime date);
 
 	@Query("""
+			select sum(p.timeElapsed) / 60 as time, p.task.project.projectCategory.name as category, p.task.project.projectCategory.color as color
+			from pomodoros as p
+			where p.user.id = :user_id and p.status in ('completed', 'past') and endTime >= :start and endTime <= :end and p.task.project.projectCategory.id in (:categories)
+			group by p.task.project.projectCategory.name, p.task.project.projectCategory.color, p.task.project.projectCategory.level
+			order by p.task.project.projectCategory.level asc
+			""")
+	public List<Object> findProjectCategoriesTime(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories);
+	
+	@Query("""
 			select sum(p.timeElapsed) / 60 as time, p.task.project.name as project, p.task.project.color as color
 			from pomodoros as p
 			where p.user.id = :user_id and p.status in ('completed', 'past') and endTime >= :start and endTime <= :end and p.task.project.projectCategory.id in (:categories)
@@ -66,4 +75,45 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			order by date
 			""", nativeQuery = true)
 	public List<String[]> findTotalTime(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories, String timezone, String limit);
+	
+	@Query(value = """
+			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			from pomodoros as p 
+			where p.user_id = :user_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			group by pomodoro_date
+			""", nativeQuery = true)
+	public List<Object> findPomodorosCount(Long user_id, OffsetDateTime start, OffsetDateTime end, String timezone);
+	
+	@Query(value = """
+			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			from pomodoros as p 
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			join project_categories as pc on pp.project_category_id = pc.id
+			where p.user_id = :user_id and pc.id = :category_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			group by pomodoro_date
+			""", nativeQuery = true)
+	public List<Object> findCategoryPomodorosCount(Long user_id, Long category_id, OffsetDateTime start, OffsetDateTime end, String timezone);
+	
+	@Query(value = """
+			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			from pomodoros as p 
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			join project_categories as pc on pp.project_category_id = pc.id
+			where p.user_id = :user_id and pp.id = :project_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			group by pomodoro_date
+			""", nativeQuery = true)
+	public List<Object> findProjectPomodorosCount(Long user_id, Long project_id, OffsetDateTime start, OffsetDateTime end, String timezone);
+	
+	@Query(value = """
+			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			from pomodoros as p 
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			join project_categories as pc on pp.project_category_id = pc.id
+			where p.user_id = :user_id and t.id = :task_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			group by pomodoro_date
+			""", nativeQuery = true)
+	public List<Object> findTaskPomodorosCount(Long user_id, Long task_id, OffsetDateTime start, OffsetDateTime end, String timezone);
 }

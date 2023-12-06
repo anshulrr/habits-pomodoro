@@ -52,6 +52,25 @@ public class PomodoroResource {
 			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
 		}
 	}
+	
+	@GetMapping("/stats/project-categories-time")
+	public ResponseEntity<List<Object>> retrieveProjectCategoriesPomodoros(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, 
+			@RequestParam("include_categories") long[] categories) {
+		Long user_id = Long.parseLong(principal.getName());
+		if (subjectId == null) {	
+			return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+			} else {
+				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
+	}
 
 	@GetMapping("/stats/projects-time")
 	public ResponseEntity<List<Object>> retrieveProjectPomodoros(Principal principal, 
@@ -105,6 +124,27 @@ public class PomodoroResource {
 		} else {
 			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			} else {
+				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
+	}
+	
+	@GetMapping("/stats/pomodoros-count")
+	public ResponseEntity<List<Object>> retrieveProjectCategoriesPomodorosCount(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
+			@RequestParam OffsetDateTime startDate,
+			@RequestParam OffsetDateTime endDate, 
+			@RequestParam(defaultValue = "user")  String type,
+			@RequestParam(required = false) Long typeId,
+			@RequestParam(defaultValue = "UTC") String timezone) {
+		Long user_id = Long.parseLong(principal.getName());
+		if (subjectId == null) {	
+			return new ResponseEntity<>(statsService.retrievePomodorosCount(user_id, startDate, endDate, type, typeId, timezone), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrievePomodorosCount(subjectId, startDate, endDate, type, typeId, timezone), HttpStatus.OK);
 			} else {
 				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

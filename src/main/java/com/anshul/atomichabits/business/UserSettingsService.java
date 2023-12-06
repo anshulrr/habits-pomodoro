@@ -53,6 +53,7 @@ public class UserSettingsService {
 		
 		userSettings.setTasksChartType(settingsRequest.getTasksChartType());
 		userSettings.setProjectsChartType(settingsRequest.getProjectsChartType());
+		userSettings.setProjectCategoriesChartType(settingsRequest.getProjectCategoriesChartType());
 		
 		userSettings.setHomePageDefaultList(settingsRequest.getHomePageDefaultList());
 		

@@ -65,6 +65,9 @@ class UserSettingsRequestDto {
 	
 	@NotBlank
 	String projectsChartType;
+	
+	@NotBlank
+	String projectCategoriesChartType;
 
 	@NotBlank
 	String homePageDefaultList;

@@ -2,7 +2,6 @@ package com.anshul.atomichabits.business;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 public class StatsService {
 
 	private PomodoroRepository pomodoroRepository;
+	
+	public List<Object> retrieveProjectCategoriesPomodoros(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
+		List<Object> result = pomodoroRepository.findProjectCategoriesTime(user_id, startDate, endDate, categories);
+		return result;
+	}
 	
 	public List<Object> retrieveProjectPomodoros(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
 		List<Object> result = pomodoroRepository.findProjectsTime(user_id, startDate, endDate, categories);
@@ -60,6 +64,20 @@ public class StatsService {
 		}
 
 		return groupedResult;
+	}
+	
+	public List<Object> retrievePomodorosCount(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, String type, Long typeId, String timezone) {
+		List<Object> result = null;
+		if (type.equals("user")) {
+			result = pomodoroRepository.findPomodorosCount(user_id, startDate, endDate, timezone);
+		} else if (type.equals("category")) {
+			result = pomodoroRepository.findCategoryPomodorosCount(user_id, typeId, startDate, endDate, timezone);
+		} else if (type.equals("project")) {
+			result = pomodoroRepository.findProjectPomodorosCount(user_id, typeId, startDate, endDate, timezone);
+		} else if (type.equals("task")) {
+			result = pomodoroRepository.findTaskPomodorosCount(user_id, typeId, startDate, endDate, timezone);
+		}
+		return result;
 	}
 }
 

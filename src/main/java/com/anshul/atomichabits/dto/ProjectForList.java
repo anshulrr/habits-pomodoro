@@ -13,6 +13,8 @@ public interface ProjectForList {
 	Integer getPriority();
 	
 	String getCategory();
+	
+	String getCategoryColor();
 }
 
 // won't work for nested projection

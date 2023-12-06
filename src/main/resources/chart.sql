@@ -94,3 +94,23 @@ and p.status in ('completed', 'past')
 group by t.id, pr.id
 order by t.priority asc, t.id desc
 limit :limit offset :offset
+
+-- Pomodoros Count
+select count(*), (p.end_time at time zone 'Asia/Kolkata')::date as end_time 
+from pomodoros p 
+where user_id=1 
+group by (p.end_time at time zone 'Asia/Kolkata')::date 
+order by end_time desc;
+
+select count(*), (p.end_time at time zone 'Asia/Kolkata')::date as pomodoro_date 
+from pomodoros p 
+where user_id=1 
+group by pomodoro_date;
+
+select count(*), (p.end_time at time zone 'Asia/Kolkata')::date as pomodoro_date 
+from pomodoros p
+join tasks as t on p.task_id = t.id
+join projects as pp on t.project_id = pp.id
+join project_categories as pc on pp.project_category_id = pc.id  
+where p.user_id=1 and pc.id = 1
+group by pomodoro_date;

@@ -47,8 +47,8 @@ public class ProjectCategory {
 	@Column(columnDefinition = "boolean default true")
 	private boolean visibleToPartners = true;
 
-	@Column(columnDefinition = "varchar(255) default '#00FFFF'")
-	private String color = "#00FFFF";
+	@Column(columnDefinition = "varchar(255) default '#818181'")
+	private String color = "#818181";
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
