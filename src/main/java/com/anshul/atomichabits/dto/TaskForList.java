@@ -14,6 +14,8 @@ public interface TaskForList {
 	
 	Instant getDueDate();
 	
+	Integer getRepeatDays();
+	
 	Integer getPriority();
 	
 	ProjectSummary getProject();

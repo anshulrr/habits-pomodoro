@@ -53,12 +53,15 @@ public class Task {
 
 	private Instant dueDate;
 
-	// added, archived, completed
-	@Column(columnDefinition = "varchar(255) default 'added'")
-	private String status = "added";
+	// current, archived
+	@Column(columnDefinition = "varchar(255) default 'current'")
+	private String status = "current";
 	
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;
+	
+	@Column(columnDefinition = "integer default 0")
+	private Integer repeatDays = 0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
