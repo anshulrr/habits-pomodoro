@@ -56,6 +56,10 @@ public class Task {
 	// current, archived
 	@Column(columnDefinition = "varchar(255) default 'current'")
 	private String status = "current";
+
+	// neutral, good, bad
+	@Column(columnDefinition = "varchar(10) default 'neutral'")
+	private String type = "neutral";
 	
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;

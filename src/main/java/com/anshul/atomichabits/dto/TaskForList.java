@@ -10,6 +10,8 @@ public interface TaskForList {
 	
 	String getStatus();
 	
+	String getType();
+	
 	Integer getPomodoroLength();
 	
 	Instant getDueDate();
