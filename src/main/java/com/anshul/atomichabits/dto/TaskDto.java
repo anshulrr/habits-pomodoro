@@ -14,5 +14,6 @@ public record TaskDto(
 		Instant dueDate, 
 		@NotNull @PositiveOrZero Integer repeatDays, 
 		@NotNull @Positive Integer priority, 
-		@NotBlank String status
+		@NotBlank String status,
+		@NotBlank String type
 	) {}

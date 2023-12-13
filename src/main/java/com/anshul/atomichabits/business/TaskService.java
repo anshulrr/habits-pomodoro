@@ -91,6 +91,7 @@ public class TaskService {
 		taskEntry.get().setPomodoroLength(taskDto.pomodoroLength());
 		taskEntry.get().setDueDate(taskDto.dueDate());
 		taskEntry.get().setStatus(taskDto.status());
+		taskEntry.get().setType(taskDto.type());
 		taskEntry.get().setPriority(taskDto.priority());
 		taskEntry.get().setRepeatDays(taskDto.repeatDays());
 		return taskRepository.save(taskEntry.get());
