@@ -15,5 +15,6 @@ public record TaskDto(
 		@NotNull @PositiveOrZero Integer repeatDays, 
 		@NotNull @Positive Integer priority, 
 		@NotBlank String status,
-		@NotBlank String type
+		@NotBlank String type,
+		@NotNull @Positive Long projectId
 	) {}

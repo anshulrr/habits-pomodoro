@@ -6,13 +6,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskFilter;
 import com.anshul.atomichabits.dto.TaskForList;
-
+import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.TagRepository;
 import com.anshul.atomichabits.jpa.TaskRepository;
@@ -35,6 +36,7 @@ public class TaskService {
 	private ProjectRepository projectRepository;
 	private TaskRepository taskRepository;
 	private TagRepository tagRepository;
+	private CommentRepository commentRepository;
 	
 	public Task retriveTask(Long user_id, Long task_id) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
@@ -82,10 +84,22 @@ public class TaskService {
 		return taskRepository.save(task);
 	}
 	
+	@Transactional
 	public Task updateTask(Long user_id, Long id, TaskDto taskDto) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException("task id:" + id);
+		
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, taskDto.projectId());
+		if (projectEntry.isEmpty())
+			throw new ResourceNotFoundException("project id:" + id);
+		
+		// for switch project
+		if (taskEntry.get().getProject().getId() != projectEntry.get().getId()) {			
+			// handle comments table for project and category update
+			// @Transactional and @Modifying is required for update query
+			commentRepository.updateCommentsProjectAndCategory(user_id, id, projectEntry.get().getId(), projectEntry.get().getProjectCategory().getId());
+		}
 
 		taskEntry.get().setDescription(taskDto.description());
 		taskEntry.get().setPomodoroLength(taskDto.pomodoroLength());
@@ -94,6 +108,7 @@ public class TaskService {
 		taskEntry.get().setType(taskDto.type());
 		taskEntry.get().setPriority(taskDto.priority());
 		taskEntry.get().setRepeatDays(taskDto.repeatDays());
+		taskEntry.get().setProject(projectEntry.get());
 		return taskRepository.save(taskEntry.get());
 	}
 	
