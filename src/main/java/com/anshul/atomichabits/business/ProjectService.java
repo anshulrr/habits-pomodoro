@@ -103,7 +103,8 @@ public class ProjectService {
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
 		projectEntry.get().setPriority(projectDto.getPriority());
 		projectEntry.get().setProjectCategory(category.get());
-		projectEntry.get().setStatus(projectDto.getStatus());
+		// disable archive project feature
+		// projectEntry.get().setStatus(projectDto.getStatus());
 		projectRepository.save(projectEntry.get());
 		log.trace("updated project: {}", projectEntry);
 
