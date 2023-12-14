@@ -24,6 +24,8 @@ public interface TaskForList {
 	
 	interface ProjectSummary {
 		
+		Long getId();
+		
 		String getName();
 		
 		String getColor();
