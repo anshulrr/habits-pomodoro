@@ -118,7 +118,6 @@ public class SignupService {
 		task.setProject(project);
 		task.setDescription("Sample Task");
 		task.setPomodoroLength(0);
-		task.setStatus("added");
 		return taskRepository.save(task);
 	}
 	

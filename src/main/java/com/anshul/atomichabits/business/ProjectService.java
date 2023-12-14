@@ -44,17 +44,17 @@ public class ProjectService {
 		return new ProjectDto(projectEntry.get());
 	}
 	
-	public List<ProjectForList> retrieveAllProjects(Long user_id, int limit, int offset) {
+	public List<ProjectForList> retrieveAllProjects(Long user_id, String status, int limit, int offset) {
 		// TODO: using PageRequest
-		return projectRepository.findUserProjects(user_id, limit, offset);
+		return projectRepository.findUserProjects(user_id, status, limit, offset);
 	}
 
 	public List<ProjectForList> retrieveCategoryProjects(Long user_id, Long category_id) {
 		return projectRepository.findCategoryProjects(user_id, category_id);
 	}
 	
-	public Integer retrieveProjectsCount(Long user_id) {
-		return projectRepository.getUserProjectsCount(user_id);
+	public Integer retrieveProjectsCount(Long user_id, String status) {
+		return projectRepository.getUserProjectsCount(user_id, status);
 	}
 	
 	public ProjectDto createProject(Long user_id, ProjectDto projectDto) {
@@ -103,6 +103,8 @@ public class ProjectService {
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
 		projectEntry.get().setPriority(projectDto.getPriority());
 		projectEntry.get().setProjectCategory(category.get());
+		// disable archive project feature
+		// projectEntry.get().setStatus(projectDto.getStatus());
 		projectRepository.save(projectEntry.get());
 		log.trace("updated project: {}", projectEntry);
 

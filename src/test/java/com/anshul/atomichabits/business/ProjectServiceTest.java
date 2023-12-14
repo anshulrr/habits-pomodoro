@@ -85,20 +85,22 @@ class ProjectServiceTest {
 	
 	@Test
 	void retrieveAllProjects() {
-		when(projectRepositoryMock.findUserProjects(USER_ID, 0, 0))
+		String status = "current";
+		when(projectRepositoryMock.findUserProjects(USER_ID, status, 0, 0))
 			.thenReturn(new ArrayList<ProjectForList>());
 		
-		List<ProjectForList> projects = projectService.retrieveAllProjects(USER_ID, 0, 0);
+		List<ProjectForList> projects = projectService.retrieveAllProjects(USER_ID, status, 0, 0);
 		
 		assertEquals(0, projects.size());
 	}
 	
 	@Test
 	void retrieveAllProjectsCount() {
-		when(projectRepositoryMock.getUserProjectsCount(USER_ID))
+		String status = "current";
+		when(projectRepositoryMock.getUserProjectsCount(USER_ID, status))
 			.thenReturn(0);
 		
-		Integer projectsCount = projectService.retrieveProjectsCount(USER_ID);
+		Integer projectsCount = projectService.retrieveProjectsCount(USER_ID, status);
 		
 		assertEquals(0, projectsCount);
 	}
