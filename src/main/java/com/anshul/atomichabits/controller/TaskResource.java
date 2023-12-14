@@ -43,7 +43,7 @@ public class TaskResource {
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) Long tagId,
-			@RequestParam(defaultValue = "added") String status, 
+			@RequestParam(defaultValue = "current") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
@@ -57,7 +57,7 @@ public class TaskResource {
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) Long tagId,
-			@RequestParam(defaultValue = "added") String status) {
+			@RequestParam(defaultValue = "current") String status) {
 		Long user_id = Long.parseLong(principal.getName());
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
 		return taskService.retrieveTasksCount(user_id, filter, status);

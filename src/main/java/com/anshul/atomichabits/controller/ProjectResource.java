@@ -40,6 +40,7 @@ public class ProjectResource {
 	@GetMapping("/projects")
 	public ResponseEntity<List<ProjectForList>> retrieveProjectsOfUser(Principal principal,
 			@RequestParam(required = false) Long subjectId,
+			@RequestParam(defaultValue = "current") String status,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(required = false) Long categoryId) {
@@ -52,16 +53,16 @@ public class ProjectResource {
 			}
 		}
 		if (categoryId == null) {			
-			return new ResponseEntity<>(projectService.retrieveAllProjects(user_id, limit, offset), HttpStatus.OK);
+			return new ResponseEntity<>(projectService.retrieveAllProjects(user_id, status, limit, offset), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(projectService.retrieveCategoryProjects(user_id, categoryId), HttpStatus.OK);
 		}
 	}
 
 	@GetMapping("/projects/count")
-	public Integer retrieveProjectsCountOfUser(Principal principal) {
+	public Integer retrieveProjectsCountOfUser(Principal principal, @RequestParam(defaultValue = "current") String status) {
 		Long user_id = Long.parseLong(principal.getName());
-		return projectService.retrieveProjectsCount(user_id);
+		return projectService.retrieveProjectsCount(user_id, status);
 	}
 
 	@PostMapping("/projects")

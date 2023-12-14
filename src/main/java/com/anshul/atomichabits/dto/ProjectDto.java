@@ -26,6 +26,7 @@ public class ProjectDto {
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
 		this.priority = project.getPriority();
+		this.status = project.getStatus();
 		log.trace("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
@@ -47,6 +48,8 @@ public class ProjectDto {
 	@NotNull
 	@Positive
 	private Integer priority;
+	
+	private String status = "current";
 	
 	private Long projectCategoryId;
 	
