@@ -119,6 +119,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	@Query(value = "update comments set project_category_id = :category_id where user_id = :user_id and project_id = :project_id", nativeQuery = true)
 	public void updateCommentsCategory(Long user_id, Long project_id, Long category_id);
 	
+	@Modifying
+	@Query(value = "update comments set project_id = :project_id, project_category_id = :category_id where user_id = :user_id and task_id = :task_id", nativeQuery = true)
+	public void updateCommentsProjectAndCategory(Long user_id, Long task_id, Long project_id, Long category_id);
+	
 	@Query(value = "select * from comments_tags t where t.comment_id in :ids", nativeQuery = true)
 	public List<Object> findCommentsTagsByIds(long[] ids);
 }

@@ -106,7 +106,7 @@ public class SignupService {
 		Project project = new Project();
 		project.setUser(user);
 		project.setProjectCategory(project_category);
-		project.setName("Sample Project");
+		project.setName("General Project");
 		project.setColor("#22688c");
 		project.setPomodoroLength(0);
 		return projectRepository.save(project);
