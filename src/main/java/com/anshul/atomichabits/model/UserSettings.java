@@ -39,28 +39,28 @@ public class UserSettings {
 	private Integer breakLength = 5;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableStopwatch;
+	private boolean enableStopwatch = false;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableStopwatchAudio;
+	private boolean enableStopwatchAudio = false;
 	
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableAutoStartBreak;
+	private boolean enableAutoStartBreak = false;
 	
 	@Column(columnDefinition = "boolean default true")
-	private boolean enableAutoTimerFullscreen;
+	private boolean enableAutoTimerFullscreen = true;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableChartScale;
+	private boolean enableChartScale = false;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableChartWeeklyAverage;
+	private boolean enableChartWeeklyAverage = false;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableChartMonthlyAverage;
+	private boolean enableChartMonthlyAverage = false;
 	
 	@Column(columnDefinition = "boolean default false")
-	private boolean enableChartAdjustedWeeklyMonthlyAverage;
+	private boolean enableChartAdjustedWeeklyMonthlyAverage = false;
 
 	@Column(columnDefinition = "integer default 25")
 	private Integer chartScale = 25;
