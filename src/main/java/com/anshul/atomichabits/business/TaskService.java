@@ -108,6 +108,7 @@ public class TaskService {
 		taskEntry.get().setType(taskDto.type());
 		taskEntry.get().setPriority(taskDto.priority());
 		taskEntry.get().setRepeatDays(taskDto.repeatDays());
+		taskEntry.get().setDailyLimit(taskDto.dailyLimit());
 		taskEntry.get().setProject(projectEntry.get());
 		return taskRepository.save(taskEntry.get());
 	}

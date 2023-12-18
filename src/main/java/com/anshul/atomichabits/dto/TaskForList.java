@@ -20,6 +20,8 @@ public interface TaskForList {
 	
 	Integer getPriority();
 	
+	Integer getDailyLimit();
+	
 	ProjectSummary getProject();
 	
 	interface ProjectSummary {
