@@ -107,7 +107,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public List<Object> findProjectPomodorosCount(Long user_id, Long project_id, OffsetDateTime start, OffsetDateTime end, String timezone);
 	
 	@Query(value = """
-			select count(*), (p.end_time at time zone :timezone)::::date as pomodoro_date
+			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
 			from pomodoros as p 
 			join tasks as t on p.task_id = t.id
 			join projects as pp on t.project_id = pp.id
