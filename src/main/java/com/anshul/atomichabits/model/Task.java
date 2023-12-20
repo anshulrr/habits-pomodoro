@@ -66,6 +66,9 @@ public class Task {
 	
 	@Column(columnDefinition = "integer default 0")
 	private Integer repeatDays = 0;
+	
+	@Column(columnDefinition = "integer default 1")
+	private Integer dailyLimit = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
