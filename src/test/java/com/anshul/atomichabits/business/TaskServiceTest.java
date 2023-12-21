@@ -210,6 +210,9 @@ class TaskServiceTest {
 		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
 			.thenReturn(Optional.of(task));
 		
+		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
+			.thenReturn(Optional.of(project));
+		
 		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 5, 1, status, "neutral", PROJECT_ID);
 		
 		taskService.updateTask(USER_ID, TASK_ID, taskDtoRequest);
