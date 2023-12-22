@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.TaskService;
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskFilter;
@@ -31,6 +31,8 @@ public class TaskResource {
 
 	private TaskService taskService;
 
+	private AccountabilityPartnerService accountabilityPartnerService;
+	
 	@GetMapping("/tasks/{task_id}")
 	public Task retrieveTask(Principal principal, @PathVariable Long task_id) {
 		Long user_id = Long.parseLong(principal.getName());
@@ -38,7 +40,8 @@ public class TaskResource {
 	}
 
 	@GetMapping("/tasks")
-	public List<TaskForList> retrieveTasks(Principal principal, 
+	public ResponseEntity<List<TaskForList>> retrieveTasks(Principal principal, 
+			@RequestParam(required = false) Long subjectId,
 			@RequestParam(required = false) Long projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
@@ -47,8 +50,15 @@ public class TaskResource {
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long user_id = Long.parseLong(principal.getName());
+		if (subjectId != null) {
+			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {
+				user_id = subjectId;
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
-		return taskService.retrieveAllTasks(user_id, limit, offset, filter, status);
+		return new ResponseEntity<>(taskService.retrieveAllTasks(user_id, limit, offset, filter, status), HttpStatus.OK);
 	}
 
 	@GetMapping("/tasks/count")
