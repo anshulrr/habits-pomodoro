@@ -79,5 +79,14 @@ public class StatsService {
 		}
 		return result;
 	}
+	
+	public List<Object> retrieveTaskPomodoros(Long user_id, Long task_id, int limit, int offset) {
+		List<Object> pomodoros = pomodoroRepository.findTaskPomodoros(user_id, task_id, limit, offset);
+		return pomodoros;
+	}
+
+	public Integer retrieveTaskPomodorosCount(Long user_id, Long task_id) {
+		return pomodoroRepository.getTaskPomodorosCount(user_id, task_id);
+	}
 }
 

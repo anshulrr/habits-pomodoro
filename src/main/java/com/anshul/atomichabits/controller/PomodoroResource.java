@@ -151,6 +151,21 @@ public class PomodoroResource {
 			}
 		}
 	}
+	
+	@GetMapping("/stats/task-pomodoros")
+	public List<Object> retrieveTaskPomodorosList(Principal principal, 
+			@RequestParam Long taskId,
+			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "0") int offset) {
+		Long user_id = Long.parseLong(principal.getName());
+		return statsService.retrieveTaskPomodoros(user_id, taskId, limit, offset);
+	}
+
+	@GetMapping("/stats/task-pomodoros/count")
+	public Integer retrieveTaskPomodorosCount(Principal principal, @RequestParam Long taskId) {
+		Long user_id = Long.parseLong(principal.getName());
+		return statsService.retrieveTaskPomodorosCount(user_id, taskId);
+	}
 
 	@PostMapping("/pomodoros")
 	public ResponseEntity<Pomodoro> createPomodoro(Principal principal, 
