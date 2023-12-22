@@ -66,10 +66,10 @@ public class StatsService {
 		return groupedResult;
 	}
 	
-	public List<Object> retrievePomodorosCount(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, String type, Long typeId, String timezone) {
+	public List<Object> retrievePomodorosCount(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, String type, Long typeId, long[] categories, String timezone) {
 		List<Object> result = null;
 		if (type.equals("user")) {
-			result = pomodoroRepository.findPomodorosCount(user_id, startDate, endDate, timezone);
+			result = pomodoroRepository.findPomodorosCount(user_id, startDate, endDate, categories, timezone);
 		} else if (type.equals("category")) {
 			result = pomodoroRepository.findCategoryPomodorosCount(user_id, typeId, startDate, endDate, timezone);
 		} else if (type.equals("project")) {

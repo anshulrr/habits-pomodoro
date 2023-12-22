@@ -91,10 +91,13 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
 			from pomodoros as p 
-			where p.user_id = :user_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
+			join tasks as t on p.task_id = t.id
+			join projects as pp on t.project_id = pp.id
+			join project_categories as pc on pp.project_category_id = pc.id
+			where p.user_id = :user_id and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end and pc.id in (:categories)
 			group by pomodoro_date
 			""", nativeQuery = true)
-	public List<Object> findPomodorosCount(Long user_id, OffsetDateTime start, OffsetDateTime end, String timezone);
+	public List<Object> findPomodorosCount(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] categories, String timezone);
 	
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date

@@ -137,14 +137,15 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam(defaultValue = "user")  String type,
+			@RequestParam(name = "include_categories", required = false) long[] categories,
 			@RequestParam(required = false) Long typeId,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long user_id = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return new ResponseEntity<>(statsService.retrievePomodorosCount(user_id, startDate, endDate, type, typeId, timezone), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrievePomodorosCount(user_id, startDate, endDate, type, typeId, categories, timezone), HttpStatus.OK);
 		} else {
 			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
-				return new ResponseEntity<>(statsService.retrievePomodorosCount(subjectId, startDate, endDate, type, typeId, timezone), HttpStatus.OK);
+				return new ResponseEntity<>(statsService.retrievePomodorosCount(subjectId, startDate, endDate, type, typeId, categories, timezone), HttpStatus.OK);
 			} else {
 				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
