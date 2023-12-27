@@ -41,4 +41,13 @@ public class UserService {
 		
 		return true;
 	}
+	
+	public boolean updateUsername(Long user_id, String username) {
+		Optional<User> userEntry = userRepository.findById(user_id);
+		
+		userEntry.get().setUsername(username);
+		userRepository.save(userEntry.get());
+		
+		return true;
+	}
 }

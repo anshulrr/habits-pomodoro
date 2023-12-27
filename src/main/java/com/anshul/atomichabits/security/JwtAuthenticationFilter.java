@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.anshul.atomichabits.business.UserService;
+
 //import io.jsonwebtoken.*;
 
 import java.io.IOException;
@@ -27,10 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private JwtDecoder jwtDecoder;
 
 	private UserDetailsService userDetailsService;
+	
+	private UserService userService;
 
-	public JwtAuthenticationFilter(JwtDecoder jwtDecoder, UserDetailsService userDetailsService) {
+	public JwtAuthenticationFilter(JwtDecoder jwtDecoder, UserDetailsService userDetailsService, UserService userService) {
 		this.jwtDecoder = jwtDecoder;
 		this.userDetailsService = userDetailsService;
+		this.userService = userService;
 	}
 
 	@Override
@@ -47,6 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
+			log.debug(" " + jwtDecoder.decode(token).getClaims().get("name"));
+			if (jwtDecoder.decode(token).getClaims().get("name") != null) {
+				userService.updateUsername(Long.parseLong(userDetails.getUsername()), (String)jwtDecoder.decode(token).getClaims().get("name"));
+			}
+			
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 					userDetails, null, userDetails.getAuthorities());
 
