@@ -26,37 +26,37 @@ public class SignupService {
 		user.setUsername(email);
 		user.setPassword("default");
 		user.setEnabled(true);
-		
+
 		User savedUser = userRepository.save(user);
 
 		authorityRepository.save(new Authority(user, "user"));
-		
+
 		userSettingsRepository.save(new UserSettings(user));
-		
+
 		// Create few initial project categories for reference
 		createInitialUserData(user);
 
 		return savedUser;
 	}
-	
+
 	private void createInitialUserData(User user) {
 		ProjectCategory project_category = createInitialProjectCategories(user);
 		Project project = createInitialProject(user, project_category);
 		Task task = createInitialTask(user, project);
-		
+
 		createInitialComments(user, project_category, project, task);
-		
+
 		createInitialTags(user);
 	}
-	
+
 	private void createInitialTags(User user) {
-		Tag tag1= new Tag();
+		Tag tag1 = new Tag();
 		tag1.setName("daily");
 		tag1.setColor("#00c0f0");
 		tag1.setUser(user);
 		tagRepository.save(tag1);
-		
-		Tag tag2= new Tag();
+
+		Tag tag2 = new Tag();
 		tag2.setName("imp");
 		tag2.setColor("#046134");
 		tag2.setPriority(2);
@@ -81,7 +81,7 @@ public class SignupService {
 		projectCategory2.setLevel(2);
 		projectCategory2.setStatsDefault(true);
 		projectCategoryRepository.save(projectCategory2);
-		
+
 		ProjectCategory projectCategory3 = new ProjectCategory();
 		projectCategory3.setUser(user);
 		projectCategory3.setName("Hobbies");
@@ -98,10 +98,10 @@ public class SignupService {
 		projectCategory4.setStatsDefault(false);
 		projectCategory4.setVisibleToPartners(false);
 		projectCategoryRepository.save(projectCategory4);
-		
+
 		return project_category;
 	}
-	
+
 	private Project createInitialProject(User user, ProjectCategory project_category) {
 		Project project = new Project();
 		project.setUser(user);
@@ -111,7 +111,7 @@ public class SignupService {
 		project.setPomodoroLength(0);
 		return projectRepository.save(project);
 	}
-	
+
 	private Task createInitialTask(User user, Project project) {
 		Task task = new Task();
 		task.setUser(user);
@@ -120,37 +120,37 @@ public class SignupService {
 		task.setPomodoroLength(0);
 		return taskRepository.save(task);
 	}
-	
+
 	private void createInitialComments(User user, ProjectCategory project_category, Project project, Task task) {
 		Comment comment = new Comment();
 		comment.setUser(user);
 		comment.setDescription("""
-				Sample comment with some markup
+				Sample note with some markdown syntax
 				- line 1
 				  - line 2
 				  - [Google Search Page](https://www.google.com/)
 				""");
 		commentRepository.save(comment);
-		
+
 		Comment comment1 = new Comment();
 		comment1.setUser(user);
 		comment1.setProjectCategory(project_category);
-		comment1.setDescription("Sample comment of a Project Category");
+		comment1.setDescription("Sample note of a Project Category");
 		commentRepository.save(comment1);
-		
+
 		Comment comment2 = new Comment();
 		comment2.setUser(user);
 		comment2.setProjectCategory(project_category);
-		comment2.setProject(project);		
-		comment2.setDescription("Sample comment of a Project");
+		comment2.setProject(project);
+		comment2.setDescription("Sample note of a Project");
 		commentRepository.save(comment2);
-		
+
 		Comment comment3 = new Comment();
 		comment3.setUser(user);
 		comment3.setProjectCategory(project_category);
-		comment3.setProject(project);		
+		comment3.setProject(project);
 		comment3.setTask(task);
-		comment3.setDescription("Sample comment of a Task");
+		comment3.setDescription("Sample note of a Task");
 		commentRepository.save(comment3);
 	}
 }
