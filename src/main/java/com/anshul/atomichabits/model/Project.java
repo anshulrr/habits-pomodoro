@@ -40,6 +40,7 @@ public class Project {
 	@Column(nullable = false)
 	private String name;
 
+	@Column(columnDefinition = "text", nullable = true)
 	private String description;
 
 	@Column(columnDefinition = "varchar(255) default '#228B22'")
