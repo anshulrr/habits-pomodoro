@@ -34,7 +34,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	public List<ProjectForList> findUserProjects(Long user_id, String status, int limit, int offset);
 	
 	@Query("""
-			select p.id id, p.name name
+			select p.id id, p.name name, p.type type, p.pomodoroLength pomodoroLength, p.dailyLimit dailyLimit
 			from projects p 
 			where p.user.id = :user_id and p.projectCategory.id = :category_id
 			order by p.priority asc, id desc 
