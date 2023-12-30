@@ -15,6 +15,10 @@ public interface ProjectForList {
 	String getCategory();
 	
 	String getCategoryColor();
+	
+	String getType();
+	
+	Integer getDailyLimit();
 }
 
 // won't work for nested projection

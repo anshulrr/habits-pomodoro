@@ -26,6 +26,8 @@ public class ProjectDto {
 		this.color = project.getColor();
 		this.pomodoroLength = project.getPomodoroLength();
 		this.priority = project.getPriority();
+		this.type = project.getType();
+		this.dailyLimit = project.getDailyLimit();
 		this.status = project.getStatus();
 		log.trace("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
@@ -50,6 +52,12 @@ public class ProjectDto {
 	private Integer priority;
 	
 	private String status = "current";
+	
+	private String type = "neutral";
+	
+	@NotNull 
+	@PositiveOrZero 
+	private Integer dailyLimit = 1;
 	
 	private Long projectCategoryId;
 	

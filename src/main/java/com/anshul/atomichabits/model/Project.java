@@ -56,6 +56,13 @@ public class Project {
 	
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;
+	
+	// neutral, good, bad
+	@Column(columnDefinition = "varchar(10) default 'neutral'")
+	private String type = "neutral";
+	
+	@Column(columnDefinition = "integer default 1")
+	private Integer dailyLimit = 1;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore

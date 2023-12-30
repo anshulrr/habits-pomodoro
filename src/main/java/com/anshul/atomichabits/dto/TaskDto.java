@@ -14,7 +14,7 @@ public record TaskDto(
 		Instant dueDate, 
 		@NotNull @PositiveOrZero Integer repeatDays, 
 		@NotNull @Positive Integer priority, 
-		@NotNull @Positive Integer dailyLimit, 
+		@NotNull @PositiveOrZero Integer dailyLimit, 
 		@NotBlank String status,
 		@NotBlank String type,
 		@NotNull @Positive Long projectId

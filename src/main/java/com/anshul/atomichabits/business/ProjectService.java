@@ -72,6 +72,8 @@ public class ProjectService {
 		project.setColor(projectDto.getColor());
 		project.setPomodoroLength(projectDto.getPomodoroLength());
 		project.setPriority(projectDto.getPriority());
+		project.setType(projectDto.getType());
+		project.setDailyLimit(projectDto.getDailyLimit());
 		project.setUser(userEntry.get());
 		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);
@@ -102,6 +104,8 @@ public class ProjectService {
 		projectEntry.get().setColor(projectDto.getColor());
 		projectEntry.get().setPomodoroLength(projectDto.getPomodoroLength());
 		projectEntry.get().setPriority(projectDto.getPriority());
+		projectEntry.get().setType(projectDto.getType());
+		projectEntry.get().setDailyLimit(projectDto.getDailyLimit());
 		projectEntry.get().setProjectCategory(category.get());
 		// disable archive project feature
 		// projectEntry.get().setStatus(projectDto.getStatus());
