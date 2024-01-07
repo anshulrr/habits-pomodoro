@@ -1,8 +1,10 @@
 package com.anshul.atomichabits.business;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -66,14 +68,17 @@ public class NotificationConfig {
 			// future.get() blocks on response
 			List<QueryDocumentSnapshot> documents;
 			documents = future.get().getDocuments();
-
-			List<String> tokens = documents.stream().map((document) -> {
-				HashMap<String, String> obj = (HashMap) document.getData();
-				String token = obj.get("token");
-				log.debug(token);
-				return token;
-			}).collect(Collectors.toList());
-
+			
+			List<String> tokens = new ArrayList<>();
+			for (QueryDocumentSnapshot document: documents) {
+				Map<String, Object> obj =  document.getData();
+				log.debug("device: {}", obj);
+				boolean enabled = (boolean)obj.get("enabled");
+				if (enabled) {
+					String token = (String)obj.get("token");
+					tokens.add(token);
+				}
+			}
 			return tokens;
 			
 		} catch (FirebaseAuthException e) {
@@ -112,3 +117,5 @@ public class NotificationConfig {
 		}
 	}
 }
+
+record UserDevice(String token, boolean enabled) {}
