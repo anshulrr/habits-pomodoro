@@ -109,6 +109,7 @@ public class TaskService {
 		taskEntry.get().setPriority(taskDto.priority());
 		taskEntry.get().setRepeatDays(taskDto.repeatDays());
 		taskEntry.get().setDailyLimit(taskDto.dailyLimit());
+		taskEntry.get().setEnableNotifications(taskDto.enableNotifications());
 		taskEntry.get().setProject(projectEntry.get());
 		return taskRepository.save(taskEntry.get());
 	}
