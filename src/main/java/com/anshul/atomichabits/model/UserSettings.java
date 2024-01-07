@@ -95,6 +95,9 @@ public class UserSettings {
 	@Column(columnDefinition = "varchar(10) default 'projects'")
 	private String homePageDefaultList = "projects";
 	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableNotifications = false;
+	
 	@CreationTimestamp
 	private Instant createdAt;
 	

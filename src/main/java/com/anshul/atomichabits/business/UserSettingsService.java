@@ -57,6 +57,8 @@ public class UserSettingsService {
 		
 		userSettings.setHomePageDefaultList(settingsRequest.getHomePageDefaultList());
 		
+		userSettings.setEnableNotifications(settingsRequest.isEnableNotifications());
+		
 		return userSettingsRepository.save(userSettings);
 	}
 }

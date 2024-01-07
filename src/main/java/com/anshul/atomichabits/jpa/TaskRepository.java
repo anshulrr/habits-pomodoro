@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.anshul.atomichabits.dto.TaskForList;
+import com.anshul.atomichabits.dto.TaskForNotifications;
 import com.anshul.atomichabits.model.Task;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -17,7 +18,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Optional<Task> findUserTaskById(Long user_id, Long id);
 
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr project
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -32,7 +33,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getProjectTasksCount(Long user_id, Long project_id, String status);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr project
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -47,7 +48,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getFilteredTasksCount(Long user_id, String status, Instant start, Instant end);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr project
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -77,4 +78,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			group by p.task.id
 			""")
 	public List<Object> findTasksTimeElapsed(Long user_id, OffsetDateTime start, OffsetDateTime end, long[] ids);
+	
+	@Query(value = """
+			select t.id, t.description description, t.type type, t.dueDate dueDate, t.user.email email
+			from tasks t
+			where t.dueDate > :start and t.dueDate <= :end and t.type in ('good', 'neutral') and t.enableNotifications = TRUE
+			""")
+	public List<TaskForNotifications> getNotificationTasks(Instant start, Instant end);
 }

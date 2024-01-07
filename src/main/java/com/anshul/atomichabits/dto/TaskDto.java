@@ -17,5 +17,6 @@ public record TaskDto(
 		@NotNull @PositiveOrZero Integer dailyLimit, 
 		@NotBlank String status,
 		@NotBlank String type,
+		@NotNull boolean enableNotifications,
 		@NotNull @Positive Long projectId
 	) {}
