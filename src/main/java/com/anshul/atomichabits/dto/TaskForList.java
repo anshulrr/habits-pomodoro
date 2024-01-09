@@ -22,6 +22,8 @@ public interface TaskForList {
 	
 	Integer getDailyLimit();
 	
+	boolean isEnableNotifications();
+	
 	ProjectSummary getProject();
 	
 	interface ProjectSummary {

@@ -69,6 +69,9 @@ public class Task {
 	
 	@Column(columnDefinition = "integer default 1")
 	private Integer dailyLimit = 1;
+	
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableNotifications = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
