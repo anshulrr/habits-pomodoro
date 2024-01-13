@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
+import com.google.firebase.auth.UserRecord.UpdateRequest;
 
 @Service
 @CacheConfig(cacheNames = "userCache")
@@ -38,6 +42,26 @@ public class UserService {
 		
 		userEntry.get().setPassword(password);
 		userRepository.save(userEntry.get());
+		
+		return true;
+	}
+
+	public boolean updatePhone(Long user_id, String phone) {
+		Optional<User> userEntry = userRepository.findById(user_id);
+		
+		userEntry.get().setPhone(phone);
+		userRepository.save(userEntry.get());
+		
+		// TODO: validate phone
+		UpdateRequest request = new UpdateRequest(userEntry.get().getUsername())
+				.setPhoneNumber(phone);
+		
+		try {
+			UserRecord userRecord = FirebaseAuth.getInstance().updateUser(request);
+		} catch (FirebaseAuthException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return true;
 	}

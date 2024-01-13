@@ -54,6 +54,7 @@ public class NotificationConfig {
 		try {
 			// get user record
 			UserRecord userRecord;
+			// Todo: use username instead of email
 			userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
 		
 			// See the UserRecord reference doc for the contents of userRecord.
