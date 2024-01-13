@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 //import io.jsonwebtoken.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -27,10 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private JwtDecoder jwtDecoder;
 
 	private UserDetailsService userDetailsService;
+	
+	private SignupService signup;
 
-	public JwtAuthenticationFilter(JwtDecoder jwtDecoder, UserDetailsService userDetailsService) {
+	public JwtAuthenticationFilter(JwtDecoder jwtDecoder, UserDetailsService userDetailsService, SignupService signup) {
 		this.jwtDecoder = jwtDecoder;
 		this.userDetailsService = userDetailsService;
+		this.signup = signup;
 	}
 
 	@Override
@@ -42,10 +46,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // decode token and set context holder
 		if (StringUtils.hasText(token)) {
-			String email = (String) jwtDecoder.decode(token).getClaims().get("email");
-			log.trace("email: " + email);
+			Map<String, Object> claims = jwtDecoder.decode(token).getClaims();
+			log.debug("token claims: {}", claims);
+			String uid = (String) claims.get("user_id"); 
+			String email = (String) claims.get("email");
+			String phone = (String) claims.get("phone_number");
 
-			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+			UserDetails userDetails = null;
+			try {
+				userDetails = userDetailsService.loadUserByUsername(uid);
+			} catch (Exception e) {
+				log.info("first time user: {}", uid);
+				signup.saveUser(uid, email, phone);
+				userDetails = userDetailsService.loadUserByUsername(uid);
+			}
 
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 					userDetails, null, userDetails.getAuthorities());

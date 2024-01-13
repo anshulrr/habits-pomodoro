@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.anshul.atomichabits.business.AuthorityService;
 import com.anshul.atomichabits.business.UserService;
-import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,25 +25,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	private AuthorityService authorityService;
 
-	private SignupService signup;
-
-	public CustomUserDetailsService(UserService userService, AuthorityService authorityService, SignupService s) {
+	public CustomUserDetailsService(UserService userService, AuthorityService authorityService) {
 		this.userService = userService;
 		this.authorityService = authorityService;
-		this.signup = s;
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		User user = null;
-		try {			
-			Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);		
-			user = optional_user.get();
-		} catch (ResourceNotFoundException e) {
-			log.info("first time user: {}", usernameOrEmail);
-			user = signup.saveUser(usernameOrEmail);
-		}
-		log.trace("from custom user detail service: " + user);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> optional_user = userService.getUserByUsernameOrEmail(username);		
+		log.debug("from custom user detail service: " + optional_user);
+		User user = optional_user.get();
 
 		Set<GrantedAuthority> authorities = authorityService.getAuthorities(user).stream()
 				.map((authority) -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toSet());

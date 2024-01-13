@@ -34,13 +34,14 @@ public class User {
 
 	@Column(unique = true, nullable = false)
 	@NotBlank(message = "Username is mandatory")
-	@Size(min = 2, message = "Username should have atleast 2 characters")
 	private String username;
 
-	@Column(unique = true, nullable = false)
+	@Column(unique = true, nullable = true)
 	@Email
-	@NotBlank(message = "Email is mandatory")
 	private String email;
+	
+	@Column(unique = true, nullable = true)
+	private String phone;
 
 	// @NotBlank(message = "Password is mandatory")
 	private String password;

@@ -20,10 +20,11 @@ public class SignupService {
 	private CommentRepository commentRepository;
 	private TagRepository tagRepository;
 
-	public User saveUser(String email) {
+	public User saveUser(String username, String email, String phone) {
 		User user = new User();
 		user.setEmail(email);
-		user.setUsername(email);
+		user.setUsername(username);
+		user.setPhone(phone);	
 		user.setPassword("default");
 		user.setEnabled(true);
 
