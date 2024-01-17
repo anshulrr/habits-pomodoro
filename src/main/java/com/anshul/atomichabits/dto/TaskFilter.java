@@ -6,5 +6,6 @@ public record TaskFilter(
 	Long projectId,
 	Long tagId,
 	Instant startDate, 
-	Instant endDate
+	Instant endDate,
+	String searchedTaskString
 ) {}

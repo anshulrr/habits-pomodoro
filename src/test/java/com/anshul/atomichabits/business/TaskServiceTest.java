@@ -105,7 +105,7 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllProjectTasks() {
 		String status = "added";
-		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null);
+		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null, null);
 		
 		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
@@ -118,7 +118,7 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllTagTasks() {
 		String status = "added";
-		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null);
+		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null, null);
 		
 		when(taskRepositoryMock.findTasksByUserIdAndTagsId(USER_ID, TAG_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
@@ -133,7 +133,7 @@ class TaskServiceTest {
 		String status = "added";
 		Instant startDate = Instant.now(); 
 		Instant endDate = Instant.now();
-		TaskFilter filter = new TaskFilter(null, null, startDate, endDate);
+		TaskFilter filter = new TaskFilter(null, null, startDate, endDate, null);
 		
 		when(taskRepositoryMock.retrieveFilteredTasks(USER_ID, status, startDate, endDate, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
@@ -146,7 +146,7 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllProjectTasksCount() {
 		String status = "added";
-		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null);
+		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null, null);
 		
 		when(taskRepositoryMock.getProjectTasksCount(USER_ID, PROJECT_ID, status))
 			.thenReturn(1);
@@ -159,7 +159,7 @@ class TaskServiceTest {
 	@Test
 	void retrieveAllTagsTasksCount() {
 		String status = "added";
-		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null);
+		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null, null);
 		
 		when(taskRepositoryMock.getTagsTasksCount(USER_ID, TAG_ID, status))
 			.thenReturn(2);
@@ -174,7 +174,7 @@ class TaskServiceTest {
 		String status = "added";
 		Instant startDate = Instant.now(); 
 		Instant endDate = Instant.now();
-		TaskFilter filter = new TaskFilter(null, null, startDate, endDate);
+		TaskFilter filter = new TaskFilter(null, null, startDate, endDate, null);
 		
 		when(taskRepositoryMock.getFilteredTasksCount(USER_ID, status, startDate, endDate))
 			.thenReturn(3);

@@ -68,6 +68,21 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			""")
 	public Integer getTagsTasksCount(Long user_id, Long tag_id, String status);
 	
+	@Query(value = """
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			pr project
+			from tasks t
+			join projects pr on t.project.id = pr.id
+			where t.user.id = :user_id and t.status = :status and t.description LIKE %:searchedTaskString%
+			group by t.id, pr.id
+			order by t.dueDate asc, t.priority asc, t.id asc
+			limit :limit offset :offset
+			""")
+	public List<TaskForList> retrieveSearchedTasks(Long user_id, String status, String searchedTaskString, int limit, int offset);
+	
+	@Query(value = "select count(*) from tasks where user_id = :user_id and status = :status and description LIKE %:searchedTaskString%", nativeQuery = true)
+	public Integer getSearchedTasksCount(Long user_id, String status, String searchedTaskString);
+	
 	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
 	public List<Object> findTaskTagsByIds(long[] ids);
 	

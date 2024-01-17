@@ -45,6 +45,7 @@ public class TaskResource {
 			@RequestParam(required = false) Long projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) String searchedTaskString,
 			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "current") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
@@ -57,7 +58,7 @@ public class TaskResource {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
-		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
+		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchedTaskString);
 		return new ResponseEntity<>(taskService.retrieveAllTasks(user_id, limit, offset, filter, status), HttpStatus.OK);
 	}
 
@@ -66,10 +67,11 @@ public class TaskResource {
 			@RequestParam(required = false) Long projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
+			@RequestParam(required = false) String searchedTaskString,
 			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "current") String status) {
 		Long user_id = Long.parseLong(principal.getName());
-		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate);
+		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchedTaskString);
 		return taskService.retrieveTasksCount(user_id, filter, status);
 	}
 
