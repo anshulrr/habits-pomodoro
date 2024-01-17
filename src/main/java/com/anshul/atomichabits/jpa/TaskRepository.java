@@ -74,8 +74,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and t.description LIKE %:searchedTaskString%
-			group by t.id, pr.id
-			order by t.dueDate asc, t.priority asc, t.id asc
+			group by t.id, pr.id, pr.projectCategory.level
+			order by pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
 	public List<TaskForList> retrieveSearchedTasks(Long user_id, String status, String searchedTaskString, int limit, int offset);
