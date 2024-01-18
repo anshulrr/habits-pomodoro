@@ -69,15 +69,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getTagsTasksCount(Long user_id, Long tag_id, String status);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
-			pr.id projectId
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
+			t.project_id projectId
 			from tasks t
-			join projects pr on t.project.id = pr.id
-			where t.user.id = :user_id and t.status = :status and t.description LIKE %:searchedTaskString%
-			group by t.id, pr.id, pr.projectCategory.level
-			order by pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
+			join projects as pr on t.project_id = pr.id
+			join project_categories as pc on pr.project_category_id = pc.id
+			where t.user_id = :user_id and t.status = :status and lower(t.description) LIKE %:searchedTaskString%
+			group by t.id, pr.id, pc.level
+			order by pc.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
-			""")
+			""", nativeQuery = true)
 	public List<TaskForList> retrieveSearchedTasks(Long user_id, String status, String searchedTaskString, int limit, int offset);
 	
 	@Query(value = "select count(*) from tasks where user_id = :user_id and status = :status and description LIKE %:searchedTaskString%", nativeQuery = true)
