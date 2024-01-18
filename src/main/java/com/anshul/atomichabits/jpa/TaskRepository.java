@@ -19,7 +19,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
-			pr project
+			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.project.id = :project_id and t.status = :status
@@ -34,7 +34,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
-			pr project
+			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and dueDate >= :start and dueDate <= :end
@@ -49,7 +49,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
-			pr project
+			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			join t.tags tags
@@ -70,7 +70,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
-			pr project
+			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :user_id and t.status = :status and t.description LIKE %:searchedTaskString%

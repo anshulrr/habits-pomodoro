@@ -24,16 +24,6 @@ public interface TaskForList {
 	
 	boolean isEnableNotifications();
 	
-	ProjectSummary getProject();
+	Long getProjectId();
 	
-	interface ProjectSummary {
-		
-		Long getId();
-		
-		String getName();
-		
-		String getColor();
-		
-		Integer getPomodoroLength();
-	}
 }
