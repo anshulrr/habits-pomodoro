@@ -56,6 +56,26 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserCommentsWithReviseDateCount(Long user_id, String status, long[] categoryIds);
 	
 	@Query(value = """
+			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			from comments c
+			left join project_categories pc on c.project_category_id = pc.id
+			left join projects p on c.project_id = p.id
+			left join tasks t on c.task_id = t.id
+			where c.user_id = :user_id and c.status = :status and websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', c.description)
+			and (c.project_category_id in :categoryIds or c.project_category_id is null)
+			order by c.revise_date
+			limit :limit offset :offset
+			""", nativeQuery = true)
+	public List<CommentForList> retrieveUserSearchedComments(Long user_id, String status, int limit, int offset, long[] categoryIds, String searchString);
+	
+	@Query(value = """
+			select count(*) from comments 
+			where user_id = :user_id and status = :status and websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', description)
+			and (project_category_id is null or project_category_id in :categoryIds) 
+			""", nativeQuery = true)
+	public Integer getUserSearchedCommentsCount(Long user_id, String status, long[] categoryIds, String searchString);
+	
+	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id

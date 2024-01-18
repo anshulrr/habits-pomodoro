@@ -57,10 +57,13 @@ public class CommentResource {
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
+			@RequestParam(defaultValue = "") String searchString,
 			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
 		List<CommentForList> comments;
-		if (filterWithReviseDate == true) {
+		if (searchString.length() != 0 ) {
+			comments = commentRepository.retrieveUserSearchedComments(user_id, status, limit, offset, categoryIds, searchString);
+		} else if (filterWithReviseDate == true) {
 			comments = commentRepository.retrieveUserCommentsWithReviseDate(user_id, status, limit, offset, categoryIds);
 		} else {			
 			comments = commentRepository.retrieveUserComments(user_id, status, limit, offset, categoryIds);
@@ -73,9 +76,12 @@ public class CommentResource {
 	public Integer retrieveCommentsCount(Principal principal, 
 			@RequestParam(defaultValue = "added") String status,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
+			@RequestParam(defaultValue = "") String searchString,
 			@RequestParam("categoryIds") long[] categoryIds) {
 		Long user_id = Long.parseLong(principal.getName());
-		if (filterWithReviseDate == true) {
+		if (searchString.length() != 0 ) {
+			return commentRepository.getUserSearchedCommentsCount(user_id, status, categoryIds, searchString);
+		} else if (filterWithReviseDate == true) {
 			return commentRepository.getUserCommentsWithReviseDateCount(user_id, status, categoryIds);
 		} else {
 			return commentRepository.getUserCommentsCount(user_id, status, categoryIds);
