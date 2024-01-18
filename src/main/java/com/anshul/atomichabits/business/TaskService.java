@@ -55,7 +55,7 @@ public class TaskService {
 		} else if (filter.startDate() != null) {
 			tasks = taskRepository.retrieveFilteredTasks(user_id, status, filter.startDate(), filter.endDate(), limit, offset);
 		} else {
-			tasks = taskRepository.retrieveSearchedTasks(user_id, status, filter.searchedTaskString(), limit, offset);
+			tasks = taskRepository.retrieveSearchedTasks(user_id, status, filter.searchString(), limit, offset);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
@@ -71,7 +71,7 @@ public class TaskService {
 		} else if (filter.startDate() != null) {
 			count = taskRepository.getFilteredTasksCount(user_id, status, filter.startDate(), filter.endDate());
 		} else {
-			count = taskRepository.getSearchedTasksCount(user_id, status, filter.searchedTaskString());
+			count = taskRepository.getSearchedTasksCount(user_id, status, filter.searchString());
 		}
 		return count;
 	}

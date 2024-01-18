@@ -7,5 +7,5 @@ public record TaskFilter(
 	Long tagId,
 	Instant startDate, 
 	Instant endDate,
-	String searchedTaskString
+	String searchString
 ) {}
