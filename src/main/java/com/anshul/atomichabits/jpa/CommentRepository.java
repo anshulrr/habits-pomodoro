@@ -63,7 +63,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			left join tasks t on c.task_id = t.id
 			where c.user_id = :user_id and c.status = :status and websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', c.description)
 			and (c.project_category_id in :categoryIds or c.project_category_id is null)
-			order by c.revise_date
+			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
 	public List<CommentForList> retrieveUserSearchedComments(Long user_id, String status, int limit, int offset, long[] categoryIds, String searchString);
