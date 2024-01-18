@@ -74,14 +74,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			from tasks t
 			join projects as pr on t.project_id = pr.id
 			join project_categories as pc on pr.project_category_id = pc.id
-			where t.user_id = :user_id and t.status = :status and websearch_to_tsquery(:searchedTaskString)  @@ to_tsvector('english', t.description)
-			group by t.id, pr.id, pc.level
+			where t.user_id = :user_id and t.status = :status and websearch_to_tsquery('english', :searchedTaskString)  @@ to_tsvector('english', t.description)
+			group by t.id, pr.id, pc.id
 			order by pc.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""", nativeQuery = true)
 	public List<TaskForList> retrieveSearchedTasks(Long user_id, String status, String searchedTaskString, int limit, int offset);
 	
-	@Query(value = "select count(*) from tasks where user_id = :user_id and status = :status and websearch_to_tsquery(:searchedTaskString)  @@ to_tsvector('english', description)", nativeQuery = true)
+	@Query(value = """
+			select count(*) 
+			from tasks 
+			where user_id = :user_id and status = :status and websearch_to_tsquery('english', :searchedTaskString)  @@ to_tsvector('english', description)
+			""", nativeQuery = true)
 	public Integer getSearchedTasksCount(Long user_id, String status, String searchedTaskString);
 	
 	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
