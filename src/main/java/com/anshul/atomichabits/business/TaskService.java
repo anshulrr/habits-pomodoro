@@ -52,8 +52,10 @@ public class TaskService {
 			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, filter.projectId(), status, limit, offset);
 		} else if (filter.tagId() != null) {
 			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, filter.tagId(), status, limit, offset);
-		} else {
+		} else if (filter.startDate() != null) {
 			tasks = taskRepository.retrieveFilteredTasks(user_id, status, filter.startDate(), filter.endDate(), limit, offset);
+		} else {
+			tasks = taskRepository.retrieveSearchedTasks(user_id, status, filter.searchString(), limit, offset);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
@@ -66,8 +68,10 @@ public class TaskService {
 			count = taskRepository.getProjectTasksCount(user_id, filter.projectId(), status);
 		} else if (filter.tagId() != null) {
 			count = taskRepository.getTagsTasksCount(user_id, filter.tagId(), status);
-		} else {
+		} else if (filter.startDate() != null) {
 			count = taskRepository.getFilteredTasksCount(user_id, status, filter.startDate(), filter.endDate());
+		} else {
+			count = taskRepository.getSearchedTasksCount(user_id, status, filter.searchString());
 		}
 		return count;
 	}
