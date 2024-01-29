@@ -184,7 +184,7 @@ public class PomodoroResource {
 		return new ResponseEntity<>(pomodoroService.createPastPomodoro(user_id, task_id, pomodoro), HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/pomodoros/past/{id}")
+	@DeleteMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> deletePastPomodoro(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.deletePastPomodoro(user_id, id), HttpStatus.OK);

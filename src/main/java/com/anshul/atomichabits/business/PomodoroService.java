@@ -112,10 +112,6 @@ public class PomodoroService {
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
 		
-		// allow deletion of past pomodoro only
-		if (!pomodoroEntry.get().getStatus().equals("past"))
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-		
 		pomodoroEntry.get().setStatus("deleted");
 		
 		return pomodoroRepository.save(pomodoroEntry.get());
