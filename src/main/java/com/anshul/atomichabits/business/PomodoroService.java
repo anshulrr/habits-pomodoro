@@ -150,6 +150,10 @@ public class PomodoroService {
 		runningPomodoro.updatePomodoroData();
 		pomodoroRepository.save(runningPomodoro.getPomodoro());
 		
+		if (runningPomodoro.getPomodoro().getStatus() == "completed") {
+			throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+		}
+		
 		List<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoros(user_id);
 		return updatedRunningPomodoroEntry.get(0);
 	}

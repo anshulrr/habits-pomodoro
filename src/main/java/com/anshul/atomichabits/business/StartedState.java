@@ -69,7 +69,7 @@ public class StartedState implements PomodoroState {
 		if (timeElapsed < pomodoro.getLength() * 60) {
 			pomodoro.setTimeElapsed(Math.toIntExact(timeElapsed));
 		} else {
-			pomodoro.setTimeElapsed(pomodoro.getLength() * 60 - 3);
+			markCompleted(runningPomodoro);
 		}
 		log.debug("{}", pomodoro.getTimeElapsed());
 	}
