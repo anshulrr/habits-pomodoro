@@ -17,8 +17,11 @@ import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @CacheConfig(cacheNames = "projectCategoryCache")
+@Slf4j
 public class ProjectCategoryService {
 
 	@Autowired
@@ -61,14 +64,14 @@ public class ProjectCategoryService {
 		category.setStatsDefault(categoryDto.isStatsDefault());
 		category.setVisibleToPartners(categoryDto.isVisibleToPartners());
 		
-		System.out.println(category);
+		log.debug("{}", category);
 
 		return projectCategoryRepository.save(category);
 	}
 	
 	@Caching(evict = { @CacheEvict(cacheNames = "projectCategory", key = "#id"),
 			@CacheEvict(cacheNames = "projectCategories", allEntries = true) })
-	public ProjectCategory updateProjectCategory(Long user_id, Long id, ProjectCategory projectCategory) {
+	public ProjectCategory updateProjectCategory(Long user_id, Long id, ProjectCategoryDto projectCategory) {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);

@@ -107,11 +107,11 @@ class ProjectCategoryServiceTest {
 	@Test
 	void updateProjectCategory() {
 		ProjectCategory projectCategory = new ProjectCategory();
+		projectCategory.setLevel(2);
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
 			.thenReturn(Optional.of(projectCategory));
 		
-		ProjectCategory projectCategoryRequest = new ProjectCategory();
-		projectCategoryRequest.setLevel(0);
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
 		
 		projectCategoryService.updateProjectCategory(USER_ID, CATEGORY_ID, projectCategoryRequest);
 		
@@ -119,7 +119,7 @@ class ProjectCategoryServiceTest {
 		verify(projectCategoryRepositoryMock).save(captor.capture());
 		
 		assertEquals(projectCategory, captor.getValue());
-		assertEquals(0, captor.getValue().getLevel());
+		assertEquals(1, captor.getValue().getLevel());
 	}
 	
 	@Test
@@ -127,7 +127,7 @@ class ProjectCategoryServiceTest {
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
 			.thenReturn(Optional.ofNullable(null));
 		
-		ProjectCategory projectCategoryRequest = new ProjectCategory();
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			projectCategoryService.updateProjectCategory(USER_ID, CATEGORY_ID, projectCategoryRequest);

@@ -71,7 +71,7 @@ public class ProjectCategoryResource {
 	@PutMapping("/project-categories/{id}")
 	public ResponseEntity<ProjectCategory> updateProjectCategoryOfUser(Principal principal, 
 			@PathVariable Long id,
-			@Valid @RequestBody ProjectCategory projectCategory) {
+			@Valid @RequestBody ProjectCategoryDto projectCategory) {
 		Long user_id = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(projectCategoryService.updateProjectCategory(user_id, id, projectCategory), HttpStatus.OK);
 	}
