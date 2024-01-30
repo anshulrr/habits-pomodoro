@@ -69,7 +69,7 @@ public class SignupService {
 		ProjectCategory projectCategory1 = new ProjectCategory();
 		projectCategory1.setUser(user);
 		projectCategory1.setName("General");
-		projectCategory1.setColor("124f12");
+		projectCategory1.setColor("#124f12");
 		projectCategory1.setLevel(1);
 		projectCategory1.setStatsDefault(true);
 		ProjectCategory project_category = projectCategoryRepository.save(projectCategory1);
@@ -77,7 +77,7 @@ public class SignupService {
 		ProjectCategory projectCategory2 = new ProjectCategory();
 		projectCategory2.setUser(user);
 		projectCategory2.setName("Health");
-		projectCategory2.setColor("4a86e8");
+		projectCategory2.setColor("#4a86e8");
 		projectCategory2.setLevel(2);
 		projectCategory2.setStatsDefault(true);
 		projectCategoryRepository.save(projectCategory2);
@@ -85,7 +85,7 @@ public class SignupService {
 		ProjectCategory projectCategory3 = new ProjectCategory();
 		projectCategory3.setUser(user);
 		projectCategory3.setName("Hobbies");
-		projectCategory3.setColor("ff0000");
+		projectCategory3.setColor("#ff0000");
 		projectCategory3.setLevel(3);
 		projectCategory3.setStatsDefault(false);
 		projectCategoryRepository.save(projectCategory3);
@@ -93,7 +93,7 @@ public class SignupService {
 		ProjectCategory projectCategory4 = new ProjectCategory();
 		projectCategory4.setUser(user);
 		projectCategory4.setName("Rest");
-		projectCategory4.setColor("919191");
+		projectCategory4.setColor("#919191");
 		projectCategory4.setLevel(4);
 		projectCategory4.setStatsDefault(false);
 		projectCategory4.setVisibleToPartners(false);
