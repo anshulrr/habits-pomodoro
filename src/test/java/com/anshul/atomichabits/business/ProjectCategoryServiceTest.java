@@ -19,6 +19,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.anshul.atomichabits.dto.ProjectCategoryDto;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -39,6 +40,7 @@ class ProjectCategoryServiceTest {
 	
 	static Long USER_ID = 1L;
 	static Long CATEGORY_ID = 11L;
+	static User user = new User("Samay", "samay@xyz.com");
 
 	@Test
 	void retriveProjectCategory() {
@@ -89,14 +91,9 @@ class ProjectCategoryServiceTest {
 	
 	@Test
 	void createProjectCategory() {
-		User user = new User("Samay", "samay@xyz.com");
+		when(userRepositoryMock.findById(USER_ID)).thenReturn(Optional.of(user));
 		
-		when(userRepositoryMock.findById(USER_ID)).thenReturn(
-				Optional.of(user)
-				);
-		
-		ProjectCategory projectCategoryRequest = new ProjectCategory();
-		projectCategoryRequest.setColor("#afafaf");
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
 		
 		projectCategoryService.createProjectCategory(USER_ID, projectCategoryRequest);
 		

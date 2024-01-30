@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 
+import com.anshul.atomichabits.dto.ProjectCategoryDto;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -48,12 +49,21 @@ public class ProjectCategoryService {
 	}
 	
 	@CacheEvict(cacheNames = "projectCategories", allEntries = true)
-	public ProjectCategory createProjectCategory(Long user_id, ProjectCategory projectCategory) {
+	public ProjectCategory createProjectCategory(Long user_id, ProjectCategoryDto categoryDto) {
 		Optional<User> userEntry = userRepository.findById(user_id);
+		
+		ProjectCategory category = new ProjectCategory();
 
-		projectCategory.setUser(userEntry.get());
+		category.setUser(userEntry.get());
+		category.setName(categoryDto.getName());
+		category.setColor(categoryDto.getColor());
+		category.setLevel(categoryDto.getLevel());
+		category.setStatsDefault(categoryDto.isStatsDefault());
+		category.setVisibleToPartners(categoryDto.isVisibleToPartners());
+		
+		System.out.println(category);
 
-		return projectCategoryRepository.save(projectCategory);
+		return projectCategoryRepository.save(category);
 	}
 	
 	@Caching(evict = { @CacheEvict(cacheNames = "projectCategory", key = "#id"),
@@ -68,6 +78,7 @@ public class ProjectCategoryService {
 		categoryEntry.get().setColor(projectCategory.getColor());
 		categoryEntry.get().setStatsDefault(projectCategory.isStatsDefault());
 		categoryEntry.get().setVisibleToPartners(projectCategory.isVisibleToPartners());
+		
 		return projectCategoryRepository.save(categoryEntry.get());
 	}	
 }
