@@ -107,7 +107,7 @@ public class PomodoroService {
 		return length;
 	}
 	
-	public Pomodoro deletePastPomodoro(Long user_id, Long id) {
+	public Pomodoro deletePomodoro(Long user_id, Long id) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);

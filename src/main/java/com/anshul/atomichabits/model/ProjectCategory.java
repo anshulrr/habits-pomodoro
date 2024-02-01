@@ -21,10 +21,12 @@ import jakarta.persistence.FetchType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity(name = "project_categories")
 @Table(indexes= {
 		@Index(name="project_categories_user_index", columnList="user_id")
@@ -65,11 +67,6 @@ public class ProjectCategory {
 	@OneToMany(mappedBy = "projectCategory")
 	@JsonIgnore
 	private List<Project> projects;
-
-	@Override
-	public String toString() {
-		return "Project Category [id=" + id + ", name=" + name + ", level=" + level + "]";
-	}
 
 	// constructor used in unit tests	
 	public ProjectCategory(Long id, String name, User user) {

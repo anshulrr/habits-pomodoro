@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.ProjectCategoryService;
+import com.anshul.atomichabits.dto.ProjectCategoryDto;
 import com.anshul.atomichabits.model.ProjectCategory;
 
 import jakarta.validation.Valid;
@@ -62,7 +63,7 @@ public class ProjectCategoryResource {
 
 	@PostMapping("/project-categories")
 	public ResponseEntity<ProjectCategory> createProjectCategoryOfUser(Principal principal, 
-			@Valid @RequestBody ProjectCategory projectCategory) {
+			@Valid @RequestBody ProjectCategoryDto projectCategory) {
 		Long user_id = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(projectCategoryService.createProjectCategory(user_id, projectCategory), HttpStatus.OK);
 	}
@@ -70,7 +71,7 @@ public class ProjectCategoryResource {
 	@PutMapping("/project-categories/{id}")
 	public ResponseEntity<ProjectCategory> updateProjectCategoryOfUser(Principal principal, 
 			@PathVariable Long id,
-			@Valid @RequestBody ProjectCategory projectCategory) {
+			@Valid @RequestBody ProjectCategoryDto projectCategory) {
 		Long user_id = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(projectCategoryService.updateProjectCategory(user_id, id, projectCategory), HttpStatus.OK);
 	}

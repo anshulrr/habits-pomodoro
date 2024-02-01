@@ -185,9 +185,9 @@ public class PomodoroResource {
 	}
 	
 	@DeleteMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> deletePastPomodoro(Principal principal, @PathVariable Long id) {
+	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable Long id) {
 		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.deletePastPomodoro(user_id, id), HttpStatus.OK);
+		return new ResponseEntity<>(pomodoroService.deletePomodoro(user_id, id), HttpStatus.OK);
 	}
 
 	@PutMapping("/pomodoros/{id}")
