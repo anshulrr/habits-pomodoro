@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +24,7 @@ import org.mockito.Mock;
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
+import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.ProjectRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -45,8 +47,12 @@ class ProjectServiceTest {
 	@Mock
 	private ProjectRepository projectRepositoryMock;
 	
+	@Mock
+	private CommentRepository commentRepositoryMock;
+	
 	static User user;
 	static ProjectCategory category;
+	static ProjectCategory category2;
 	
 	static Long USER_ID = 1L;
 	static Long CATEGORY_ID = 11L;
@@ -56,6 +62,7 @@ class ProjectServiceTest {
 	static void setup() {
 		user = new User("Samay", "samay@xyz.com");
 		category = new ProjectCategory(CATEGORY_ID, "Sample Category", user);
+		category2 = new ProjectCategory(CATEGORY_ID + 1, "Sample Category 2", user);
 	}
 	
 	@Test
@@ -106,6 +113,16 @@ class ProjectServiceTest {
 	}
 	
 	@Test
+	void retrieveCategoryProjects() {
+		when(projectRepositoryMock.findCategoryProjects(USER_ID, CATEGORY_ID))
+			.thenReturn(new ArrayList<ProjectForList>());
+		
+		List<ProjectForList> projects = projectService.retrieveCategoryProjects(USER_ID, CATEGORY_ID);
+		
+		assertEquals(0, projects.size());
+	}
+	
+	@Test
 	void createProject() {
 		when(userRepositoryMock.findById(1L))
 			.thenReturn(Optional.of(user));
@@ -143,6 +160,29 @@ class ProjectServiceTest {
 		
 		assertEquals(project, captor.getValue());
 		assertEquals(5, captor.getValue().getPriority());
+	}
+	
+	@Test
+	void updateProjectChangeCategory() {
+		Project project = new Project(PROJECT_ID, "Test Project", user, category);
+		
+		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
+			.thenReturn(Optional.of(project));
+		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID + 1))
+			.thenReturn(Optional.of(category2));
+		
+		ProjectDto projectDtoRequest = new ProjectDto(project);
+		projectDtoRequest.setPriority(5);
+		projectDtoRequest.setProjectCategoryId(CATEGORY_ID + 1);
+		
+		projectService.updateProject(USER_ID, PROJECT_ID, projectDtoRequest);
+		
+		ArgumentCaptor<Project> captor = ArgumentCaptor.forClass(Project.class);
+		verify(projectRepositoryMock).save(captor.capture());
+		
+		assertEquals(project, captor.getValue());
+		assertEquals(5, captor.getValue().getPriority());
+		verify(commentRepositoryMock, times(1)).updateCommentsCategory(USER_ID, PROJECT_ID, CATEGORY_ID + 1);
 	}
 	
 	@Test
