@@ -3,7 +3,6 @@ package com.anshul.atomichabits.business;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,43 +16,43 @@ import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@AllArgsConstructor
+@Slf4j
 @Service
 @CacheConfig(cacheNames = "projectCategoryCache")
-@Slf4j
 public class ProjectCategoryService {
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private ProjectCategoryRepository projectCategoryRepository;
 	
 	@Cacheable(value = "projectCategory", key = "#id", unless = "#result == null")
-	public ProjectCategory retriveProjectCategory(Long user_id, Long id) {
-		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, id);
+	public ProjectCategory retriveProjectCategory(Long userId, Long id) {
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
 		return categoryEntry.get();
 	}
 	
 	@Cacheable(value = "projectCategories")
-	public List<ProjectCategory> retrieveAllProjectCategories(Long user_id, Integer limit, Integer offset) {
-		return projectCategoryRepository.findUserProjectCategories(user_id, limit, offset);
+	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset) {
+		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset);
 	}
 	
 	public List<ProjectCategory> retrieveSubjectProjectCategories(Long subjectId, Integer limit, Integer offset) {
 		return projectCategoryRepository.findSubjectProjectCategories(subjectId, limit, offset);
 	}
 	
-	public Integer retrieveAllProjectCategoriesCount(Long user_id) {
-		return projectCategoryRepository.getUserProjectCategoriesCount(user_id);
+	public Integer retrieveAllProjectCategoriesCount(Long userId) {
+		return projectCategoryRepository.getUserProjectCategoriesCount(userId);
 	}
 	
 	@CacheEvict(cacheNames = "projectCategories", allEntries = true)
-	public ProjectCategory createProjectCategory(Long user_id, ProjectCategoryDto categoryDto) {
-		Optional<User> userEntry = userRepository.findById(user_id);
+	public ProjectCategory createProjectCategory(Long userId, ProjectCategoryDto categoryDto) {
+		Optional<User> userEntry = userRepository.findById(userId);
 		
 		ProjectCategory category = new ProjectCategory();
 
@@ -71,8 +70,8 @@ public class ProjectCategoryService {
 	
 	@Caching(evict = { @CacheEvict(cacheNames = "projectCategory", key = "#id"),
 			@CacheEvict(cacheNames = "projectCategories", allEntries = true) })
-	public ProjectCategory updateProjectCategory(Long user_id, Long id, ProjectCategoryDto projectCategory) {
-		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, id);
+	public ProjectCategory updateProjectCategory(Long userId, Long id, ProjectCategoryDto projectCategory) {
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
 

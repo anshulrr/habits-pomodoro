@@ -1,6 +1,5 @@
 package com.anshul.atomichabits.security;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		User user = null;
 		try {			
-			Optional<User> optional_user = userService.getUserByUsernameOrEmail(usernameOrEmail);		
-			user = optional_user.get();
+			user = userService.getUserByUsernameOrEmail(usernameOrEmail);		
 		} catch (ResourceNotFoundException e) {
 			log.info("first time user: {}", usernameOrEmail);
 			user = signup.saveUser(usernameOrEmail);

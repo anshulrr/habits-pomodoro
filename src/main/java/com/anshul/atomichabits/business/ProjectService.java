@@ -3,7 +3,6 @@ package com.anshul.atomichabits.business;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,49 +17,49 @@ import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.User;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+@AllArgsConstructor
 @Slf4j
+@Service
 public class ProjectService {
 
-	@Autowired
 	private UserRepository userRepository;
 	
-	@Autowired
 	private ProjectRepository projectRepository;
 	
-	@Autowired
 	private ProjectCategoryRepository projectCategoryRepository;
 
-	@Autowired 
 	private CommentRepository commentRepository;
 	
-	public ProjectDto retriveProject(Long user_id, Long id) {
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
+	public ProjectDto retriveProject(Long userId, Long id) {
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, id);
 		if (projectEntry.isEmpty())
 			 	throw new ResourceNotFoundException("project id:" + id);
 		
 		return new ProjectDto(projectEntry.get());
 	}
 	
-	public List<ProjectForList> retrieveAllProjects(Long user_id, String status, int limit, int offset) {
+	public List<ProjectForList> retrieveAllProjects(Long userId, String status, int limit, int offset) {
 		// TODO: using PageRequest
-		return projectRepository.findUserProjects(user_id, status, limit, offset);
+		return projectRepository.findUserProjects(userId, status, limit, offset);
 	}
 
-	public List<ProjectForList> retrieveCategoryProjects(Long user_id, Long category_id) {
-		return projectRepository.findCategoryProjects(user_id, category_id);
+	public List<ProjectForList> retrieveCategoryProjects(Long userId, Long categoryId) {
+		return projectRepository.findCategoryProjects(userId, categoryId);
 	}
 	
-	public Integer retrieveProjectsCount(Long user_id, String status) {
-		return projectRepository.getUserProjectsCount(user_id, status);
+	public Integer retrieveProjectsCount(Long userId, String status) {
+		return projectRepository.getUserProjectsCount(userId, status);
 	}
 	
-	public ProjectDto createProject(Long user_id, ProjectDto projectDto) {
-		Optional<User> userEntry = userRepository.findById(user_id);
+	public ProjectDto createProject(Long userId, ProjectDto projectDto) {
+		Optional<User> userEntry = userRepository.findById(userId);
+		if (userEntry.isEmpty())
+		 	throw new ResourceNotFoundException("user id: " + userId);
 
-		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id,
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId,
 				projectDto.getProjectCategoryId());
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + projectDto.getProjectCategoryId());
@@ -82,12 +81,12 @@ public class ProjectService {
 	}
 	
 	@Transactional
-	public Project updateProject(Long user_id, Long id, ProjectDto projectDto) {
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, id);
+	public Project updateProject(Long userId, Long id, ProjectDto projectDto) {
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, id);
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);
 		
-		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(user_id,
+		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(userId,
 				projectDto.getProjectCategoryId());
 		
 		log.trace("project for update: " + projectEntry + projectDto + category);
@@ -96,7 +95,7 @@ public class ProjectService {
 			// handle comments table for category update
 			// @Transactional and @Modifying is required for update query
 			// TODO: check if better solution is possible
-			commentRepository.updateCommentsCategory(user_id, id, category.get().getId());
+			commentRepository.updateCommentsCategory(userId, id, category.get().getId());
 		}
 
 		projectEntry.get().setName(projectDto.getName());
@@ -107,8 +106,7 @@ public class ProjectService {
 		projectEntry.get().setType(projectDto.getType());
 		projectEntry.get().setDailyLimit(projectDto.getDailyLimit());
 		projectEntry.get().setProjectCategory(category.get());
-		// disable archive project feature
-		// projectEntry.get().setStatus(projectDto.getStatus());
+		
 		projectRepository.save(projectEntry.get());
 		log.trace("updated project: {}", projectEntry);
 
