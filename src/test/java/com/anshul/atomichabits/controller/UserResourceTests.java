@@ -28,7 +28,7 @@ import com.anshul.atomichabits.model.User;
 
 @WebMvcTest(UserResource.class)
 //@ContextConfiguration
-public class UserResourceTests {
+class UserResourceTests {
 
 	@Autowired
 	private MockMvc mockMvc;

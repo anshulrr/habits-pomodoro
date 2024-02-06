@@ -272,7 +272,7 @@ class TaskServiceTest {
 		
 		List<Object> result = taskService.retrieveTasksTags(taskIds);
 		
-		assertEquals(result.size(), 0);
+		assertEquals(0, result.size());
 	}
 	
 	@Test
@@ -286,6 +286,6 @@ class TaskServiceTest {
 		
 		List<Object> result = taskService.retrieveTasksTimeElapsed(USER_ID, startDate, endDate, taskIds);
 		
-		assertEquals(result.size(), 0);
+		assertEquals(0, result.size());
 	}
 }

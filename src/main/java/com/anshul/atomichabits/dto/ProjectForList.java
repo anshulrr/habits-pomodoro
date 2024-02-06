@@ -22,6 +22,3 @@ public interface ProjectForList {
 
 	Integer getDailyLimit();
 }
-
-// won't work for nested projection
-// public record ProjectForList(Long id, String name, String color, String category) {}

@@ -61,10 +61,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public List<TaskForList> findTasksByUserIdAndTagsId(Long userId, Long tagId, String status, int limit, int offset);
 	
 	@Query(value = """
-				select count(*) 
-				from tasks t
-				join t.tags tags 
-				where t.user.id = :userId and tags.id = :tagId and status = :status
+			select count(*) 
+			from tasks t
+			join t.tags tags 
+			where t.user.id = :userId and tags.id = :tagId and status = :status
 			""")
 	public Integer getTagsTasksCount(Long userId, Long tagId, String status);
 	

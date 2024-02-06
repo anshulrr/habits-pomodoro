@@ -64,7 +64,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			left join tasks t on c.task_id = t.id
 			where c.user_id = :userId and c.status = :status 
 			and (websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', c.description)
-				or websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description))
+			    or websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description))
 			and (c.project_category_id in :categoryIds or c.project_category_id is null)
 			order by c.id desc
 			limit :limit offset :offset
@@ -76,7 +76,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			left join tasks t on c.task_id = t.id
 			where c.user_id = :userId and c.status = :status 
 			and (websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', c.description)
-				or websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description))
+			    or websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description))
 			and (c.project_category_id is null or c.project_category_id in :categoryIds) 
 			""", nativeQuery = true)
 	public Integer getUserSearchedCommentsCount(Long userId, String status, long[] categoryIds, String searchString);
