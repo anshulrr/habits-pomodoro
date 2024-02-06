@@ -41,17 +41,21 @@ public class PomodoroController {
 	private static final String LOG_MESSAGE = "{} tried unauthorized access of {} stats";
 	
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
+	public ResponseEntity<List<PomodoroForList>> retrievePomodorosOfUser(Principal principal, 
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("categoryIds") long[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return pomodoroService.retrievePomodoros(userId, startDate, endDate, categories);
+			return new ResponseEntity<>(pomodoroService.retrievePomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
 		} else {
-			log.info(LOG_MESSAGE, userId, subjectId);
-			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
+				return new ResponseEntity<>(pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+			} else {
+				log.info(LOG_MESSAGE, userId, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
 		}
 	}
 	
