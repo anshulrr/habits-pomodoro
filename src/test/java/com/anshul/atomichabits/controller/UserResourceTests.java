@@ -26,7 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import com.anshul.atomichabits.business.UserService;
 import com.anshul.atomichabits.model.User;
 
-@WebMvcTest(UserResource.class)
+@WebMvcTest(UserController.class)
 //@ContextConfiguration
 class UserResourceTests {
 

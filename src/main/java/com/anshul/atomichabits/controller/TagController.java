@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-public class TagResource {
+public class TagController {
 
 	private TagService tagService;
 

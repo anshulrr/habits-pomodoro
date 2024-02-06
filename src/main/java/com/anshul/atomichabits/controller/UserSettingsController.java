@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-public class UserSettingsResource {
+public class UserSettingsController {
 
 	private UserSettingsService userSettingsService;
 

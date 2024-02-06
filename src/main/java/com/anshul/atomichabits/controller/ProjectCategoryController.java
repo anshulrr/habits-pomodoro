@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-public class ProjectCategoryResource {
+public class ProjectCategoryController {
 	
 	private ProjectCategoryService projectCategoryService;
 	

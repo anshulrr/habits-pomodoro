@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-public class AccountabilityPartnerResource {
+public class AccountabilityPartnerController {
 
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
