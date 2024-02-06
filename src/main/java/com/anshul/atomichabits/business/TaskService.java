@@ -101,7 +101,7 @@ public class TaskService {
 			throw new ResourceNotFoundException("project id:" + id);
 		
 		// for switch project
-		if (taskEntry.get().getProject().getId() != projectEntry.get().getId()) {			
+		if (!taskEntry.get().getProject().getId().equals(projectEntry.get().getId())) {			
 			// handle comments table for project and category update
 			// @Transactional and @Modifying is required for update query
 			commentRepository.updateCommentsProjectAndCategory(userId, id, projectEntry.get().getId(), projectEntry.get().getProjectCategory().getId());
