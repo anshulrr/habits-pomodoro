@@ -38,9 +38,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
-@Slf4j
 @AllArgsConstructor
+@Slf4j
+@RestController
 public class CommentResource {
 
 	private UserRepository userRepository;
@@ -59,16 +59,16 @@ public class CommentResource {
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
 			@RequestParam("categoryIds") long[] categoryIds) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments;
 		if (searchString.length() != 0 ) {
-			comments = commentRepository.retrieveUserSearchedComments(user_id, status, limit, offset, categoryIds, searchString);
-		} else if (filterWithReviseDate == true) {
-			comments = commentRepository.retrieveUserCommentsWithReviseDate(user_id, status, limit, offset, categoryIds);
+			comments = commentRepository.retrieveUserSearchedComments(userId, status, limit, offset, categoryIds, searchString);
+		} else if (filterWithReviseDate) {
+			comments = commentRepository.retrieveUserCommentsWithReviseDate(userId, status, limit, offset, categoryIds);
 		} else {			
-			comments = commentRepository.retrieveUserComments(user_id, status, limit, offset, categoryIds);
+			comments = commentRepository.retrieveUserComments(userId, status, limit, offset, categoryIds);
 		}
-		log.trace("comments: {}", comments);
+		log.trace("{}", comments);
 		return comments;
 	}
 
@@ -78,20 +78,22 @@ public class CommentResource {
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
 			@RequestParam("categoryIds") long[] categoryIds) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (searchString.length() != 0 ) {
-			return commentRepository.getUserSearchedCommentsCount(user_id, status, categoryIds, searchString);
-		} else if (filterWithReviseDate == true) {
-			return commentRepository.getUserCommentsWithReviseDateCount(user_id, status, categoryIds);
+			return commentRepository.getUserSearchedCommentsCount(userId, status, categoryIds, searchString);
+		} else if (filterWithReviseDate) {
+			return commentRepository.getUserCommentsWithReviseDateCount(userId, status, categoryIds);
 		} else {
-			return commentRepository.getUserCommentsCount(user_id, status, categoryIds);
+			return commentRepository.getUserCommentsCount(userId, status, categoryIds);
 		}
 	}
 
 	@PostMapping("/comments")
 	public Comment createComment(@RequestBody Comment comment, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
+		Long userId = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(userId);
+		if (userEntry.isEmpty())
+			throw new ResourceNotFoundException("user id:" + userId);
 
 		comment.setUser(userEntry.get());
 		return commentRepository.save(comment);
@@ -99,18 +101,18 @@ public class CommentResource {
 	
 	@GetMapping("/comments/{id}")
 	public Comment getComment(@PathVariable Long id, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		Long userId = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
 		if (commentEntry.isEmpty())
-		 	throw new ResourceNotFoundException("comment id:" + id);
+		 	throw new ResourceNotFoundException("cid:" + id);
 
 		return commentEntry.get();
 	}
 
 	@PutMapping("/comments/{id}")
 	public Comment updateComment(@PathVariable Long id, @Valid @RequestBody CommentUpdateDto commentDto, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		Long userId = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
 		if (commentEntry.isEmpty())
 		 	throw new ResourceNotFoundException("comment id:" + id);
 
@@ -119,57 +121,56 @@ public class CommentResource {
 		return commentRepository.save(commentEntry.get());
 	}
 
-	@GetMapping("/project-categories/{category_id}/comments")
-	public List<CommentForList> retrieveCategoryComments(Principal principal, @PathVariable Long category_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserProjectCategoryComments(user_id, category_id, status, limit, offset);
-		log.trace("comments: {}", comments);
+	@GetMapping("/project-categories/{categoryId}/comments")
+	public List<CommentForList> retrieveCategoryComments(Principal principal, @PathVariable Long categoryId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+		Long userId = Long.parseLong(principal.getName());
+		List<CommentForList> comments = commentRepository.retrieveUserProjectCategoryComments(userId, categoryId, status, limit, offset);
+		log.trace("{}", comments);
 		return comments;
 	}
 
-	@GetMapping("/project-categories/{category_id}/comments/count")
-	public Integer retrieveCategoryCommentCount(@PathVariable Long category_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserProjectCategoryCommentsCount(user_id, category_id, status);
+	@GetMapping("/project-categories/{categoryId}/comments/count")
+	public Integer retrieveCategoryCommentCount(@PathVariable Long categoryId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		return commentRepository.getUserProjectCategoryCommentsCount(userId, categoryId, status);
 	}
 
-	@PostMapping("/project-categories/{category_id}/comments")
-	public Comment createCategoryComment(@PathVariable Long category_id, @RequestBody Comment comment, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(user_id, category_id);
+	@PostMapping("/project-categories/{categoryId}/comments")
+	public Comment createCategoryComment(@PathVariable Long categoryId, @RequestBody Comment comment, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, categoryId);
 		if (categoryEntry.isEmpty())
-		 	throw new ResourceNotFoundException("category id:" + category_id);
+		 	throw new ResourceNotFoundException("category id:" + categoryId);
 		log.debug("found project category: {}", categoryEntry);
 
 		comment.setUser(userEntry.get());
 		comment.setProjectCategory(categoryEntry.get());
 		
-		// TODO: return category name in the response
 		return commentRepository.save(comment);
 	}
 
-	@GetMapping("/projects/{project_id}/comments")
-	public List<CommentForList> retrieveProjectComments(Principal principal, @PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserProjectComments(user_id, project_id, status, limit, offset);
-		log.trace("comments: {}", comments);
+	@GetMapping("/projects/{projectId}/comments")
+	public List<CommentForList> retrieveProjectComments(Principal principal, @PathVariable Long projectId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+		Long userId = Long.parseLong(principal.getName());
+		List<CommentForList> comments = commentRepository.retrieveUserProjectComments(userId, projectId, status, limit, offset);
+		log.trace("{}", comments);
 		return comments;
 	}
 
-	@GetMapping("/projects/{project_id}/comments/count")
-	public Integer retrieveProjectCommentsCount(@PathVariable Long project_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserProjectCommentsCount(user_id, project_id, status);
+	@GetMapping("/projects/{projectId}/comments/count")
+	public Integer retrieveProjectCommentsCount(@PathVariable Long projectId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		return commentRepository.getUserProjectCommentsCount(userId, projectId, status);
 	}
 
-	@PostMapping("/projects/{project_id}/comments")
-	public Comment createProjectComment(@PathVariable Long project_id, @RequestBody Comment comment, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, project_id);
+	@PostMapping("/projects/{projectId}/comments")
+	public Comment createProjectComment(@PathVariable Long projectId, @RequestBody Comment comment, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, projectId);
 		if (projectEntry.isEmpty())
-		 	throw new ResourceNotFoundException("project id:" + project_id);
+		 	throw new ResourceNotFoundException("project id:" + projectId);
 		log.debug("found project: {}, project category: {}", projectEntry, projectEntry.get().getProjectCategory());
 
 		comment.setUser(userEntry.get());
@@ -178,27 +179,27 @@ public class CommentResource {
 		return commentRepository.save(comment);
 	}
 
-	@GetMapping("/tasks/{task_id}/comments")
-	public List<CommentForList> retrieveTaskComments(Principal principal, @PathVariable Long task_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserTaskComments(user_id, task_id, status, limit, offset);
+	@GetMapping("/tasks/{taskId}/comments")
+	public List<CommentForList> retrieveTaskComments(Principal principal, @PathVariable Long taskId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+		Long userId = Long.parseLong(principal.getName());
+		List<CommentForList> comments = commentRepository.retrieveUserTaskComments(userId, taskId, status, limit, offset);
 		log.trace("comments: {}", comments);
 		return comments;
 	}
 
-	@GetMapping("/tasks/{task_id}/comments/count")
-	public Integer retrieveTaskCommentsCount(@PathVariable Long task_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserTaskCommentsCount(user_id, task_id, status);
+	@GetMapping("/tasks/{taskId}/comments/count")
+	public Integer retrieveTaskCommentsCount(@PathVariable Long taskId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		return commentRepository.getUserTaskCommentsCount(userId, taskId, status);
 	}
 
-	@PostMapping("/tasks/{task_id}/comments")
-	public Comment createTaskComment(@PathVariable Long task_id, @RequestBody Comment comment, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+	@PostMapping("/tasks/{taskId}/comments")
+	public Comment createTaskComment(@PathVariable Long taskId, @RequestBody Comment comment, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
 		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + task_id);
+		 	throw new ResourceNotFoundException("task id:" + taskId);
 		log.debug("found task: {}, project: {}", taskEntry, taskEntry.get().getProject());
 
 		comment.setUser(userEntry.get());
@@ -208,27 +209,27 @@ public class CommentResource {
 		return commentRepository.save(comment);
 	}
 
-	@GetMapping("/pomodoros/{pomodoro_id}/comments")
-	public List<CommentForList> retrievePomodoroComments(Principal principal, @PathVariable Long pomodoro_id, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
-		List<CommentForList> comments = commentRepository.retrieveUserPomodoroComments(user_id, pomodoro_id, status, limit, offset);
+	@GetMapping("/pomodoros/{pomodoroId}/comments")
+	public List<CommentForList> retrievePomodoroComments(Principal principal, @PathVariable Long pomodoroId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+		Long userId = Long.parseLong(principal.getName());
+		List<CommentForList> comments = commentRepository.retrieveUserPomodoroComments(userId, pomodoroId, status, limit, offset);
 		log.trace("comments: {}", comments);
 		return comments;
 	}
 
-	@GetMapping("/pomodoros/{pomodoro_id}/comments/count")
-	public Integer retrievePomodoroCommentsCount(@PathVariable Long pomodoro_id, @RequestParam(defaultValue = "added") String status, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return commentRepository.getUserPomodoroCommentsCount(user_id, pomodoro_id, status);
+	@GetMapping("/pomodoros/{pomodoroId}/comments/count")
+	public Integer retrievePomodoroCommentsCount(@PathVariable Long pomodoroId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		return commentRepository.getUserPomodoroCommentsCount(userId, pomodoroId, status);
 	}
 
-	@PostMapping("/pomodoros/{pomodoro_id}/comments")
-	public Comment createPomodoroComment(@PathVariable Long pomodoro_id, @RequestBody Comment comment, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, pomodoro_id);
+	@PostMapping("/pomodoros/{pomodoroId}/comments")
+	public Comment createPomodoroComment(@PathVariable Long pomodoroId, @RequestBody Comment comment, Principal principal) {
+		Long userId = Long.parseLong(principal.getName());
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, pomodoroId);
 		if (pomodoroEntry.isEmpty())
-		 	throw new ResourceNotFoundException("pomodoro id:" + pomodoro_id);
+		 	throw new ResourceNotFoundException("pomodoro id:" + pomodoroId);
 		log.debug("found pomodoro: {}, task: {}", pomodoroEntry, pomodoroEntry.get().getTask());
 
 		comment.setUser(userEntry.get());
@@ -243,12 +244,12 @@ public class CommentResource {
 	public ResponseEntity<Comment> addTag(Principal principal, 
 			@PathVariable Long id, 
 			@RequestBody MapTagsRequest request) {
-		Long user_id = Long.parseLong(principal.getName());
-		Optional<Comment> commentEntry = commentRepository.findUserCommentById(user_id, id);
+		Long userId = Long.parseLong(principal.getName());
+		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
 		if (commentEntry.isEmpty())
 		 	throw new ResourceNotFoundException("comment id:" + id);
 		
-		Set<Tag> tags = tagRepository.findUserTagByIds(user_id, request.tagIds());
+		Set<Tag> tags = tagRepository.findUserTagByIds(userId, request.tagIds());
 		
 		commentEntry.get().setTags(tags);
 		

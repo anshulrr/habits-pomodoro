@@ -27,9 +27,9 @@ import com.anshul.atomichabits.model.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
-@Slf4j
 @AllArgsConstructor
+@Slf4j
+@Service
 public class TaskService {
 
 	private UserRepository userRepository;
@@ -38,47 +38,49 @@ public class TaskService {
 	private TagRepository tagRepository;
 	private CommentRepository commentRepository;
 	
-	public Task retriveTask(Long user_id, Long task_id) {
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+	private static final String NOT_FOUND_MESSAGE = "task id:";
+	
+	public Task retriveTask(Long userId, Long taskId) {
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
 		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + task_id);
+		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + taskId);
 		
 		return taskEntry.get();
 	}
 	
-	public List<TaskForList> retrieveAllTasks(Long user_id, int limit, int offset, TaskFilter filter, String status) {
+	public List<TaskForList> retrieveAllTasks(Long userId, int limit, int offset, TaskFilter filter, String status) {
 		List<TaskForList> tasks;
 		if (filter.projectId() != null) {			
-			tasks = taskRepository.retrieveUserTasksByProjectId(user_id, filter.projectId(), status, limit, offset);
+			tasks = taskRepository.retrieveUserTasksByProjectId(userId, filter.projectId(), status, limit, offset);
 		} else if (filter.tagId() != null) {
-			tasks = taskRepository.findTasksByUserIdAndTagsId(user_id, filter.tagId(), status, limit, offset);
+			tasks = taskRepository.findTasksByUserIdAndTagsId(userId, filter.tagId(), status, limit, offset);
 		} else if (filter.startDate() != null) {
-			tasks = taskRepository.retrieveFilteredTasks(user_id, status, filter.startDate(), filter.endDate(), limit, offset);
+			tasks = taskRepository.retrieveFilteredTasks(userId, status, filter.startDate(), filter.endDate(), limit, offset);
 		} else {
-			tasks = taskRepository.retrieveSearchedTasks(user_id, status, filter.searchString(), limit, offset);
+			tasks = taskRepository.retrieveSearchedTasks(userId, status, filter.searchString(), limit, offset);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
 	
-	public Integer retrieveTasksCount(Long user_id, TaskFilter filter, String status) {
+	public Integer retrieveTasksCount(Long userId, TaskFilter filter, String status) {
 		Integer count = 0;
 		log.debug("{} {} {}", status, filter.startDate(), filter.endDate());
 		if (filter.projectId() != null) {	
-			count = taskRepository.getProjectTasksCount(user_id, filter.projectId(), status);
+			count = taskRepository.getProjectTasksCount(userId, filter.projectId(), status);
 		} else if (filter.tagId() != null) {
-			count = taskRepository.getTagsTasksCount(user_id, filter.tagId(), status);
+			count = taskRepository.getTagsTasksCount(userId, filter.tagId(), status);
 		} else if (filter.startDate() != null) {
-			count = taskRepository.getFilteredTasksCount(user_id, status, filter.startDate(), filter.endDate());
+			count = taskRepository.getFilteredTasksCount(userId, status, filter.startDate(), filter.endDate());
 		} else {
-			count = taskRepository.getSearchedTasksCount(user_id, status, filter.searchString());
+			count = taskRepository.getSearchedTasksCount(userId, status, filter.searchString());
 		}
 		return count;
 	}
 	
-	public Task createTask(Long user_id, Long projectId, Task task) {
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, projectId);
+	public Task createTask(Long userId, Long projectId, Task task) {
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, projectId);
 		if (projectEntry.isEmpty())
 		 	throw new ResourceNotFoundException("project id:" + projectId);
 		log.trace("found project: {}", projectEntry);
@@ -89,12 +91,12 @@ public class TaskService {
 	}
 	
 	@Transactional
-	public Task updateTask(Long user_id, Long id, TaskDto taskDto) {
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
+	public Task updateTask(Long userId, Long id, TaskDto taskDto) {
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + id);
+		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
 		
-		Optional<Project> projectEntry = projectRepository.findUserProjectById(user_id, taskDto.projectId());
+		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, taskDto.projectId());
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);
 		
@@ -102,7 +104,7 @@ public class TaskService {
 		if (taskEntry.get().getProject().getId() != projectEntry.get().getId()) {			
 			// handle comments table for project and category update
 			// @Transactional and @Modifying is required for update query
-			commentRepository.updateCommentsProjectAndCategory(user_id, id, projectEntry.get().getId(), projectEntry.get().getProjectCategory().getId());
+			commentRepository.updateCommentsProjectAndCategory(userId, id, projectEntry.get().getId(), projectEntry.get().getProjectCategory().getId());
 		}
 
 		taskEntry.get().setDescription(taskDto.description());
@@ -118,12 +120,12 @@ public class TaskService {
 		return taskRepository.save(taskEntry.get());
 	}
 	
-	public Task addTag(Long user_id, Long id, List<Long> tagIds) {
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, id);
+	public Task addTag(Long userId, Long id, List<Long> tagIds) {
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
-		 	throw new ResourceNotFoundException("task id:" + id);
+		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
 		
-		Set<Tag> tags = tagRepository.findUserTagByIds(user_id, tagIds);
+		Set<Tag> tags = tagRepository.findUserTagByIds(userId, tagIds);
 		
 		taskEntry.get().setTags(tags);
 		
@@ -134,9 +136,8 @@ public class TaskService {
 		return taskRepository.findTaskTagsByIds(taskIds);
 	}
 	
-	public List<Object> retrieveTasksTimeElapsed(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] taskIds) {
+	public List<Object> retrieveTasksTimeElapsed(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] taskIds) {
 		log.debug(startDate + " " + endDate);
-		List<Object> tasksTimeElapsed = taskRepository.findTasksTimeElapsed(user_id, startDate, endDate, taskIds);
-		return tasksTimeElapsed;
+		return taskRepository.findTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
 }

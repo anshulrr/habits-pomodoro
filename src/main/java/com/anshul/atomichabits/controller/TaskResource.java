@@ -33,10 +33,10 @@ public class TaskResource {
 
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
-	@GetMapping("/tasks/{task_id}")
-	public Task retrieveTask(Principal principal, @PathVariable Long task_id) {
-		Long user_id = Long.parseLong(principal.getName());
-		return taskService.retriveTask(user_id, task_id);
+	@GetMapping("/tasks/{taskId}")
+	public Task retrieveTask(Principal principal, @PathVariable Long taskId) {
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.retriveTask(userId, taskId);
 	}
 
 	@GetMapping("/tasks")
@@ -50,16 +50,16 @@ public class TaskResource {
 			@RequestParam(defaultValue = "current") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId != null) {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {
-				user_id = subjectId;
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {
+				userId = subjectId;
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchString);
-		return new ResponseEntity<>(taskService.retrieveAllTasks(user_id, limit, offset, filter, status), HttpStatus.OK);
+		return new ResponseEntity<>(taskService.retrieveAllTasks(userId, limit, offset, filter, status), HttpStatus.OK);
 	}
 
 	@GetMapping("/tasks/count")
@@ -70,29 +70,29 @@ public class TaskResource {
 			@RequestParam(required = false) String searchString,
 			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "current") String status) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchString);
-		return taskService.retrieveTasksCount(user_id, filter, status);
+		return taskService.retrieveTasksCount(userId, filter, status);
 	}
 
 	@PostMapping("/tasks")
 	public Task createTask(Principal principal, @RequestParam Long projectId, @RequestBody Task task) {
-		Long user_id = Long.parseLong(principal.getName());
-		return taskService.createTask(user_id, projectId, task);
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.createTask(userId, projectId, task);
 	}
 
 	@PutMapping("/tasks/{id}")
 	public Task updateTask(Principal principal, @PathVariable Long id, @Valid @RequestBody TaskDto taskDto) {
-		Long user_id = Long.parseLong(principal.getName());
-		return taskService.updateTask(user_id, id, taskDto);
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.updateTask(userId, id, taskDto);
 	}
 	
 	@PostMapping("/tasks/{id}/tags")
 	public ResponseEntity<Task> addTag(Principal principal, 
 			@PathVariable Long id, 
 			@RequestBody MapTagsRequest request) {
-		Long user_id = Long.parseLong(principal.getName());
-	    return new ResponseEntity<>(taskService.addTag(user_id, id, request.tagIds()), HttpStatus.CREATED);
+		Long userId = Long.parseLong(principal.getName());
+	    return new ResponseEntity<>(taskService.addTag(userId, id, request.tagIds()), HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/tasks/tags")
@@ -106,8 +106,8 @@ public class TaskResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate,
 			@RequestParam("taskIds") long[] taskIds) {
-		Long user_id = Long.parseLong(principal.getName());
-		return taskService.retrieveTasksTimeElapsed(user_id, startDate, endDate, taskIds);
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.retrieveTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
 }
 

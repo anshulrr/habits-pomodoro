@@ -38,17 +38,19 @@ public class PomodoroResource {
 	private StatsService statsService;
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
+	private static final String LOG_MESSAGE = "{} tried unauthorized access of {} stats";
+	
 	@GetMapping("/pomodoros")
 	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return pomodoroService.retrievePomodoros(user_id, startDate, endDate, categories);
+			return pomodoroService.retrievePomodoros(userId, startDate, endDate, categories);
 		} else {
-			log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+			log.info(LOG_MESSAGE, userId, subjectId);
 			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
 		}
 	}
@@ -59,14 +61,14 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
 		} else {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
 			} else {
-				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -78,14 +80,14 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return new ResponseEntity<>(statsService.retrieveProjectPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveProjectPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
 		} else {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrieveProjectPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
 			} else {
-				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -97,14 +99,14 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam("include_categories") long[] categories) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
-			return new ResponseEntity<>(statsService.retrieveTaskPomodoros(user_id, startDate, endDate, categories), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveTaskPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
 		} else {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrieveTaskPomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
 			} else {
-				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -118,14 +120,14 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime endDate,
 			@RequestParam("include_categories") long[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
-			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(user_id, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 		} else {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 			} else {
-				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -140,14 +142,14 @@ public class PomodoroResource {
 			@RequestParam(name = "include_categories", required = false) long[] categories,
 			@RequestParam(required = false) Long typeId,
 			@RequestParam(defaultValue = "UTC") String timezone) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return new ResponseEntity<>(statsService.retrievePomodorosCount(user_id, startDate, endDate, type, typeId, categories, timezone), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrievePomodorosCount(userId, startDate, endDate, type, typeId, categories, timezone), HttpStatus.OK);
 		} else {
-			if (accountabilityPartnerService.isSubject(user_id, subjectId)) {	
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
 				return new ResponseEntity<>(statsService.retrievePomodorosCount(subjectId, startDate, endDate, type, typeId, categories, timezone), HttpStatus.OK);
 			} else {
-				log.info("{} tried unauthorized access of {} stats", user_id, subjectId);
+				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -158,48 +160,48 @@ public class PomodoroResource {
 			@RequestParam Long taskId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
-		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTaskPomodoros(user_id, taskId, limit, offset);
+		Long userId = Long.parseLong(principal.getName());
+		return statsService.retrieveTaskPomodoros(userId, taskId, limit, offset);
 	}
 
 	@GetMapping("/stats/task-pomodoros/count")
 	public Integer retrieveTaskPomodorosCount(Principal principal, @RequestParam Long taskId) {
-		Long user_id = Long.parseLong(principal.getName());
-		return statsService.retrieveTaskPomodorosCount(user_id, taskId);
+		Long userId = Long.parseLong(principal.getName());
+		return statsService.retrieveTaskPomodorosCount(userId, taskId);
 	}
 
 	@PostMapping("/pomodoros")
 	public ResponseEntity<Pomodoro> createPomodoro(Principal principal, 
-			@RequestParam Long task_id,
+			@RequestParam Long taskId,
 			@Valid @RequestBody Pomodoro pomodoro) {	
-		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.createPomodoro(user_id, task_id, pomodoro), HttpStatus.OK);
+		Long userId = Long.parseLong(principal.getName());
+		return new ResponseEntity<>(pomodoroService.createPomodoro(userId, taskId, pomodoro), HttpStatus.OK);
 	}
 
 	@PostMapping("/pomodoros/past")
 	public ResponseEntity<Pomodoro> createPastPomodoro(Principal principal, 
-			@RequestParam Long task_id,
+			@RequestParam Long taskId,
 			@Valid @RequestBody Pomodoro pomodoro) {	
-		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.createPastPomodoro(user_id, task_id, pomodoro), HttpStatus.OK);
+		Long userId = Long.parseLong(principal.getName());
+		return new ResponseEntity<>(pomodoroService.createPastPomodoro(userId, taskId, pomodoro), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable Long id) {
-		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.deletePomodoro(user_id, id), HttpStatus.OK);
+		Long userId = Long.parseLong(principal.getName());
+		return new ResponseEntity<>(pomodoroService.deletePomodoro(userId, id), HttpStatus.OK);
 	}
 
 	@PutMapping("/pomodoros/{id}")
 	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.updatePomodoro(user_id, id, pomodoroUpdateDto), HttpStatus.OK);
+		Long userId = Long.parseLong(principal.getName());
+		return new ResponseEntity<>(pomodoroService.updatePomodoro(userId, id, pomodoroUpdateDto), HttpStatus.OK);
 	}
 	
 	@GetMapping("/pomodoros/running")
 	public ResponseEntity<PomodoroDto> getRunningPomodoro(Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return new ResponseEntity<>(pomodoroService.getRunningPomodoro(user_id), HttpStatus.OK);
+		Long userId = Long.parseLong(principal.getName());
+		return new ResponseEntity<>(pomodoroService.getRunningPomodoro(userId), HttpStatus.OK);
 	}
 }

@@ -24,9 +24,9 @@ import com.anshul.atomichabits.model.UserSettings;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
-@Slf4j
 @AllArgsConstructor
+@Slf4j
+@Service
 public class PomodoroService {
 
 	private UserRepository userRepository;
@@ -34,45 +34,44 @@ public class PomodoroService {
 	private UserSettingsRepository userSettingsRepository;
 	private PomodoroRepository pomodoroRepository;
 	
-	public List<PomodoroForList> retrievePomodoros(Long user_id, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
-		// TODO: using PageRequest
+	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
 		log.debug(startDate + " " + endDate);
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(user_id, startDate, endDate, categories);
-		log.trace("first pomodoro: {}", pomodoros.size() != 0 ? pomodoros.get(0).getId() : "nill");
+		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(userId, startDate, endDate, categories);
+		log.trace("first pomodoro: {}", !pomodoros.isEmpty() ? pomodoros.get(0).getId() : "nill");
 		return pomodoros;
 	}
 	
-	public Pomodoro createPomodoro(Long user_id, Long task_id, Pomodoro pomodoro) {
+	public Pomodoro createPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
-		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(user_id);
-		if (runningPomodoros.size() != 0) {
+		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(userId);
+		if (!runningPomodoros.isEmpty()) {
 			log.trace("running pomodoro: {}", runningPomodoros.get(0));
 			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
 		if (taskEntry.isEmpty())
-			throw new ResourceNotFoundException("task id:" + task_id);
+			throw new ResourceNotFoundException("task id:" + taskId);
 
 		pomodoro.setUser(userEntry.get());
 		pomodoro.setTask(taskEntry.get());
-		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
+		pomodoro.setLength(calculateAndSetPomodoroLength(userId, taskEntry.get()));
 		log.debug("pomodoro {}", pomodoro);
 
 		return pomodoroRepository.save(pomodoro);
 	}
 	
-	public Pomodoro createPastPomodoro(Long user_id, Long task_id, Pomodoro pomodoro) {
+	public Pomodoro createPastPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
-		Optional<User> userEntry = userRepository.findById(user_id);
-		Optional<Task> taskEntry = taskRepository.findUserTaskById(user_id, task_id);
+		Optional<User> userEntry = userRepository.findById(userId);
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
 		if (taskEntry.isEmpty())
-			throw new ResourceNotFoundException("task id:" + task_id);
+			throw new ResourceNotFoundException("task id:" + taskId);
 
 		pomodoro.setUser(userEntry.get());
 		pomodoro.setTask(taskEntry.get());
-		pomodoro.setLength(calculateAndSetPomodoroLength(user_id, taskEntry.get()));
+		pomodoro.setLength(calculateAndSetPomodoroLength(userId, taskEntry.get()));
 		pomodoro.setStatus("past");				
 		log.debug("pomodoro {}", pomodoro);
 		
@@ -83,7 +82,7 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoro);
 	}
 	
-	private Integer calculateAndSetPomodoroLength(Long user_id, Task task) {		
+	private Integer calculateAndSetPomodoroLength(Long userId, Task task) {		
 		Integer length;
 		
 		// check task settings, then project settings, then user settings
@@ -98,7 +97,7 @@ public class PomodoroService {
 				log.debug("project length {}", length);
 			} else {
 				// TODO: get length from user settings stored in auth context
-				UserSettings settings = userSettingsRepository.findUserSettings(user_id);
+				UserSettings settings = userSettingsRepository.findUserSettings(userId);
 				length = settings.getPomodoroLength();
 				log.debug("settings length {}", length);
 			}
@@ -107,8 +106,8 @@ public class PomodoroService {
 		return length;
 	}
 	
-	public Pomodoro deletePomodoro(Long user_id, Long id) {
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
+	public Pomodoro deletePomodoro(Long userId, Long id) {
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
 		
@@ -117,8 +116,8 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoroEntry.get());
 	}
 	
-	public Pomodoro updatePomodoro(Long user_id, Long id, PomodoroUpdateDto pomodoroUpdateDto) {
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, id);
+	public Pomodoro updatePomodoro(Long userId, Long id, PomodoroUpdateDto pomodoroUpdateDto) {
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
 		log.debug("new pomodoro request: {}, pomodoro entry: {}", pomodoroUpdateDto, pomodoroEntry.get());
@@ -130,9 +129,9 @@ public class PomodoroService {
 		return pomodoroRepository.save(runningPomodoro.getPomodoro());
 	}
 	
-	public PomodoroDto getRunningPomodoro(Long user_id) {
-		List<PomodoroDto> runningPomodoros = pomodoroRepository.findRunningPomodoros(user_id);
-		if (runningPomodoros.size() == 0) {
+	public PomodoroDto getRunningPomodoro(Long userId) {
+		List<PomodoroDto> runningPomodoros = pomodoroRepository.findRunningPomodoros(userId);
+		if (runningPomodoros.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NO_CONTENT);
 		} else if (runningPomodoros.size() > 1) {
 			// handle if more than one entry found
@@ -144,7 +143,7 @@ public class PomodoroService {
 		}
 		
 		// update pomodoro data for running pomodoro
-		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(user_id, runningPomodoros.get(0).getId());
+		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, runningPomodoros.get(0).getId());
 		
 		RunningPomodoro runningPomodoro = new RunningPomodoro(pomodoroEntry.get());
 		runningPomodoro.updatePomodoroData();
@@ -154,7 +153,7 @@ public class PomodoroService {
 			throw new ResponseStatusException(HttpStatus.NO_CONTENT);
 		}
 		
-		List<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoros(user_id);
+		List<PomodoroDto> updatedRunningPomodoroEntry = pomodoroRepository.findRunningPomodoros(userId);
 		return updatedRunningPomodoroEntry.get(0);
 	}
 }

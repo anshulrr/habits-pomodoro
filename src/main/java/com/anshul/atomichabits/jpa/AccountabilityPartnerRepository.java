@@ -11,16 +11,16 @@ import com.anshul.atomichabits.model.AccountabilityPartner;
 
 public interface AccountabilityPartnerRepository extends JpaRepository<AccountabilityPartner, Long> {
 
-	@Query("select a.partner.id id, a.partner.email email from accountability_partners a where a.subject.id = :user_id")
-	public List<UserForList> getPartners(Long user_id);
+	@Query("select a.partner.id id, a.partner.email email from accountability_partners a where a.subject.id = :userId")
+	public List<UserForList> getPartners(Long userId);
 	
-	@Query("select a.subject.id id, a.subject.email email from accountability_partners a where a.partner.id = :user_id")
-	public List<UserForList> getSubjects(Long user_id);
+	@Query("select a.subject.id id, a.subject.email email from accountability_partners a where a.partner.id = :userId")
+	public List<UserForList> getSubjects(Long userId);
 	
-	@Query("select count(*) from accountability_partners a where a.partner.id = :user_id and a.subject.id = :subject_id")
-	public int getSubject(Long user_id, Long subject_id);
+	@Query("select count(*) from accountability_partners a where a.partner.id = :userId and a.subject.id = :subjectId")
+	public int getSubject(Long userId, Long subjectId);
 	
 	@Modifying
-	@Query("delete from accountability_partners a where a.subject.id = :user_id and a.partner.id = :partner_id")
-	public void deletePartner(Long user_id, Long partner_id);
+	@Query("delete from accountability_partners a where a.subject.id = :userId and a.partner.id = :partnerId")
+	public void deletePartner(Long userId, Long partnerId);
 }

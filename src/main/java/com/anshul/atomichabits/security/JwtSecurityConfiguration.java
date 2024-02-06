@@ -1,6 +1,5 @@
 package com.anshul.atomichabits.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -13,13 +12,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Configuration
 public class JwtSecurityConfiguration {
 
-	@Autowired
 	private Environment env;
 	
-	@Autowired
 	private JwtAuthenticationFilter authenticationFilter;
 
 	@Bean
@@ -44,16 +44,10 @@ public class JwtSecurityConfiguration {
 		return http.build();
 	}
 
-//	@Bean
-//	public JwtDecoder jwtDecoder() throws JOSEException {
-//		return NimbusJwtDecoder
-//				.withJwkSetUri(env.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri"))
-//				.build();
-//	}
-	
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
+			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedMethods("*")
