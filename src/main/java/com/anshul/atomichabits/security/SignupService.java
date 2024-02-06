@@ -40,11 +40,11 @@ public class SignupService {
 	}
 
 	private void createInitialUserData(User user) {
-		ProjectCategory project_category = createInitialProjectCategories(user);
-		Project project = createInitialProject(user, project_category);
+		ProjectCategory projectCategory = createInitialProjectCategories(user);
+		Project project = createInitialProject(user, projectCategory);
 		Task task = createInitialTask(user, project);
 
-		createInitialComments(user, project_category, project, task);
+		createInitialComments(user, projectCategory, project, task);
 
 		createInitialTags(user);
 	}
@@ -72,7 +72,7 @@ public class SignupService {
 		projectCategory1.setColor("#124f12");
 		projectCategory1.setLevel(1);
 		projectCategory1.setStatsDefault(true);
-		ProjectCategory project_category = projectCategoryRepository.save(projectCategory1);
+		ProjectCategory projectCategory = projectCategoryRepository.save(projectCategory1);
 
 		ProjectCategory projectCategory2 = new ProjectCategory();
 		projectCategory2.setUser(user);
@@ -99,13 +99,13 @@ public class SignupService {
 		projectCategory4.setVisibleToPartners(false);
 		projectCategoryRepository.save(projectCategory4);
 
-		return project_category;
+		return projectCategory;
 	}
 
-	private Project createInitialProject(User user, ProjectCategory project_category) {
+	private Project createInitialProject(User user, ProjectCategory projectCategory) {
 		Project project = new Project();
 		project.setUser(user);
-		project.setProjectCategory(project_category);
+		project.setProjectCategory(projectCategory);
 		project.setName("General Project");
 		project.setColor("#22688c");
 		project.setPomodoroLength(0);
@@ -121,7 +121,7 @@ public class SignupService {
 		return taskRepository.save(task);
 	}
 
-	private void createInitialComments(User user, ProjectCategory project_category, Project project, Task task) {
+	private void createInitialComments(User user, ProjectCategory projectCategory, Project project, Task task) {
 		Comment comment = new Comment();
 		comment.setUser(user);
 		comment.setDescription("""
@@ -134,20 +134,20 @@ public class SignupService {
 
 		Comment comment1 = new Comment();
 		comment1.setUser(user);
-		comment1.setProjectCategory(project_category);
+		comment1.setProjectCategory(projectCategory);
 		comment1.setDescription("Sample note of a Project Category");
 		commentRepository.save(comment1);
 
 		Comment comment2 = new Comment();
 		comment2.setUser(user);
-		comment2.setProjectCategory(project_category);
+		comment2.setProjectCategory(projectCategory);
 		comment2.setProject(project);
 		comment2.setDescription("Sample note of a Project");
 		commentRepository.save(comment2);
 
 		Comment comment3 = new Comment();
 		comment3.setUser(user);
-		comment3.setProjectCategory(project_category);
+		comment3.setProjectCategory(projectCategory);
 		comment3.setProject(project);
 		comment3.setTask(task);
 		comment3.setDescription("Sample note of a Task");

@@ -23,7 +23,6 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
-//import com.google.firebase.messaging.Notification;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,15 +79,12 @@ public class NotificationConfig {
 			return tokens;
 			
 		} catch (FirebaseAuthException e) {
-			// TODO Auto-generated catch block
 			log.info("couldn't retrieve user record from firebase auth");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			log.info("retrieval device details from firebase firestore is interrupted");
 			e.printStackTrace();
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
 			log.info("couldn't retrieve device details from firebase firestore");
 			e.printStackTrace();
 		}
@@ -109,7 +105,6 @@ public class NotificationConfig {
 			response = FirebaseMessaging.getInstance().send(message);
 			log.debug("Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			log.info("an error occurs while handing the message off to FCM for delivery.");
 		}

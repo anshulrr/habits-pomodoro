@@ -28,7 +28,7 @@ public class BasicAuthSecurityConfiguration {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// disable form login
-		// http.formLogin();
+		http.formLogin();
 
 		http.httpBasic();
 
@@ -52,9 +52,6 @@ public class BasicAuthSecurityConfiguration {
 	// required for default spring security Todo: why
 	@Bean
 	public UserDetailsService userDetailService(DataSource dataSource) {
-
-		var jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-
-		return jdbcUserDetailsManager;
+		return new JdbcUserDetailsManager(dataSource);
 	}
 }

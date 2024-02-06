@@ -38,7 +38,7 @@ public class TaskService {
 	private TagRepository tagRepository;
 	private CommentRepository commentRepository;
 	
-	private static final String NOT_FOUND_MESSAGE = "task id: ";
+	private static final String NOT_FOUND_MESSAGE = "task id:";
 	
 	public Task retriveTask(Long userId, Long taskId) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);

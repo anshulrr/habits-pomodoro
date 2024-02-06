@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.security.Principal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,30 +18,31 @@ import com.anshul.atomichabits.dto.UserForList;
 import com.anshul.atomichabits.business.AccountabilityPartnerService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @RestController
 public class AccountabilityPartnerResource {
 
-	@Autowired
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
 	@GetMapping("/accountability-partners")
 	public List<UserForList> getPartners(Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return  accountabilityPartnerService.getPartners(user_id);
+		Long userId = Long.parseLong(principal.getName());
+		return  accountabilityPartnerService.getPartners(userId);
 	}
 
 	@GetMapping("/accountability-subjects")
 	public List<UserForList> getSubjects(Principal principal) {
-		Long user_id = Long.parseLong(principal.getName());
-		return  accountabilityPartnerService.getSubjects(user_id);
+		Long userId = Long.parseLong(principal.getName());
+		return  accountabilityPartnerService.getSubjects(userId);
 	}
 
 	@PostMapping("/accountability-partners")
 	public ResponseEntity<Boolean> createPartner(Principal principal, @Valid @RequestBody AccountabilityPartnerRequest request) {
-		Long user_id = Long.parseLong(principal.getName());
+		Long userId = Long.parseLong(principal.getName());
 		try {
-			accountabilityPartnerService.addPartner(user_id, request.email());
+			accountabilityPartnerService.addPartner(userId, request.email());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (DataIntegrityViolationException e) {
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -53,10 +53,10 @@ public class AccountabilityPartnerResource {
 	
 	@DeleteMapping("/accountability-partners/{id}")
 	public ResponseEntity<Boolean> deletePartner(Principal principal, @PathVariable Long id) {
-		Long user_id = Long.parseLong(principal.getName());
-		accountabilityPartnerService.deletePartner(user_id, id);
+		Long userId = Long.parseLong(principal.getName());
+		accountabilityPartnerService.deletePartner(userId, id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
 
-record AccountabilityPartnerRequest(String email) {};
+record AccountabilityPartnerRequest(String email) {}
