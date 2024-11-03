@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Slf4j
 @RestController
-public class CommentResource {
+public class CommentController {
 
 	private UserRepository userRepository;
 	private ProjectCategoryRepository projectCategoryRepository;

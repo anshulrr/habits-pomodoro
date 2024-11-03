@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-public class ProjectResource {
+public class ProjectController {
 
 	private ProjectService projectService;
 

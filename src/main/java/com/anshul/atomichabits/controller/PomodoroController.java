@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class PomodoroResource {
+public class PomodoroController {
 
 	private PomodoroService pomodoroService;
 	private StatsService statsService;
@@ -41,17 +41,21 @@ public class PomodoroResource {
 	private static final String LOG_MESSAGE = "{} tried unauthorized access of {} stats";
 	
 	@GetMapping("/pomodoros")
-	public List<PomodoroForList> retrievePomodorosOfUser(Principal principal, 
+	public ResponseEntity<List<PomodoroForList>> retrievePomodorosOfUser(Principal principal, 
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("include_categories") long[] categories) {
+			@RequestParam("categoryIds") long[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return pomodoroService.retrievePomodoros(userId, startDate, endDate, categories);
+			return new ResponseEntity<>(pomodoroService.retrievePomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
 		} else {
-			log.info(LOG_MESSAGE, userId, subjectId);
-			return pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories);
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
+				return new ResponseEntity<>(pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+			} else {
+				log.info(LOG_MESSAGE, userId, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
 		}
 	}
 	
@@ -60,7 +64,7 @@ public class PomodoroResource {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("include_categories") long[] categories) {
+			@RequestParam("categoryIds") long[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
 			return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -79,7 +83,7 @@ public class PomodoroResource {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("include_categories") long[] categories) {
+			@RequestParam("categoryIds") long[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
 			return new ResponseEntity<>(statsService.retrieveProjectPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -98,7 +102,7 @@ public class PomodoroResource {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("include_categories") long[] categories) {
+			@RequestParam("categoryIds") long[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
 			return new ResponseEntity<>(statsService.retrieveTaskPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -118,7 +122,7 @@ public class PomodoroResource {
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
 			@RequestParam OffsetDateTime endDate,
-			@RequestParam("include_categories") long[] categories,
+			@RequestParam("categoryIds") long[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
@@ -139,7 +143,7 @@ public class PomodoroResource {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam(defaultValue = "user")  String type,
-			@RequestParam(name = "include_categories", required = false) long[] categories,
+			@RequestParam(name = "categoryIds", required = false) long[] categories,
 			@RequestParam(required = false) Long typeId,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());

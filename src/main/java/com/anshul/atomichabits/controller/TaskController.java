@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-public class TaskResource {
+public class TaskController {
 
 	private TaskService taskService;
 

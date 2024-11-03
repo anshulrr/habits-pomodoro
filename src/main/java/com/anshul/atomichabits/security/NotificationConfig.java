@@ -38,7 +38,7 @@ public class NotificationConfig {
 	@Scheduled(cron = "0 1,31 * * * *")
 	public void scheduleFixedRateTask() {
 		List<TaskForNotifications> tasks = taskRepository.getNotificationTasks(Instant.now(),
-				Instant.now().plusSeconds(30 * 60));
+				Instant.now().plusSeconds(30L * 60L));
 
 		log.info("notification for {} tasks", tasks.size());
 		for (TaskForNotifications task : tasks) {
@@ -80,13 +80,12 @@ public class NotificationConfig {
 			
 		} catch (FirebaseAuthException e) {
 			log.info("couldn't retrieve user record from firebase auth");
-			e.printStackTrace();
 		} catch (InterruptedException e) {
 			log.info("retrieval device details from firebase firestore is interrupted");
-			e.printStackTrace();
+			/* Clean up whatever needs to be handled before interrupting  */
+		    Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			log.info("couldn't retrieve device details from firebase firestore");
-			e.printStackTrace();
 		}
 		
 		return List.of();
@@ -105,7 +104,6 @@ public class NotificationConfig {
 			response = FirebaseMessaging.getInstance().send(message);
 			log.debug("Successfully sent message: " + response);
 		} catch (FirebaseMessagingException e) {
-			e.printStackTrace();
 			log.info("an error occurs while handing the message off to FCM for delivery.");
 		}
 	}

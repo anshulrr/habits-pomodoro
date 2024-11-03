@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableMethodSecurity
 @RestController
-public class UserResource {
+public class UserController {
 
 	private UserService userService;
 
