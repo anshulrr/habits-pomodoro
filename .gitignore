@@ -34,6 +34,6 @@ build/
 
 
 src/main/resources/application.properties
-src/main/resources/application-copy-*
+src/main/resources/application-*
 src/main/resources/firebaseServiceAccountKey.json
 logs/
