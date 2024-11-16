@@ -46,6 +46,9 @@ public class UserSettingsService {
 		userSettings.setEnableChartMonthlyAverage(settingsRequest.isEnableChartMonthlyAverage());
 		userSettings.setChartMonthlyAverage(settingsRequest.getChartMonthlyAverage());
 		
+		userSettings.setEnableChartYearlyAverage(settingsRequest.isEnableChartYearlyAverage());
+		userSettings.setChartYearlyAverage(settingsRequest.getChartYearlyAverage());
+		
 		userSettings.setEnableChartAdjustedWeeklyMonthlyAverage(settingsRequest.isEnableChartAdjustedWeeklyMonthlyAverage());
 		
 		userSettings.setPageProjectsCount(settingsRequest.getPageProjectsCount());
