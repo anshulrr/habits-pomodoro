@@ -38,6 +38,9 @@ class UserSettingsRequestDto {
 
 	@NotNull
 	boolean enableChartMonthlyAverage;
+
+	@NotNull
+	boolean enableChartYearlyAverage;
 	
 	@NotNull
 	boolean enableChartAdjustedWeeklyMonthlyAverage;
@@ -50,6 +53,9 @@ class UserSettingsRequestDto {
 
 	@NotNull @Positive
 	Integer chartMonthlyAverage;
+
+	@NotNull @Positive
+	Integer chartYearlyAverage;
 	
 	@NotNull @Positive
 	Integer pageProjectsCount;

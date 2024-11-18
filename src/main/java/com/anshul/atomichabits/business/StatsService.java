@@ -41,6 +41,8 @@ public class StatsService {
 			limit = "IW";
 		} else if (limit.equals("monthly")) {
 			limit = "MM";
+		} else if (limit.equals("yearly")) {
+			limit = "YYYY";
 		}
 		
 		List<String[]> result = pomodoroRepository.findTotalTime(userId, startDate, endDate, categories, timezone, limit);

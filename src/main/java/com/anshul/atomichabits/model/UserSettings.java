@@ -57,6 +57,9 @@ public class UserSettings {
 
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartMonthlyAverage = false;
+
+	@Column(columnDefinition = "boolean default false")
+	private boolean enableChartYearlyAverage = false;
 	
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableChartAdjustedWeeklyMonthlyAverage = false;
@@ -69,6 +72,9 @@ public class UserSettings {
 
 	@Column(columnDefinition = "integer default 30")
 	private Integer chartMonthlyAverage = 30;
+
+	@Column(columnDefinition = "integer default 365")
+	private Integer chartYearlyAverage = 365;
 	
 	@Column(columnDefinition = "integer default 5")
 	private Integer pageProjectsCount = 5;
