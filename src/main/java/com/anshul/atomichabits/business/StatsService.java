@@ -35,6 +35,10 @@ public class StatsService {
 	}
 	
 	public Map<String, TotalChartProjectData> retrieveTotalPomodoros(Long userId, String limit, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, String timezone) {
+		// temporary fix for timezone issue with latest postgres / IANA timezone
+		if (timezone.equals("Asia/Calcutta")) {
+			timezone = "Asia/Kolkata";
+		}
 		if (limit.equals("daily")) {
 			limit = "DD";
 		} else if (limit.equals("weekly")) {
@@ -66,6 +70,11 @@ public class StatsService {
 	}
 	
 	public List<Object> retrievePomodorosCount(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, String type, Long typeId, long[] categories, String timezone) {
+		// temporary fix for timezone issue with latest postgres / IANA timezone
+		// TODO: find generic solution
+		if (timezone.equals("Asia/Calcutta")) {
+			timezone = "Asia/Kolkata";
+		}
 		List<Object> result = null;
 		if (type.equals("user")) {
 			result = pomodoroRepository.findPomodorosCount(userId, startDate, endDate, categories, timezone);
