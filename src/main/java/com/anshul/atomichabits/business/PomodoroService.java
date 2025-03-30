@@ -74,10 +74,6 @@ public class PomodoroService {
 		pomodoro.setLength(calculateAndSetPomodoroLength(userId, taskEntry.get()));
 		pomodoro.setStatus("past");				
 		log.debug("pomodoro {}", pomodoro);
-		
-		if (pomodoro.getTimeElapsed() > pomodoro.getLength() * 60) {
-			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
-		}
 
 		return pomodoroRepository.save(pomodoro);
 	}
