@@ -95,6 +95,9 @@ public class UserSettings {
 
 	@Column(columnDefinition = "varchar(255) default 'bar'")
 	private String projectCategoriesChartType = "bar";
+
+	@Column(columnDefinition = "varchar(255) default 'daily'")
+	private String defaultStatsLimit = "daily";
 	
 	// projects, tags, filters
 	@Column(columnDefinition = "varchar(10) default 'projects'")
