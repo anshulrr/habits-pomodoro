@@ -103,6 +103,10 @@ public class UserSettings {
 	@Column(columnDefinition = "varchar(10) default 'projects'")
 	private String homePageDefaultList = "projects";
 	
+	// none, total, tasks, projects, categories, streak
+	@Column(columnDefinition = "varchar(10) default 'tasks'")
+	private String homePageChart = "tasks";
+	
 	@Column(columnDefinition = "boolean default false")
 	private boolean enableNotifications = false;
 	
