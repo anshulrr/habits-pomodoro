@@ -76,6 +76,9 @@ class UserSettingsRequestDto {
 	String projectCategoriesChartType;
 
 	@NotBlank
+	String defaultStatsLimit;
+
+	@NotBlank
 	String homePageDefaultList;
 	
 	@NotNull

@@ -59,6 +59,8 @@ public class UserSettingsService {
 		userSettings.setProjectsChartType(settingsRequest.getProjectsChartType());
 		userSettings.setProjectCategoriesChartType(settingsRequest.getProjectCategoriesChartType());
 		
+		userSettings.setDefaultStatsLimit(settingsRequest.getDefaultStatsLimit());
+		
 		userSettings.setHomePageDefaultList(settingsRequest.getHomePageDefaultList());
 		
 		userSettings.setEnableNotifications(settingsRequest.isEnableNotifications());
