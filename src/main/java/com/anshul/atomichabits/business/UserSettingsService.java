@@ -55,6 +55,10 @@ public class UserSettingsService {
 		userSettings.setPageTasksCount(settingsRequest.getPageTasksCount());
 		userSettings.setPageCommentsCount(settingsRequest.getPageCommentsCount());
 		
+		userSettings.setStreakDefaultCategory(settingsRequest.getStreakDefaultCategory());
+		userSettings.setStreakDefaultProject(settingsRequest.getStreakDefaultProject());
+		userSettings.setStreakDefaultTask(settingsRequest.getStreakDefaultTask());
+		
 		userSettings.setTasksChartType(settingsRequest.getTasksChartType());
 		userSettings.setProjectsChartType(settingsRequest.getProjectsChartType());
 		userSettings.setProjectCategoriesChartType(settingsRequest.getProjectCategoriesChartType());

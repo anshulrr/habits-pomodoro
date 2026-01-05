@@ -66,6 +66,15 @@ class UserSettingsRequestDto {
 	@NotNull @Positive
 	Integer pageCommentsCount;
 	
+	@NotNull @PositiveOrZero
+	Integer streakDefaultCategory;
+	
+	@NotNull @PositiveOrZero
+	Integer streakDefaultProject;
+	
+	@NotNull @PositiveOrZero
+	Integer streakDefaultTask;
+	
 	@NotBlank
 	String tasksChartType;
 	

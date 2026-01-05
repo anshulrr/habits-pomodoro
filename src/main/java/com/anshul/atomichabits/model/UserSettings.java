@@ -85,6 +85,15 @@ public class UserSettings {
 	@Column(columnDefinition = "integer default 5")
 	private Integer pageCommentsCount = 5;
 	
+	@Column(columnDefinition = "integer default 0")
+	private Integer streakDefaultCategory = 0;
+	
+	@Column(columnDefinition = "integer default 0")
+	private Integer streakDefaultProject = 0;
+	
+	@Column(columnDefinition = "integer default 0")
+	private Integer streakDefaultTask = 0;
+	
 	// TODO: use enum
 	// bar, doughnut
 	@Column(columnDefinition = "varchar(255) default 'doughnut'")
