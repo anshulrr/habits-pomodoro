@@ -80,6 +80,9 @@ class UserSettingsRequestDto {
 
 	@NotBlank
 	String homePageDefaultList;
+
+	@NotBlank
+	String homePageChart;
 	
 	@NotNull
 	boolean enableNotifications;

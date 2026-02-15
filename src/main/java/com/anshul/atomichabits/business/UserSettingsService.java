@@ -63,6 +63,8 @@ public class UserSettingsService {
 		
 		userSettings.setHomePageDefaultList(settingsRequest.getHomePageDefaultList());
 		
+		userSettings.setHomePageChart(settingsRequest.getHomePageChart());
+		
 		userSettings.setEnableNotifications(settingsRequest.isEnableNotifications());
 		
 		return userSettingsRepository.save(userSettings);
