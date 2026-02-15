@@ -34,7 +34,7 @@ public class StatsService {
 		return pomodoroRepository.findTasksTime(userId, startDate, endDate, categories);
 	}
 	
-	public Map<String, TotalChartProjectData> retrieveTotalPomodoros(Long userId, String limit, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, String timezone) {
+	public Map<String, TotalChartProjectData> retrieveTotalPomodoros(String entity, Long userId, String limit, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, String timezone) {
 		// temporary fix for timezone issue with latest postgres / IANA timezone
 		if (timezone.equals("Asia/Calcutta")) {
 			timezone = "Asia/Kolkata";
@@ -49,7 +49,12 @@ public class StatsService {
 			limit = "YYYY";
 		}
 		
-		List<String[]> result = pomodoroRepository.findTotalTime(userId, startDate, endDate, categories, timezone, limit);
+		List<String[]> result;
+		if (entity.equals("task")) {
+			result = pomodoroRepository.findTasksTotalTime(userId, startDate, endDate, categories, timezone, limit);
+		} else {			
+			result = pomodoroRepository.findTotalTime(userId, startDate, endDate, categories, timezone, limit);
+		}
 		log.trace("total time result: {}", result);
 
 		Map<String, TotalChartProjectData> groupedResult = new HashMap<>();

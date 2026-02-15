@@ -118,6 +118,7 @@ public class PomodoroController {
 
 	@GetMapping("/stats/total-time")
 	public ResponseEntity<Map<String, TotalChartProjectData>> retrieveTotalPomodoros(Principal principal,
+			@RequestParam(defaultValue = "project") String entity,
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
@@ -126,10 +127,10 @@ public class PomodoroController {
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
-			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(entity, userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 		} else {
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
-				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(entity, subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 			} else {
 				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
