@@ -60,15 +60,13 @@ public class StatsService {
 		Map<String, TotalChartProjectData> groupedResult = new HashMap<>();
 		
 		for (String[] strArr: result) {
-			String project = strArr[2];
-			if (groupedResult.containsKey(project)) {
-				groupedResult.get(project).dataArr().add(new IndexedTime(Integer.valueOf(strArr[0]), Integer.valueOf(strArr[1])));
-			} else {
+			String key = strArr[2];
+			if (!groupedResult.containsKey(key)) {
 				List<IndexedTime> dataArr = new ArrayList<>();
-				dataArr.add(new IndexedTime(Integer.valueOf(strArr[0]), Integer.valueOf(strArr[1])));
-				TotalChartProjectData obj = new TotalChartProjectData(dataArr, strArr[3], Integer.valueOf(strArr[4]), Integer.valueOf(strArr[5]));
-				groupedResult.put(project, obj);
+				TotalChartProjectData obj = new TotalChartProjectData(dataArr, strArr[3], strArr[4], Integer.valueOf(strArr[5]), Integer.valueOf(strArr[6]));
+				groupedResult.put(key, obj);
 			}
+			groupedResult.get(key).dataArr().add(new IndexedTime(Integer.valueOf(strArr[0]), Integer.valueOf(strArr[1])));
 		}
 
 		return groupedResult;
