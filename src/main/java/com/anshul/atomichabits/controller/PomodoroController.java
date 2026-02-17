@@ -20,6 +20,7 @@ import com.anshul.atomichabits.business.AccountabilityPartnerService;
 import com.anshul.atomichabits.business.PomodoroService;
 import com.anshul.atomichabits.business.StatsService;
 import com.anshul.atomichabits.dto.TotalChartProjectData;
+import com.anshul.atomichabits.dto.TotalChartTaskData;
 import com.anshul.atomichabits.dto.PomodoroDto;
 import com.anshul.atomichabits.dto.PomodoroForList;
 import com.anshul.atomichabits.dto.PomodoroUpdateDto;
@@ -116,8 +117,8 @@ public class PomodoroController {
 		}
 	}
 
-	@GetMapping("/stats/total-time")
-	public ResponseEntity<Map<String, TotalChartProjectData>> retrieveTotalPomodoros(Principal principal,
+	@GetMapping("/stats/projects-total-time")
+	public ResponseEntity<Map<String, TotalChartProjectData>> retrieveProjectsTotalPomodoros(Principal principal,
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
@@ -126,10 +127,31 @@ public class PomodoroController {
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
-			return new ResponseEntity<>(statsService.retrieveTotalPomodoros(userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			return new ResponseEntity<>(statsService.retrieveProjectsTotalPomodoros(userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 		} else {
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
-				return new ResponseEntity<>(statsService.retrieveTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+				return new ResponseEntity<>(statsService.retrieveProjectsTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+			} else {
+				log.info(LOG_MESSAGE, userId, subjectId);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		}
+	}
+
+	@GetMapping("/stats/tasks-total-time")
+	public ResponseEntity<Map<String, TotalChartTaskData>> retrieveTasksTotalPomodoros(Principal principal,
+			@RequestParam(required = false) Long subjectId,
+			@RequestParam String limit,
+			@RequestParam OffsetDateTime startDate, 
+			@RequestParam OffsetDateTime endDate,
+			@RequestParam("categoryIds") long[] categories,
+			@RequestParam(defaultValue = "UTC") String timezone) {
+		Long userId = Long.parseLong(principal.getName());
+		if (subjectId == null) {
+			return new ResponseEntity<>(statsService.retrieveTasksTotalPomodoros(userId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
+		} else {
+			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
+				return new ResponseEntity<>(statsService.retrieveTasksTotalPomodoros(subjectId, limit, startDate, endDate, categories, timezone), HttpStatus.OK);
 			} else {
 				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
