@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.security;
 
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -27,6 +28,7 @@ public class JwtSecurityConfiguration {
 
 		http.authorizeHttpRequests()
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/manage/**").hasAuthority("admin")
 				.anyRequest().authenticated();
 
 		http.sessionManagement()
