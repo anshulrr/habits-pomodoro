@@ -27,6 +27,7 @@ public class JwtSecurityConfiguration {
 
 		http.authorizeHttpRequests()
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/manage/**").hasAuthority("admin")
 				.anyRequest().authenticated();
 
 		http.sessionManagement()
