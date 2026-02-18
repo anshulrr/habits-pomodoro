@@ -109,6 +109,12 @@ public class TaskController {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.retrieveTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
+	
+	@GetMapping("/tasks/comments/count")
+	public List<Object> retrieveTasksCommentsCount(Principal principal, 
+			@RequestParam("taskIds") long[] taskIds) {
+		return taskService.retrieveTasksCommentsCount(taskIds);
+	}
 }
 
 record MapTagsRequest(List<Long> tagIds) {}

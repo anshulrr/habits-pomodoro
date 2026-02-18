@@ -140,4 +140,8 @@ public class TaskService {
 		log.debug(startDate + " " + endDate);
 		return taskRepository.findTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
+	
+	public List<Object> retrieveTasksCommentsCount(long[] taskIds) {
+		return taskRepository.countTaskCommentsByIds(taskIds);
+	}
 }

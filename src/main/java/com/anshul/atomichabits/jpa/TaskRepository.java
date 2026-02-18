@@ -91,6 +91,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
 	public List<Object> findTaskTagsByIds(long[] ids);
 	
+	@Query(value = """
+			select task_id, count(*) commentsCount
+			from comments
+			where task_id in :ids
+			group by task_id
+			""", nativeQuery = true)
+	public List<Object> countTaskCommentsByIds(long[] ids);
+	
 	@Query("""
 			select p.task.id taskId, sum(p.timeElapsed) timeElapsed
 			from pomodoros p
