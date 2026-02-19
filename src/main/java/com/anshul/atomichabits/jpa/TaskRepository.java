@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.anshul.atomichabits.dto.TaskForList;
@@ -113,4 +114,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			where t.dueDate > :start and t.dueDate <= :end and t.type in ('good', 'neutral') and t.enableNotifications = TRUE
 			""")
 	public List<TaskForNotifications> getNotificationTasks(Instant start, Instant end);
+	
+	@Modifying
+	@Query(value = """
+			WITH reordered_items AS (
+			SELECT id, ROW_NUMBER() OVER (ORDER BY priority) * 1000 AS new_order
+			FROM tasks
+			WHERE user_id = :userId and project_id = :projectId
+			)
+			UPDATE tasks
+			SET priority = reordered_items.new_order
+			FROM reordered_items
+			WHERE tasks.id = reordered_items.id
+			""", nativeQuery = true)
+	public void updateTasksPriorityOrder(Long userId, Long projectId);
 }

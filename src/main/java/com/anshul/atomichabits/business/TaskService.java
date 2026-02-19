@@ -2,6 +2,7 @@ package com.anshul.atomichabits.business;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -118,6 +119,44 @@ public class TaskService {
 		taskEntry.get().setEnableNotifications(taskDto.enableNotifications());
 		taskEntry.get().setProject(projectEntry.get());
 		return taskRepository.save(taskEntry.get());
+	}
+	
+	@Transactional
+	public Task updateTaskPriority(Long userId, Long id, Map<String, String> map) {
+		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
+		if (taskEntry.isEmpty())
+		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
+		
+		Integer prevOrder = Optional.ofNullable(map.get("prevOrder"))
+                				.filter(s -> !s.isEmpty())
+                				.map(Integer::parseInt)
+                				.orElse(null);
+		Integer nextOrder = Optional.ofNullable(map.get("nextOrder"))
+                				.filter(s -> !s.isEmpty())
+                				.map(Integer::parseInt)
+                				.orElse(null);
+		
+		// handle start or end of the list
+		Integer priority;
+		if (prevOrder == null) {
+			priority = nextOrder - 1000;
+		} else if (nextOrder == null) {
+			priority = prevOrder + 1000;
+		} else {			
+			priority = (prevOrder + nextOrder) / 2;
+		}
+		log.debug("{} {} {}", priority, prevOrder, nextOrder);
+		
+		taskEntry.get().setPriority(priority);
+
+		return taskRepository.save(taskEntry.get());
+	}
+	
+	@Transactional
+	public Boolean resetProjectTaskPriority(Long userId, Long projectId) {
+		log.info("updating project's {} task's orders", projectId);
+		taskRepository.updateTasksPriorityOrder(userId, projectId);
+		return true;
 	}
 	
 	public Task addTag(Long userId, Long id, List<Long> tagIds) {

@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,6 +86,18 @@ public class TaskController {
 	public Task updateTask(Principal principal, @PathVariable Long id, @Valid @RequestBody TaskDto taskDto) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.updateTask(userId, id, taskDto);
+	}
+
+	@PutMapping("/tasks/{id}/priority")
+	public Task updateTaskPriority(Principal principal, @PathVariable Long id, @Valid @RequestBody Map<String, String> map) {
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.updateTaskPriority(userId, id, map);
+	}
+	
+	@PutMapping("/projects/{id}/priority-reset")
+	public Boolean resetProjectTaskPriority(Principal principal, @PathVariable Long id) {
+		Long userId = Long.parseLong(principal.getName());
+		return taskService.resetProjectTaskPriority(userId, id);
 	}
 	
 	@PostMapping("/tasks/{id}/tags")
