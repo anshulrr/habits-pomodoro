@@ -13,7 +13,6 @@ public record TaskDto(
 		@NotNull @PositiveOrZero Integer pomodoroLength, 
 		Instant dueDate, 
 		@NotNull @PositiveOrZero Integer repeatDays, 
-		@NotNull @Positive Integer priority, 
 		@NotNull @PositiveOrZero Integer dailyLimit, 
 		@NotBlank String status,
 		@NotBlank String type,

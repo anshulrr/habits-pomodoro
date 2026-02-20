@@ -119,7 +119,6 @@ public class TaskService {
 		taskEntry.get().setDueDate(taskDto.dueDate());
 		taskEntry.get().setStatus(taskDto.status());
 		taskEntry.get().setType(taskDto.type());
-		taskEntry.get().setPriority(taskDto.priority());
 		taskEntry.get().setRepeatDays(taskDto.repeatDays());
 		taskEntry.get().setDailyLimit(taskDto.dailyLimit());
 		taskEntry.get().setEnableNotifications(taskDto.enableNotifications());
@@ -160,12 +159,8 @@ public class TaskService {
 	
 	@Transactional
 	public Boolean resetProjectTaskPriority(Long userId, Long projectId) {
-		log.info("updating project's {} task's orders", projectId);
+		log.debug("updating project's {} task's orders", projectId);
 		taskRepository.updateTasksPriorityOrder(userId, projectId);
-//		for(Project project : projectRepository.findAll()) {			
-//			log.info("updating project's {} task's orders", project.getId());
-//			taskRepository.updateTasksPriorityOrder(project.getUser().getId(), project.getId());
-//		}
 		return true;
 	}
 	
