@@ -85,6 +85,12 @@ public class TaskService {
 		if (projectEntry.isEmpty())
 		 	throw new ResourceNotFoundException("project id:" + projectId);
 		log.trace("found project: {}", projectEntry);
+		
+		// calculate priority
+		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(userId, projectId, "current", 1, 0);
+		if (!tasks.isEmpty()) {
+			task.setPriority(tasks.get(0).getPriority() - 1000);
+		}
 
 		task.setUser(userEntry.get());
 		task.setProject(projectEntry.get());
@@ -156,6 +162,10 @@ public class TaskService {
 	public Boolean resetProjectTaskPriority(Long userId, Long projectId) {
 		log.info("updating project's {} task's orders", projectId);
 		taskRepository.updateTasksPriorityOrder(userId, projectId);
+//		for(Project project : projectRepository.findAll()) {			
+//			log.info("updating project's {} task's orders", project.getId());
+//			taskRepository.updateTasksPriorityOrder(project.getUser().getId(), project.getId());
+//		}
 		return true;
 	}
 	

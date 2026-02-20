@@ -118,7 +118,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Modifying
 	@Query(value = """
 			WITH reordered_items AS (
-			SELECT id, ROW_NUMBER() OVER (ORDER BY priority) * 1000 AS new_order
+			SELECT id, ROW_NUMBER() OVER (ORDER BY priority, id desc) * 1000 AS new_order
 			FROM tasks
 			WHERE user_id = :userId and project_id = :projectId
 			)
