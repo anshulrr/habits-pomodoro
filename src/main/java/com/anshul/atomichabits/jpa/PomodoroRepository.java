@@ -38,7 +38,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			select p
 			from pomodoros p 
 			where p.user.id = :userId and p.task.id = :taskId and p.status in ('completed', 'past')
-			order by p.endTime desc 
+			order by p.endTime desc, p.id
 			limit :limit offset :offset
 			""")
 	public List<Object> findTaskPomodoros(Long userId, Long taskId, int limit, int offset);
