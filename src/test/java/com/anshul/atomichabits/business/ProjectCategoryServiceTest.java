@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
@@ -93,7 +94,7 @@ class ProjectCategoryServiceTest {
 	void createProjectCategory() {
 		when(userRepositoryMock.findById(USER_ID)).thenReturn(Optional.of(user));
 		
-		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto(UUID.randomUUID(), "category 1", 1, true, true, "#afafaf");
 		
 		projectCategoryService.createProjectCategory(USER_ID, projectCategoryRequest);
 		
@@ -111,7 +112,7 @@ class ProjectCategoryServiceTest {
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
 			.thenReturn(Optional.of(projectCategory));
 		
-		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto(UUID.randomUUID(), "category 1", 1, true, true, "#afafaf");
 		
 		projectCategoryService.updateProjectCategory(USER_ID, CATEGORY_ID, projectCategoryRequest);
 		
@@ -127,7 +128,7 @@ class ProjectCategoryServiceTest {
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
 			.thenReturn(Optional.ofNullable(null));
 		
-		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto("category 1", 1, true, true, "#afafaf");
+		ProjectCategoryDto projectCategoryRequest = new ProjectCategoryDto(UUID.randomUUID(), "category 1", 1, true, true, "#afafaf");
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			projectCategoryService.updateProjectCategory(USER_ID, CATEGORY_ID, projectCategoryRequest);

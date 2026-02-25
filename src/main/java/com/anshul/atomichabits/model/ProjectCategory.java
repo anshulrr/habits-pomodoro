@@ -2,6 +2,7 @@ package com.anshul.atomichabits.model;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,6 +37,9 @@ public class ProjectCategory {
 	@Id
 	@GeneratedValue
 	private Long id;
+	
+	@Column(unique = true, nullable = false)
+    private UUID publicId; // Set this from the client's request
 
 	@Column(nullable = false)
 	private String name;

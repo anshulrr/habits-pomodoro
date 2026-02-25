@@ -62,6 +62,7 @@ public class ProjectCategoryService {
 		category.setLevel(categoryDto.getLevel());
 		category.setStatsDefault(categoryDto.isStatsDefault());
 		category.setVisibleToPartners(categoryDto.isVisibleToPartners());
+		category.setPublicId(categoryDto.getPublicId());
 		
 		log.debug("{}", category);
 
