@@ -30,7 +30,7 @@ public class ProjectCategoryDto {
 	@NotBlank
 	private String color;
 
-	@NotBlank
+	@NotNull
 	private Instant updatedAt;
 
 }
