@@ -25,7 +25,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	//		limit ?2 offset ?3
 	//		""", nativeQuery = true)
 	@Query("""
-			select p.id id, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, p.projectCategory.name category, p.projectCategory.color categoryColor
+			select p.id id, p.publicId publicId, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, p.projectCategory.name category, p.projectCategory.color categoryColor
 			from projects p 
 			where p.user.id = :userId and status = :status
 			order by p.projectCategory.level asc, p.priority asc, id desc 
@@ -34,7 +34,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	public List<ProjectForList> findUserProjects(Long userId, String status, int limit, int offset);
 	
 	@Query("""
-			select p.id id, p.name name, p.type type, p.pomodoroLength pomodoroLength, p.dailyLimit dailyLimit
+			select p.id id, p.publicId publicId, p.name name, p.type type, p.pomodoroLength pomodoroLength, p.dailyLimit dailyLimit
 			from projects p 
 			where p.user.id = :userId and p.projectCategory.id = :categoryId
 			order by p.priority asc, id desc 

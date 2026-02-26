@@ -1,5 +1,7 @@
 package com.anshul.atomichabits.dto;
 
+import java.util.UUID;
+
 import com.anshul.atomichabits.model.Project;
 
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +23,7 @@ public class ProjectDto {
 	public ProjectDto(Project project) {
 		super();
 		this.id = project.getId();
+		this.publicId = project.getPublicId();
 		this.name = project.getName();
 		this.description = project.getDescription();
 		this.color = project.getColor();
@@ -34,6 +37,9 @@ public class ProjectDto {
 	}
 
 	private Long id;
+	
+	@NotNull
+	private UUID publicId;
 	
 	@NotBlank
 	private String name;

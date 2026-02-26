@@ -1,8 +1,12 @@
 package com.anshul.atomichabits.dto;
 
+import java.util.UUID;
+
 public interface ProjectForList {
 
 	Long getId();
+
+	UUID getPublicId();
 
 	String getName();
 
