@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -28,5 +29,8 @@ public class ProjectCategoryDto {
 	
 	@NotBlank
 	private String color;
+
+	@NotBlank
+	private Instant updatedAt;
 
 }

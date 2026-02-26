@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 
 import com.anshul.atomichabits.dto.ProjectCategoryDto;
+import com.anshul.atomichabits.exceptions.ResourceConflictException;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -76,6 +77,10 @@ public class ProjectCategoryService {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
+		
+		if (projectCategory.getUpdatedAt().isBefore(categoryEntry.get().getUpdatedAt())) {
+			throw new ResourceConflictException("Conflict: category provided is stale");
+		}
 
 		categoryEntry.get().setName(projectCategory.getName());
 		categoryEntry.get().setLevel(projectCategory.getLevel());
