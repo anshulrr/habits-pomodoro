@@ -73,6 +73,7 @@ public class ProjectService {
 		project.setPriority(projectDto.getPriority());
 		project.setType(projectDto.getType());
 		project.setDailyLimit(projectDto.getDailyLimit());
+		project.setPublicId(projectDto.getPublicId());
 		project.setUser(userEntry.get());
 		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);

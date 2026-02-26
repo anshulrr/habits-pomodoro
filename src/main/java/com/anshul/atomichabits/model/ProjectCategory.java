@@ -30,7 +30,8 @@ import lombok.ToString;
 @ToString
 @Entity(name = "project_categories")
 @Table(indexes= {
-		@Index(name="project_categories_user_index", columnList="user_id")
+		@Index(name="project_categories_user_index", columnList="user_id"),
+		@Index(name="project_categories_updated_at_index", columnList="updatedAt")
 })
 public class ProjectCategory {
 
