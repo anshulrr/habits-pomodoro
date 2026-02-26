@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +39,8 @@ public class ProjectCategoryService {
 	}
 	
 	@Cacheable(value = "projectCategories")
-	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset) {
-		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset);
+	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset, Instant lastSyncTime) {
+		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset, lastSyncTime);
 	}
 	
 	public List<ProjectCategory> retrieveSubjectProjectCategories(Long subjectId, Integer limit, Integer offset) {

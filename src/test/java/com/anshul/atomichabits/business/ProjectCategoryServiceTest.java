@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -72,10 +73,10 @@ class ProjectCategoryServiceTest {
 		List<ProjectCategory> categories = new ArrayList<>();
 		categories.add(new ProjectCategory());
 		
-		when(projectCategoryRepositoryMock.findUserProjectCategories(USER_ID, limit, offset))
+		when(projectCategoryRepositoryMock.findUserProjectCategories(USER_ID, limit, offset, Instant.EPOCH))
 			.thenReturn(categories);
 		
-		List<ProjectCategory> retrievedCategories = projectCategoryService.retrieveAllProjectCategories(USER_ID, limit, offset);
+		List<ProjectCategory> retrievedCategories = projectCategoryService.retrieveAllProjectCategories(USER_ID, limit, offset, Instant.EPOCH);
 		
 		assertEquals(1, retrievedCategories.size());
 	}
