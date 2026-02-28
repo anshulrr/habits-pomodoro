@@ -25,4 +25,8 @@ public interface ProjectForList {
 	String getType();
 
 	Integer getDailyLimit();
+	
+	Long getProjectCategoryId();
+	
+	Long getCategoryPriority();
 }
