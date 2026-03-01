@@ -30,7 +30,8 @@ import lombok.Setter;
 @Table(indexes= {
 		@Index(name="projects_status_index", columnList="status"),
 		@Index(name="projects_project_category_index", columnList="project_category_id"),
-		@Index(name="projects_user_index", columnList="user_id")
+		@Index(name="projects_user_index", columnList="user_id"),
+		@Index(name="projects_updated_at_index", columnList="updatedAt")
 })
 public class Project {
 

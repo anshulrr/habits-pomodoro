@@ -66,7 +66,7 @@ public class ProjectDto {
 	@PositiveOrZero 
 	private Integer dailyLimit = 1;
 	
-	@NotBlank
+	@NotNull
 	private Instant updatedAt;
 	
 	private Long projectCategoryId;
