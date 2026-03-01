@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 
 import com.anshul.atomichabits.dto.ProjectCategoryDto;
+import com.anshul.atomichabits.exceptions.ResourceConflictException;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.ProjectCategoryRepository;
 import com.anshul.atomichabits.jpa.UserRepository;
@@ -38,8 +40,8 @@ public class ProjectCategoryService {
 	}
 	
 	@Cacheable(value = "projectCategories")
-	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset) {
-		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset);
+	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset, Instant lastSyncTime) {
+		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset, lastSyncTime);
 	}
 	
 	public List<ProjectCategory> retrieveSubjectProjectCategories(Long subjectId, Integer limit, Integer offset) {
@@ -62,6 +64,7 @@ public class ProjectCategoryService {
 		category.setLevel(categoryDto.getLevel());
 		category.setStatsDefault(categoryDto.isStatsDefault());
 		category.setVisibleToPartners(categoryDto.isVisibleToPartners());
+		category.setPublicId(categoryDto.getPublicId());
 		
 		log.debug("{}", category);
 
@@ -74,6 +77,10 @@ public class ProjectCategoryService {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
+		
+		if (projectCategory.getUpdatedAt().isBefore(categoryEntry.get().getUpdatedAt())) {
+			throw new ResourceConflictException("Conflict: category provided is stale");
+		}
 
 		categoryEntry.get().setName(projectCategory.getName());
 		categoryEntry.get().setLevel(projectCategory.getLevel());

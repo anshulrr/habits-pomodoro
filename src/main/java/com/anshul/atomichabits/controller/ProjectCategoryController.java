@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -40,10 +41,14 @@ public class ProjectCategoryController {
 	public ResponseEntity<List<ProjectCategory>> retrieveProjectCategoriesOfUser(Principal principal,
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam(defaultValue = "10") int limit, 
-			@RequestParam(defaultValue = "0") int offset) {
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {			
-			return new ResponseEntity<>(projectCategoryService.retrieveAllProjectCategories(userId, limit, offset), HttpStatus.OK);
+			return new ResponseEntity<>(projectCategoryService.retrieveAllProjectCategories(userId, limit, offset, lastSyncTime), HttpStatus.OK);
 		} else {
 			// TODO: move this check to filter or intercepter
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {				
