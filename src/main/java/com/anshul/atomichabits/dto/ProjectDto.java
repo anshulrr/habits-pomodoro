@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import com.anshul.atomichabits.model.Project;
@@ -64,6 +65,9 @@ public class ProjectDto {
 	@NotNull 
 	@PositiveOrZero 
 	private Integer dailyLimit = 1;
+	
+	@NotBlank
+	private Instant updatedAt;
 	
 	private Long projectCategoryId;
 	

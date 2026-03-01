@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.jpa;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +29,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 			select p.id id, p.publicId publicId, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, 
 			p.projectCategory.name category, p.projectCategory.color categoryColor, p.projectCategory.id projectCategoryId, p.projectCategory.level categoryPriority
 			from projects p 
-			where p.user.id = :userId and status = :status
+			where p.user.id = :userId and status = :status and updatedAt > :lastSyncTime
 			order by p.projectCategory.level asc, p.priority asc, id desc 
 			limit :limit offset :offset
 			""")
-	public List<ProjectForList> findUserProjects(Long userId, String status, int limit, int offset);
+	public List<ProjectForList> findUserProjects(Long userId, String status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query("""
 			select p.id id, p.publicId publicId, p.name name, p.type type, p.pomodoroLength pomodoroLength, p.dailyLimit dailyLimit

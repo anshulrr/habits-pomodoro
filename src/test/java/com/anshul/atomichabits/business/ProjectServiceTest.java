@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -93,10 +94,10 @@ class ProjectServiceTest {
 	@Test
 	void retrieveAllProjects() {
 		String status = "current";
-		when(projectRepositoryMock.findUserProjects(USER_ID, status, 0, 0))
+		when(projectRepositoryMock.findUserProjects(USER_ID, status, 0, 0, Instant.EPOCH))
 			.thenReturn(new ArrayList<ProjectForList>());
 		
-		List<ProjectForList> projects = projectService.retrieveAllProjects(USER_ID, status, 0, 0);
+		List<ProjectForList> projects = projectService.retrieveAllProjects(USER_ID, status, 0, 0, Instant.EPOCH);
 		
 		assertEquals(0, projects.size());
 	}
