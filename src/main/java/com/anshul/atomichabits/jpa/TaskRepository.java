@@ -138,7 +138,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			WHERE user_id = :userId and project_id = :projectId
 			)
 			UPDATE tasks
-			SET priority = reordered_items.new_order
+			SET priority = reordered_items.new_order, updated_at = NOW()
 			FROM reordered_items
 			WHERE tasks.id = reordered_items.id
 			""", nativeQuery = true)
