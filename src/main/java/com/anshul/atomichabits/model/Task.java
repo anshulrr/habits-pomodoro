@@ -3,6 +3,7 @@ package com.anshul.atomichabits.model;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -34,13 +35,17 @@ import lombok.Setter;
 @Table(indexes= {
 		@Index(name="tasks_status_index", columnList="status"),
 		@Index(name="tasks_project_index", columnList="project_id"),
-		@Index(name="tasks_user_index", columnList="user_id")
+		@Index(name="tasks_user_index", columnList="user_id"),
+		@Index(name="tasks_updated_at_index", columnList="updatedAt")
 })
 public class Task {
 
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column(unique = true, nullable = false)
+    private UUID publicId; // Set this from the client's request
 
 	@Column(nullable = false)
 	private String description;

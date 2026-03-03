@@ -1,10 +1,13 @@
 package com.anshul.atomichabits.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public interface TaskForList {
 
 	Long getId();
+	
+	UUID getPublicId();
 
 	String getDescription();
 	
