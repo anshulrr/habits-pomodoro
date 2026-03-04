@@ -2,6 +2,7 @@ package com.anshul.atomichabits.model;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,13 +30,17 @@ import lombok.Setter;
 @Table(indexes= {
 		@Index(name="projects_status_index", columnList="status"),
 		@Index(name="projects_project_category_index", columnList="project_category_id"),
-		@Index(name="projects_user_index", columnList="user_id")
+		@Index(name="projects_user_index", columnList="user_id"),
+		@Index(name="projects_updated_at_index", columnList="updatedAt")
 })
 public class Project {
 
 	@Id
 	@GeneratedValue
 	private Long id;
+	
+	@Column(unique = true, nullable = false)
+    private UUID publicId; // Set this from the client's request
 
 	@Column(nullable = false)
 	private String name;

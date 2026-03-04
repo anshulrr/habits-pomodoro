@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,11 @@ public class ProjectController {
 			@RequestParam(defaultValue = "current") String status,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
-			@RequestParam(required = false) Long categoryId) {
+			@RequestParam(required = false) Long categoryId,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId != null) {
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {
@@ -52,7 +57,7 @@ public class ProjectController {
 			}
 		}
 		if (categoryId == null) {			
-			return new ResponseEntity<>(projectService.retrieveAllProjects(userId, status, limit, offset), HttpStatus.OK);
+			return new ResponseEntity<>(projectService.retrieveAllProjects(userId, status, limit, offset, lastSyncTime), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(projectService.retrieveCategoryProjects(userId, categoryId), HttpStatus.OK);
 		}

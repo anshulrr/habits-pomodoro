@@ -1,11 +1,13 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.anshul.atomichabits.exceptions.ResourceConflictException;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.dto.ProjectDto;
 import com.anshul.atomichabits.dto.ProjectForList;
@@ -41,9 +43,9 @@ public class ProjectService {
 		return new ProjectDto(projectEntry.get());
 	}
 	
-	public List<ProjectForList> retrieveAllProjects(Long userId, String status, int limit, int offset) {
+	public List<ProjectForList> retrieveAllProjects(Long userId, String status, int limit, int offset, Instant lastSyncTime) {
 		// TODO: using PageRequest
-		return projectRepository.findUserProjects(userId, status, limit, offset);
+		return projectRepository.findUserProjects(userId, status, limit, offset, lastSyncTime);
 	}
 
 	public List<ProjectForList> retrieveCategoryProjects(Long userId, Long categoryId) {
@@ -73,6 +75,7 @@ public class ProjectService {
 		project.setPriority(projectDto.getPriority());
 		project.setType(projectDto.getType());
 		project.setDailyLimit(projectDto.getDailyLimit());
+		project.setPublicId(projectDto.getPublicId());
 		project.setUser(userEntry.get());
 		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);
@@ -85,6 +88,10 @@ public class ProjectService {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, id);
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);
+		
+		if (projectDto.getUpdatedAt().isBefore(projectEntry.get().getUpdatedAt())) {
+			throw new ResourceConflictException("Conflict: project provided is stale");
+		}
 		
 		Optional<ProjectCategory> category = projectCategoryRepository.findUserProjectCategoryById(userId,
 				projectDto.getProjectCategoryId());
