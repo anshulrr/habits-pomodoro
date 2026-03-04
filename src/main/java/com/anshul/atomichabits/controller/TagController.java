@@ -2,6 +2,7 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.time.Instant;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +33,13 @@ public class TagController {
 	@GetMapping("/tags")
 	public List<Tag> retrieveTagsOfUser(Principal principal,
 			@RequestParam(defaultValue = "10") int limit, 
-			@RequestParam(defaultValue = "0") int offset) {
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
-		return tagService.retrieveAllTags(userId, limit, offset);
+		return tagService.retrieveAllTags(userId, limit, offset, lastSyncTime);
 	}
 
 	@GetMapping("/tags/count")

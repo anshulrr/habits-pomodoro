@@ -58,15 +58,21 @@ public class CommentController {
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
-			@RequestParam("categoryIds") long[] categoryIds) {
+			@RequestParam(name = "categoryIds", required = false) long[] categoryIds,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments;
 		if (searchString.length() != 0 ) {
 			comments = commentRepository.retrieveUserSearchedComments(userId, status, limit, offset, categoryIds, searchString);
 		} else if (filterWithReviseDate) {
 			comments = commentRepository.retrieveUserCommentsWithReviseDate(userId, status, limit, offset, categoryIds);
-		} else {			
+		} else if (categoryIds != null){			
 			comments = commentRepository.retrieveUserComments(userId, status, limit, offset, categoryIds);
+		} else {
+			comments = commentRepository.retrieveUserSyncComments(userId, status, limit, offset, lastSyncTime);
 		}
 		log.trace("{}", comments);
 		return comments;
@@ -77,14 +83,16 @@ public class CommentController {
 			@RequestParam(defaultValue = "added") String status,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
-			@RequestParam("categoryIds") long[] categoryIds) {
+			@RequestParam(name = "categoryIds", required = false) long[] categoryIds) {
 		Long userId = Long.parseLong(principal.getName());
 		if (searchString.length() != 0 ) {
 			return commentRepository.getUserSearchedCommentsCount(userId, status, categoryIds, searchString);
 		} else if (filterWithReviseDate) {
 			return commentRepository.getUserCommentsWithReviseDateCount(userId, status, categoryIds);
-		} else {
+		} else if (categoryIds != null){	
 			return commentRepository.getUserCommentsCount(userId, status, categoryIds);
+		} else {
+			return commentRepository.getUserSyncCommentsCount(userId, status);
 		}
 	}
 

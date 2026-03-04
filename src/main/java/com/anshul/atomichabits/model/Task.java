@@ -44,7 +44,7 @@ public class Task {
 	@GeneratedValue
 	private Long id;
 
-	@Column(unique = true, nullable = false)
+	@Column(unique = true, nullable = true)
     private UUID publicId; // Set this from the client's request
 
 	@Column(nullable = false)

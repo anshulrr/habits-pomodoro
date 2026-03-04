@@ -1,10 +1,13 @@
 package com.anshul.atomichabits.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public interface CommentForList {
 
 	Long getId();
+
+	UUID getPublicId();
 
 	String getDescription();
 	
@@ -19,4 +22,6 @@ public interface CommentForList {
 	Instant getReviseDate();
 	
 	Instant getCreatedAt();
+
+	Instant getUpdatedAt();
 }

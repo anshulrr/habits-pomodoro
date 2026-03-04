@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.jpa;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,17 +17,29 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Optional<Comment> findUserCommentById(Long userId, Long id);
 
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
 			left join tasks t on c.task_id = t.id
-			where c.user_id = :userId and c.status = :status 
+			where c.user_id = :userId and c.status = :status
 			and (c.project_category_id in :categoryIds or c.project_category_id is null)
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
 	public List<CommentForList> retrieveUserComments(Long userId, String status, int limit, int offset, long[] categoryIds);
+	
+	@Query(value = """
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			from comments c
+			left join project_categories pc on c.project_category_id = pc.id
+			left join projects p on c.project_id = p.id
+			left join tasks t on c.task_id = t.id
+			where c.user_id = :userId and c.status = :status and p.updated_at > :lastSyncTime
+			order by c.id desc
+			limit :limit offset :offset
+			""", nativeQuery = true)
+	public List<CommentForList> retrieveUserSyncComments(Long userId, String status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query(value = """
 			select count(*) from comments 
@@ -36,7 +49,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserCommentsCount(Long userId, String status, long[] categoryIds);
 	
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			select count(*) from comments 
+			where user_id = :userId and status = :status 
+			""", nativeQuery = true)
+	public Integer getUserSyncCommentsCount(Long userId, String status);
+	
+	@Query(value = """
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
@@ -57,7 +76,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	
 	// TODO: optimize query for with 'or' for task description match
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
@@ -82,7 +101,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserSearchedCommentsCount(Long userId, String status, long[] categoryIds, String searchString);
 	
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
@@ -97,7 +116,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserProjectCategoryCommentsCount(Long userId, Long categoryId, String status);
 	
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
@@ -112,7 +131,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserProjectCommentsCount(Long userId, Long projectId, String status);
 	
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
@@ -127,7 +146,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public Integer getUserTaskCommentsCount(Long userId, Long taskId, String status);
 
 	@Query(value = """
-			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
 			from comments c
 			join project_categories pc on c.project_category_id = pc.id
 			join projects p on c.project_id = p.id
