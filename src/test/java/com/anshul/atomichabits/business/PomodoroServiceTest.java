@@ -93,7 +93,7 @@ class PomodoroServiceTest {
 		OffsetDateTime startDate = OffsetDateTime.now(); 
 		OffsetDateTime endDate = OffsetDateTime.now();
 		
-		when(pomodoroRepositoryMock.findAllForToday(USER_ID, startDate, endDate, categoryIds, Instant.EPOCH))
+		when(pomodoroRepositoryMock.findAllForToday(USER_ID, startDate, endDate, categoryIds))
 			.thenReturn(new ArrayList<PomodoroForList>());
 		
 		List<PomodoroForList> pomodoros = pomodoroService.retrievePomodoros(USER_ID, startDate, endDate, categoryIds, Instant.EPOCH);

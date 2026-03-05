@@ -30,7 +30,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public List<CommentForList> retrieveUserComments(Long userId, String status, int limit, int offset, long[] categoryIds);
 	
 	@Query(value = """
-			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task  
+			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, c.updated_at updatedAt,
+			pc.name category, p.name project, p.color color, t.description task  
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
