@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
 
 import com.anshul.atomichabits.dto.CommentForList;
+import com.anshul.atomichabits.dto.CommentForSync;
 import com.anshul.atomichabits.model.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -30,17 +31,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	public List<CommentForList> retrieveUserComments(Long userId, String status, int limit, int offset, long[] categoryIds);
 	
 	@Query(value = """
-			select c.*, c.public_id publicId, c.created_at createdAt, c.revise_date reviseDate, c.updated_at updatedAt,
-			pc.name category, p.name project, p.color color, t.description task  
+			select c.*, c.public_id publicId, c.created_at createdAt, c.updated_at updatedAt, c.revise_date reviseDate, 
+			pc.id categoryId, p.id projectId, t.id taskId,
+			pc.name category, p.name project, p.color color, t.description task
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id
 			left join tasks t on c.task_id = t.id
-			where c.user_id = :userId and c.status = :status and p.updated_at > :lastSyncTime
+			where c.user_id = :userId and c.status = :status and c.updated_at > :lastSyncTime
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserSyncComments(Long userId, String status, int limit, int offset, Instant lastSyncTime);
+	public List<CommentForSync> retrieveUserSyncComments(Long userId, String status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query(value = """
 			select count(*) from comments 
