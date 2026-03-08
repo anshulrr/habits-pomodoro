@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anshul.atomichabits.dto.CommentForList;
+import com.anshul.atomichabits.dto.CommentForSync;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 import com.anshul.atomichabits.jpa.CommentRepository;
 import com.anshul.atomichabits.jpa.PomodoroRepository;
@@ -58,7 +59,7 @@ public class CommentController {
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
-			@RequestParam("categoryIds") long[] categoryIds) {
+			@RequestParam(name = "categoryIds") long[] categoryIds) {
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments;
 		if (searchString.length() != 0 ) {
@@ -71,20 +72,37 @@ public class CommentController {
 		log.trace("{}", comments);
 		return comments;
 	}
+	
+	@GetMapping("/comments/sync")
+	public List<CommentForSync> retrieveSyncComments(Principal principal, 
+			@RequestParam(defaultValue = "added") String status, 
+			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
+		Long userId = Long.parseLong(principal.getName());
+		List<CommentForSync> comments = commentRepository.retrieveUserSyncComments(userId, status, limit, offset, lastSyncTime);
+		log.trace("{}", comments);
+		return comments;
+	}
 
 	@GetMapping("comments/count")
 	public Integer retrieveCommentsCount(Principal principal, 
 			@RequestParam(defaultValue = "added") String status,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
-			@RequestParam("categoryIds") long[] categoryIds) {
+			@RequestParam(name = "categoryIds", required = false) long[] categoryIds) {
 		Long userId = Long.parseLong(principal.getName());
 		if (searchString.length() != 0 ) {
 			return commentRepository.getUserSearchedCommentsCount(userId, status, categoryIds, searchString);
 		} else if (filterWithReviseDate) {
 			return commentRepository.getUserCommentsWithReviseDateCount(userId, status, categoryIds);
-		} else {
+		} else if (categoryIds != null){	
 			return commentRepository.getUserCommentsCount(userId, status, categoryIds);
+		} else {
+			return commentRepository.getUserSyncCommentsCount(userId, status);
 		}
 	}
 

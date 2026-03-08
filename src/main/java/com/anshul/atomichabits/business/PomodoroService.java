@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +35,14 @@ public class PomodoroService {
 	private UserSettingsRepository userSettingsRepository;
 	private PomodoroRepository pomodoroRepository;
 	
-	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories) {
+	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, Instant lastSyncTime) {
 		log.debug(startDate + " " + endDate);
-		List<PomodoroForList> pomodoros = pomodoroRepository.findAllForToday(userId, startDate, endDate, categories);
+		List<PomodoroForList> pomodoros;
+		if (categories == null) {
+			pomodoros = pomodoroRepository.findAllForSync(userId, startDate, endDate, lastSyncTime);
+		} else {			
+			pomodoros = pomodoroRepository.findAllForToday(userId, startDate, endDate, categories);
+		}
 		log.trace("first pomodoro: {}", !pomodoros.isEmpty() ? pomodoros.get(0).getId() : "nill");
 		return pomodoros;
 	}

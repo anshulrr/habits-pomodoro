@@ -2,6 +2,7 @@ package com.anshul.atomichabits.model;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,13 +36,17 @@ import lombok.Setter;
 		@Index(name="comments_project_category_index", columnList="project_category_id"),
 		@Index(name="comments_project_index", columnList="project_id"),
 		@Index(name="comments_task_index", columnList="task_id"),
-		@Index(name="comments_pomodoro_index", columnList="pomodoro_id")		
+		@Index(name="comments_pomodoro_index", columnList="pomodoro_id"),
+		@Index(name="comments_updated_at_index", columnList="updatedAt")		
 })
 public class Comment {
 
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column(unique = true, nullable = true)
+    private UUID publicId; // Set this from the client's request
 
 	@Column(columnDefinition = "text", nullable = false)
 	private String description;

@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.anshul.atomichabits.exceptions.ResourceConflictException;
 import com.anshul.atomichabits.exceptions.ResourceNotFoundException;
 
 import com.anshul.atomichabits.dto.TaskDto;
@@ -49,16 +51,18 @@ public class TaskService {
 		return taskEntry.get();
 	}
 	
-	public List<TaskForList> retrieveAllTasks(Long userId, int limit, int offset, TaskFilter filter, String status) {
+	public List<TaskForList> retrieveAllTasks(Long userId, int limit, int offset, TaskFilter filter, String status, Instant lastSyncTime) {
 		List<TaskForList> tasks;
 		if (filter.projectId() != null) {			
-			tasks = taskRepository.retrieveUserTasksByProjectId(userId, filter.projectId(), status, limit, offset);
+			tasks = taskRepository.retrieveUserTasksByProjectId(userId, filter.projectId(), status, limit, offset, lastSyncTime);
 		} else if (filter.tagId() != null) {
 			tasks = taskRepository.findTasksByUserIdAndTagsId(userId, filter.tagId(), status, limit, offset);
 		} else if (filter.startDate() != null) {
 			tasks = taskRepository.retrieveFilteredTasks(userId, status, filter.startDate(), filter.endDate(), limit, offset);
-		} else {
+		} else if (filter.searchString() != null) {
 			tasks = taskRepository.retrieveSearchedTasks(userId, status, filter.searchString(), limit, offset);
+		} else {
+			tasks = taskRepository.retrieveAllUserTasks(userId, limit, offset, lastSyncTime);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
@@ -73,8 +77,10 @@ public class TaskService {
 			count = taskRepository.getTagsTasksCount(userId, filter.tagId(), status);
 		} else if (filter.startDate() != null) {
 			count = taskRepository.getFilteredTasksCount(userId, status, filter.startDate(), filter.endDate());
-		} else {
+		} else if (filter.searchString() != null) {
 			count = taskRepository.getSearchedTasksCount(userId, status, filter.searchString());
+		} else {
+			count = taskRepository.getAllTasksCount(userId);
 		}
 		return count;
 	}
@@ -87,7 +93,7 @@ public class TaskService {
 		log.trace("found project: {}", projectEntry);
 		
 		// calculate priority
-		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(userId, projectId, "current", 1, 0);
+		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(userId, projectId, "current", 1, 0, Instant.EPOCH);
 		if (!tasks.isEmpty()) {
 			task.setPriority(tasks.get(0).getPriority() - 1000);
 		}
@@ -102,6 +108,10 @@ public class TaskService {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
+		
+		if (taskDto.updatedAt().isBefore(taskEntry.get().getUpdatedAt())) {
+			throw new ResourceConflictException("Conflict: project provided is stale");
+		}
 		
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, taskDto.projectId());
 		if (projectEntry.isEmpty())
