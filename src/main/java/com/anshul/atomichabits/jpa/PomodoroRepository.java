@@ -28,7 +28,8 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	public List<PomodoroDto> findRunningPomodoros(Long userId);
 
 	@Query("""
-			select p.id id, p.publicId publicId, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.task.id taskId, p.task.description task, p.task.project.color color, p.task.project.id projectId
+			select p.id id, p.publicId publicId, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, 
+			p.task.id taskId, p.task.description task, p.task.project.color color, p.task.project.id projectId, p.task.project.projectCategory.id categoryId
 			from pomodoros p
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
 			order by p.endTime desc, p.id desc
@@ -37,7 +38,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 	
 	@Query("""
 			select p.id id, p.publicId publicId, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.updatedAt updatedAt,
-			p.task.id taskId, p.task.description task, p.task.project.color color, p.task.project.id projectId
+			p.task.id taskId, p.task.description task, p.task.project.color color, p.task.project.id projectId, p.task.project.projectCategory.id categoryId
 			from pomodoros p
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.updatedAt > :lastSyncTime
 			order by p.endTime desc, p.id desc

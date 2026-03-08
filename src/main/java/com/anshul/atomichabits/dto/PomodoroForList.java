@@ -26,5 +26,7 @@ public interface PomodoroForList {
 
 	Instant getUpdatedAt();
 	
-	String getProjectId();
+	Long getProjectId();
+	
+	Long getCategoryId();
 }
