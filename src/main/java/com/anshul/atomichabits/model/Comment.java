@@ -45,7 +45,7 @@ public class Comment {
 	@GeneratedValue
 	private Long id;
 
-	@Column(unique = true, nullable = true)
+	@Column(unique = true, nullable = false)
     private UUID publicId; // Set this from the client's request
 
 	@Column(columnDefinition = "text", nullable = false)
