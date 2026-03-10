@@ -9,9 +9,7 @@ import com.anshul.atomichabits.model.Task;
 
 public interface PomodoroDto {
 
-	Long getId();
-
-	UUID getPublicId();
+	UUID getId();
 
 	OffsetDateTime getStartTime();
 

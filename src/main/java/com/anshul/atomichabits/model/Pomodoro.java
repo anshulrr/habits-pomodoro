@@ -6,16 +6,19 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Index;
 import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.FetchType;
 
 import lombok.Getter;
@@ -33,14 +36,13 @@ import lombok.Setter;
 		@Index(name="pomodoros_user_index", columnList="user_id"),
 		@Index(name="pomodoros_updated_at_index", columnList="updatedAt")
 })
-public class Pomodoro {
+public class Pomodoro implements Persistable<UUID>  {
 
 	@Id
-	@GeneratedValue
-	private Long id;
+	private UUID id;
 
-	@Column(unique = true, nullable = false)
-    private UUID publicId; // Set this from the client's request
+	//@Column(unique = true, nullable = false)
+    //private UUID publicId; // Set this from the client's request
 
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private OffsetDateTime startTime;
@@ -72,12 +74,11 @@ public class Pomodoro {
 	@Override
 	public String toString() {
 		return "Pomodoro [id=" + id + ", startTime=" + startTime + ", endTime=" + endTime + ", length=" + length
-				+ ", timeElapsed=" + timeElapsed + ", status=" + status + ", task=" + task.getDescription()
-				+ ", useremail=" + user.getEmail() + "]";
+				+ ", timeElapsed=" + timeElapsed + ", status=" + status + "]";
 	}
 
 	// constructor used in unit tests
-	public Pomodoro(Long id, OffsetDateTime startTime, OffsetDateTime endTime, Integer timeElapsed, String status,
+	public Pomodoro(UUID id, OffsetDateTime startTime, OffsetDateTime endTime, Integer timeElapsed, String status,
 			Task task, User user) {
 		super();
 		this.id = id;
@@ -88,5 +89,15 @@ public class Pomodoro {
 		this.task = task;
 		this.user = user;
 	}
+	
+	@Transient
+    private boolean isNew = true;
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PrePersist
+    void markNotNew() { this.isNew = false; }
 
 }
