@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
@@ -107,10 +108,10 @@ class TaskServiceTest {
 		String status = "added";
 		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null, null);
 		
-		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, status, 0, 0))
+		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, status, 0, 0, Instant.EPOCH))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -123,7 +124,7 @@ class TaskServiceTest {
 		when(taskRepositoryMock.findTasksByUserIdAndTagsId(USER_ID, TAG_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -138,7 +139,7 @@ class TaskServiceTest {
 		when(taskRepositoryMock.retrieveFilteredTasks(USER_ID, status, startDate, endDate, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
 		
-		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status);
+		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
 		
 		assertEquals(0, tasks.size());
 	}
@@ -213,7 +214,7 @@ class TaskServiceTest {
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
 			.thenReturn(Optional.of(project));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, PROJECT_ID);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, UUID.randomUUID(), "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
 		
 		taskService.updateTask(USER_ID, TASK_ID, taskDtoRequest);
 		
@@ -232,7 +233,7 @@ class TaskServiceTest {
 		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
 			.thenReturn(Optional.ofNullable(null));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, PROJECT_ID);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, UUID.randomUUID(), "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			taskService.updateTask(USER_ID, nil_task_id, taskDtoRequest);

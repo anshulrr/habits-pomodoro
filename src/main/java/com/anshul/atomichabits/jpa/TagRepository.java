@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.jpa;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,8 +18,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 	@Query("select p from tags p where p.user.id = :userId and p.id in :tagIds")
 	public Set<Tag> findUserTagByIds(Long userId, List<Long> tagIds);
 
-	@Query(value = "select * from tags where user_id = :userId order by priority, id desc limit :limit offset :offset", nativeQuery = true)
-	public List<Tag> findUserTags(Long userId, int limit, int offset);
+	@Query(value = "select * from tags where user_id = :userId and updated_at > :lastSyncTime order by priority, id desc limit :limit offset :offset", nativeQuery = true)
+	public List<Tag> findUserTags(Long userId, int limit, int offset, Instant lastSyncTime);
 
 	@Query(value = "select count(*) from tags where user_id = :userId", nativeQuery = true)
 	public Integer getUserTagsCount(Long userId);

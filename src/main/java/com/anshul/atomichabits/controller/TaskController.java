@@ -50,7 +50,11 @@ public class TaskController {
 			@RequestParam(required = false) Long tagId,
 			@RequestParam(defaultValue = "current") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
-			@RequestParam(defaultValue = "0") int offset) {
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId != null) {
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {
@@ -60,7 +64,7 @@ public class TaskController {
 			}
 		}
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchString);
-		return new ResponseEntity<>(taskService.retrieveAllTasks(userId, limit, offset, filter, status), HttpStatus.OK);
+		return new ResponseEntity<>(taskService.retrieveAllTasks(userId, limit, offset, filter, status,lastSyncTime), HttpStatus.OK);
 	}
 
 	@GetMapping("/tasks/count")
