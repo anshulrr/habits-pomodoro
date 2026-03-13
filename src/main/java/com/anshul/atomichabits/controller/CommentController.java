@@ -119,7 +119,7 @@ public class CommentController {
 	}
 	
 	@GetMapping("/comments/{id}")
-	public Comment getComment(@PathVariable Long id, Principal principal) {
+	public Comment getComment(@PathVariable UUID id, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
 		if (commentEntry.isEmpty())
@@ -129,7 +129,7 @@ public class CommentController {
 	}
 
 	@PutMapping("/comments/{id}")
-	public Comment updateComment(@PathVariable Long id, @Valid @RequestBody CommentUpdateDto commentDto, Principal principal) {
+	public Comment updateComment(@PathVariable UUID id, @Valid @RequestBody CommentUpdateDto commentDto, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
 		if (commentEntry.isEmpty())
@@ -261,7 +261,7 @@ public class CommentController {
 
 	@PostMapping("/comments/{id}/tags")
 	public ResponseEntity<Comment> addTag(Principal principal, 
-			@PathVariable Long id, 
+			@PathVariable UUID id, 
 			@RequestBody MapTagsRequest request) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<Comment> commentEntry = commentRepository.findUserCommentById(userId, id);
@@ -277,7 +277,7 @@ public class CommentController {
 	
 	@GetMapping("/comments/tags")
 	public List<Object> retrieveCommentsTags(Principal principal, 
-			@RequestParam("commentIds") long[] commentIds) {
+			@RequestParam("commentIds") UUID[] commentIds) {
 		return commentRepository.findCommentsTagsByIds(commentIds);
 	}
 }
