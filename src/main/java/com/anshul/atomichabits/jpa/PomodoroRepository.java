@@ -2,6 +2,7 @@ package com.anshul.atomichabits.jpa;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ import java.time.OffsetDateTime;
 public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 
 	@Query("select p from pomodoros p where p.user.id = :userId and p.id = :id")
-	public Optional<Pomodoro> findUserPomodoroById(Long userId, Long id);
+	public Optional<Pomodoro> findUserPomodoroById(Long userId, UUID id);
 
 	@Query("""
 			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.length length, 
@@ -151,4 +152,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by pomodoro_date
 			""", nativeQuery = true)
 	public List<Object> findTaskPomodorosCount(Long userId, Long taskId, OffsetDateTime start, OffsetDateTime end, String timezone);
+
+	@Query(value = "delete from pomodoros where id = :id")
+	public void deleteByUuid(UUID id);
 }

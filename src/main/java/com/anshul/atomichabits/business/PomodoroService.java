@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -108,7 +109,7 @@ public class PomodoroService {
 		return length;
 	}
 	
-	public Pomodoro deletePomodoro(Long userId, Long id) {
+	public Pomodoro deletePomodoro(Long userId, UUID id) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -118,7 +119,7 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoroEntry.get());
 	}
 	
-	public Pomodoro updatePomodoro(Long userId, Long id, PomodoroUpdateDto pomodoroUpdateDto) {
+	public Pomodoro updatePomodoro(Long userId, UUID id, PomodoroUpdateDto pomodoroUpdateDto) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -140,7 +141,7 @@ public class PomodoroService {
 			// TODO: find better solution
 			log.info("multiple pomodoros found: {}", runningPomodoros.size());
 			for (int i = 1; i < runningPomodoros.size(); i++) {
-				pomodoroRepository.deleteById(runningPomodoros.get(i).getId());
+				pomodoroRepository.deleteByUuid(runningPomodoros.get(i).getId());
 			}
 		}
 		

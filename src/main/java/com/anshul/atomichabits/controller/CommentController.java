@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -242,7 +243,7 @@ public class CommentController {
 	}
 
 	@PostMapping("/pomodoros/{pomodoroId}/comments")
-	public Comment createPomodoroComment(@PathVariable Long pomodoroId, @RequestBody Comment comment, Principal principal) {
+	public Comment createPomodoroComment(@PathVariable UUID pomodoroId, @RequestBody Comment comment, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, pomodoroId);

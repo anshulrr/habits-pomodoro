@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
@@ -77,7 +78,7 @@ class RunningPomodoroTest {
 	static Long CATEGORY_ID = 11L;
 	static Long PROJECT_ID = 22L;
 	static Long TASK_ID = 33L;
-	static Long POMODORO_ID = 44L;
+	static UUID POMODORO_ID = UUID.randomUUID();
 	
 	@BeforeAll
 	static void setup() {

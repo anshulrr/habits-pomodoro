@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface PomodoroForList {
 
-	Long getId();
+	UUID getId();
 
 	UUID getPublicId();
 	

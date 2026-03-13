@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -218,13 +219,13 @@ public class PomodoroController {
 	}
 	
 	@DeleteMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable Long id) {
+	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.deletePomodoro(userId, id), HttpStatus.OK);
 	}
 
 	@PutMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
+	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable UUID id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.updatePomodoro(userId, id, pomodoroUpdateDto), HttpStatus.OK);
