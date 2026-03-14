@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,10 +17,10 @@ import com.anshul.atomichabits.model.Task;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query("select t from tasks t where t.user.id = :userId and t.id = :id")
-	public Optional<Task> findUserTaskById(Long userId, Long id);
+	public Optional<Task> findUserTaskById(Long userId, UUID id);
 
 	@Query(value = """
-			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -34,7 +35,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getAllTasksCount(Long userId);
 	
 	@Query(value = """
-			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -43,13 +44,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, Long projectId, String status, int limit, int offset, Instant lastSyncTime);
+	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, UUID projectId, String status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query(value = "select count(*) from tasks where user_id = :userId and project_id = :projectId and status = :status", nativeQuery = true)
-	public Integer getProjectTasksCount(Long userId, Long projectId, String status);
+	public Integer getProjectTasksCount(Long userId, UUID projectId, String status);
 	
 	@Query(value = """
-			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -64,7 +65,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getFilteredTasksCount(Long userId, String status, Instant start, Instant end);
 	
 	@Query(value = """
-			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -74,7 +75,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			order by pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> findTasksByUserIdAndTagsId(Long userId, Long tagId, String status, int limit, int offset);
+	public List<TaskForList> findTasksByUserIdAndTagsId(Long userId, UUID tagId, String status, int limit, int offset);
 	
 	@Query(value = """
 			select count(*) 
@@ -82,10 +83,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join t.tags tags 
 			where t.user.id = :userId and tags.id = :tagId and status = :status
 			""")
-	public Integer getTagsTasksCount(Long userId, Long tagId, String status);
+	public Integer getTagsTasksCount(Long userId, UUID tagId, String status);
 	
 	@Query(value = """
-			select t.id id, t.public_id publicId, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
 			t.project_id projectId
 			from tasks t
 			join projects as pr on t.project_id = pr.id
@@ -105,7 +106,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getSearchedTasksCount(Long userId, String status, String searchString);
 	
 	@Query(value = "select * from tasks_tags t where t.task_id in :ids", nativeQuery = true)
-	public List<Object> findTaskTagsByIds(long[] ids);
+	public List<Object> findTaskTagsByIds(UUID[] ids);
 	
 	@Query(value = """
 			select task_id, count(*) commentsCount
@@ -113,7 +114,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			where task_id in :ids
 			group by task_id
 			""", nativeQuery = true)
-	public List<Object> countTaskCommentsByIds(long[] ids);
+	public List<Object> countTaskCommentsByIds(UUID[] ids);
 	
 	@Query("""
 			select p.task.id taskId, sum(p.timeElapsed) timeElapsed
@@ -121,7 +122,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.id in :ids
 			group by p.task.id
 			""")
-	public List<Object> findTasksTimeElapsed(Long userId, OffsetDateTime start, OffsetDateTime end, long[] ids);
+	public List<Object> findTasksTimeElapsed(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] ids);
 	
 	@Query(value = """
 			select t.id, t.description description, t.type type, t.dueDate dueDate, t.user.email email
@@ -142,5 +143,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			FROM reordered_items
 			WHERE tasks.id = reordered_items.id
 			""", nativeQuery = true)
-	public void updateTasksPriorityOrder(Long userId, Long projectId);
+	public void updateTasksPriorityOrder(Long userId, UUID projectId);
 }

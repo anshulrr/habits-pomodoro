@@ -36,7 +36,7 @@ public class PomodoroService {
 	private UserSettingsRepository userSettingsRepository;
 	private PomodoroRepository pomodoroRepository;
 	
-	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, Instant lastSyncTime) {
+	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, UUID[] categories, Instant lastSyncTime) {
 		log.debug(startDate + " " + endDate);
 		List<PomodoroForList> pomodoros;
 		if (categories == null) {
@@ -48,7 +48,7 @@ public class PomodoroService {
 		return pomodoros;
 	}
 	
-	public Pomodoro createPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
+	public Pomodoro createPomodoro(Long userId, UUID taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
 		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(userId);
 		if (!runningPomodoros.isEmpty()) {
@@ -69,7 +69,7 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoro);
 	}
 	
-	public Pomodoro createPastPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
+	public Pomodoro createPastPomodoro(Long userId, UUID taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);

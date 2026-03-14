@@ -3,6 +3,7 @@ package com.anshul.atomichabits.controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ProjectController {
 	private AccountabilityPartnerService accountabilityPartnerService;
 
 	@GetMapping("/projects/{id}")
-	public ProjectDto retrieveProject(Principal principal, @PathVariable Long id) {
+	public ProjectDto retrieveProject(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 		return projectService.retriveProject(userId, id);
 	}
@@ -43,7 +44,7 @@ public class ProjectController {
 			@RequestParam(defaultValue = "current") String status,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
-			@RequestParam(required = false) Long categoryId,
+			@RequestParam(required = false) UUID categoryId,
 			@RequestParam(required = false) Instant lastSyncTime) {
 		if (lastSyncTime == null) {
 			lastSyncTime = Instant.EPOCH;
@@ -78,7 +79,7 @@ public class ProjectController {
 
 	@PutMapping("/projects/{id}")
 	public Project updateProjectOfUser(Principal principal, 
-			@PathVariable Long id,
+			@PathVariable UUID id,
 			@Valid @RequestBody ProjectDto projectDto) {
 		Long userId = Long.parseLong(principal.getName());
 		return projectService.updateProject(userId, id, projectDto);

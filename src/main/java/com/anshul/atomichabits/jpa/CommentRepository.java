@@ -13,7 +13,7 @@ import com.anshul.atomichabits.dto.CommentForList;
 import com.anshul.atomichabits.dto.CommentForSync;
 import com.anshul.atomichabits.model.Comment;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, UUID> {
 	
 	@Query("select c from comments c where c.user.id = :userId and c.id = :id")
 	public Optional<Comment> findUserCommentById(Long userId, UUID id);
@@ -50,7 +50,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			where user_id = :userId and status = :status 
 			and (project_category_id is null or project_category_id in :categoryIds) 
 			""", nativeQuery = true)
-	public Integer getUserCommentsCount(Long userId, String status, long[] categoryIds);
+	public Integer getUserCommentsCount(Long userId, String status, UUID[] categoryIds);
 	
 	@Query(value = """
 			select count(*) from comments 
@@ -76,7 +76,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			where user_id = :userId and status = :status and revise_date is not null
 			and (project_category_id is null or project_category_id in :categoryIds) 
 			""", nativeQuery = true)
-	public Integer getUserCommentsWithReviseDateCount(Long userId, String status, long[] categoryIds);
+	public Integer getUserCommentsWithReviseDateCount(Long userId, String status, UUID[] categoryIds);
 	
 	// TODO: optimize query for with 'or' for task description match
 	@Query(value = """
@@ -102,7 +102,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			    or websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description))
 			and (c.project_category_id is null or c.project_category_id in :categoryIds) 
 			""", nativeQuery = true)
-	public Integer getUserSearchedCommentsCount(Long userId, String status, long[] categoryIds, String searchString);
+	public Integer getUserSearchedCommentsCount(Long userId, String status, UUID[] categoryIds, String searchString);
 	
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
@@ -114,10 +114,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserProjectCategoryComments(Long userId, Long categoryId, String status, int limit, int offset);
+	public List<CommentForList> retrieveUserProjectCategoryComments(Long userId, UUID categoryId, String status, int limit, int offset);
 	
 	@Query(value = "select count(*) from comments where user_id = :userId and project_category_id = :categoryId and status = :status", nativeQuery = true)
-	public Integer getUserProjectCategoryCommentsCount(Long userId, Long categoryId, String status);
+	public Integer getUserProjectCategoryCommentsCount(Long userId, UUID categoryId, String status);
 	
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
@@ -129,10 +129,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserProjectComments(Long userId, Long projectId, String status, int limit, int offset);
+	public List<CommentForList> retrieveUserProjectComments(Long userId, UUID projectId, String status, int limit, int offset);
 	
 	@Query(value = "select count(*) from comments where user_id = :userId and project_id = :projectId and status = :status", nativeQuery = true)
-	public Integer getUserProjectCommentsCount(Long userId, Long projectId, String status);
+	public Integer getUserProjectCommentsCount(Long userId, UUID projectId, String status);
 	
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
@@ -144,10 +144,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserTaskComments(Long userId, Long taskId, String status, int limit, int offset);
+	public List<CommentForList> retrieveUserTaskComments(Long userId, UUID taskId, String status, int limit, int offset);
 	
 	@Query(value = "select count(*) from comments where user_id = :userId and task_id = :taskId and status = :status", nativeQuery = true)
-	public Integer getUserTaskCommentsCount(Long userId, Long taskId, String status);
+	public Integer getUserTaskCommentsCount(Long userId, UUID taskId, String status);
 
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.revise_date reviseDate, pc.name category, p.name project, p.color color, t.description task 
@@ -159,18 +159,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 			order by c.id desc
 			limit :limit offset :offset
 			""", nativeQuery = true)
-	public List<CommentForList> retrieveUserPomodoroComments(Long userId, Long pomodoroId, String status, int limit, int offset);
+	public List<CommentForList> retrieveUserPomodoroComments(Long userId, UUID pomodoroId, String status, int limit, int offset);
 	
 	@Query(value = "select count(*) from comments where user_id = :userId and pomodoro_id = :pomodoroId and status = :status", nativeQuery = true)
-	public Integer getUserPomodoroCommentsCount(Long userId, Long pomodoroId, String status);
+	public Integer getUserPomodoroCommentsCount(Long userId, UUID pomodoroId, String status);
 	
 	@Modifying
 	@Query(value = "update comments set project_category_id = :categoryId where user_id = :userId and project_id = :projectId", nativeQuery = true)
-	public void updateCommentsCategory(Long userId, Long projectId, Long categoryId);
+	public void updateCommentsCategory(Long userId, UUID projectId, UUID categoryId);
 	
 	@Modifying
 	@Query(value = "update comments set project_id = :projectId, project_category_id = :categoryId where user_id = :userId and task_id = :taskId", nativeQuery = true)
-	public void updateCommentsProjectAndCategory(Long userId, Long taskId, Long projectId, Long categoryId);
+	public void updateCommentsProjectAndCategory(Long userId, UUID taskId, UUID projectId, UUID categoryId);
 	
 	@Query(value = "select * from comments_tags t where t.comment_id in :ids", nativeQuery = true)
 	public List<Object> findCommentsTagsByIds(UUID[] ids);

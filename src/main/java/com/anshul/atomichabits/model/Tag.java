@@ -6,16 +6,20 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Index;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.CascadeType;
@@ -32,14 +36,10 @@ import lombok.Setter;
 		@Index(name="tags_user_index", columnList="user_id"),
 		@Index(name="tags_updated_at_index", columnList="updatedAt")
 })
-public class Tag {
+public class Tag implements Persistable<UUID>  {
 
 	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Column(unique = true, nullable = false)
-    private UUID publicId; // Set this from the client's request
+	private UUID id;
 
 	@Column(nullable = false)
 	private String name;
@@ -67,6 +67,16 @@ public class Tag {
 	
 	@UpdateTimestamp
 	private Instant updatedAt;
+	
+	@Transient
+    private boolean isNew = true;
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PrePersist
+    void markNotNew() { this.isNew = false; }
 
 	@Override
 	public String toString() {
@@ -74,7 +84,7 @@ public class Tag {
 	}
 
 	// constructor used in unit tests	
-	public Tag(Long id, String title, User user) {
+	public Tag(UUID id, String title, User user) {
 		super();
 		this.id = id;
 		this.name = title;

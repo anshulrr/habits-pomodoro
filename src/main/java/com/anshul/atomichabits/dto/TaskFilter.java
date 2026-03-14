@@ -1,10 +1,11 @@
 package com.anshul.atomichabits.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record TaskFilter(
-	Long projectId,
-	Long tagId,
+	UUID projectId,
+	UUID tagId,
 	Instant startDate, 
 	Instant endDate,
 	String searchString

@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
@@ -56,14 +57,14 @@ class ProjectServiceTest {
 	static ProjectCategory category2;
 	
 	static Long USER_ID = 1L;
-	static Long CATEGORY_ID = 11L;
-	static Long PROJECT_ID = 111L;
+	static UUID CATEGORY_ID = UUID.randomUUID();
+	static UUID PROJECT_ID = UUID.randomUUID();
 	
 	@BeforeAll
 	static void setup() {
 		user = new User("Samay", "samay@xyz.com");
 		category = new ProjectCategory(CATEGORY_ID, "Sample Category", user);
-		category2 = new ProjectCategory(CATEGORY_ID + 1, "Sample Category 2", user);
+		category2 = new ProjectCategory(UUID.randomUUID(), "Sample Category 2", user);
 	}
 	
 	@Test
@@ -80,7 +81,7 @@ class ProjectServiceTest {
 	
 	@Test
 	void retriveProjectEmpty() {
-		Long nil_project_id = 12L;
+		UUID nil_project_id = UUID.randomUUID();
 		when(projectRepositoryMock.findUserProjectById(USER_ID, nil_project_id))
 			.thenReturn(Optional.ofNullable(null));
 		
@@ -166,15 +167,16 @@ class ProjectServiceTest {
 	@Test
 	void updateProjectChangeCategory() {
 		Project project = new Project(PROJECT_ID, "Test Project", user, category);
+		UUID category_id_2 = UUID.randomUUID();
 		
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
 			.thenReturn(Optional.of(project));
-		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID + 1))
+		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, category_id_2))
 			.thenReturn(Optional.of(category2));
 		
 		ProjectDto projectDtoRequest = new ProjectDto(project);
 		projectDtoRequest.setPriority(5);
-		projectDtoRequest.setProjectCategoryId(CATEGORY_ID + 1);
+		projectDtoRequest.setProjectCategoryId(category_id_2);
 		
 		projectService.updateProject(USER_ID, PROJECT_ID, projectDtoRequest);
 		
@@ -183,12 +185,12 @@ class ProjectServiceTest {
 		
 		assertEquals(project, captor.getValue());
 		assertEquals(5, captor.getValue().getPriority());
-		verify(commentRepositoryMock, times(1)).updateCommentsCategory(USER_ID, PROJECT_ID, CATEGORY_ID + 1);
+		verify(commentRepositoryMock, times(1)).updateCommentsCategory(USER_ID, PROJECT_ID, category_id_2);
 	}
 	
 	@Test
 	void updateProjectEmpty() {
-		Long nil_project_id = 12L;
+		UUID nil_project_id = UUID.randomUUID();
 		when(projectRepositoryMock.findUserProjectById(USER_ID, nil_project_id))
 			.thenReturn(Optional.ofNullable(null));
 		

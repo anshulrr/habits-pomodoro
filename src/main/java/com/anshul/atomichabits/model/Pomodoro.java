@@ -41,9 +41,6 @@ public class Pomodoro implements Persistable<UUID>  {
 	@Id
 	private UUID id;
 
-	//@Column(unique = true, nullable = false)
-    //private UUID publicId; // Set this from the client's request
-
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private OffsetDateTime startTime;
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")

@@ -94,7 +94,7 @@ public class CommentController {
 			@RequestParam(defaultValue = "added") String status,
 			@RequestParam(defaultValue = "false") boolean filterWithReviseDate,
 			@RequestParam(defaultValue = "") String searchString,
-			@RequestParam(name = "categoryIds", required = false) long[] categoryIds) {
+			@RequestParam(name = "categoryIds", required = false) UUID[] categoryIds) {
 		Long userId = Long.parseLong(principal.getName());
 		if (searchString.length() != 0 ) {
 			return commentRepository.getUserSearchedCommentsCount(userId, status, categoryIds, searchString);
@@ -141,7 +141,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/project-categories/{categoryId}/comments")
-	public List<CommentForList> retrieveCategoryComments(Principal principal, @PathVariable Long categoryId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrieveCategoryComments(Principal principal, @PathVariable UUID categoryId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments = commentRepository.retrieveUserProjectCategoryComments(userId, categoryId, status, limit, offset);
 		log.trace("{}", comments);
@@ -149,13 +149,13 @@ public class CommentController {
 	}
 
 	@GetMapping("/project-categories/{categoryId}/comments/count")
-	public Integer retrieveCategoryCommentCount(@PathVariable Long categoryId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrieveCategoryCommentCount(@PathVariable UUID categoryId, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return commentRepository.getUserProjectCategoryCommentsCount(userId, categoryId, status);
 	}
 
 	@PostMapping("/project-categories/{categoryId}/comments")
-	public Comment createCategoryComment(@PathVariable Long categoryId, @RequestBody Comment comment, Principal principal) {
+	public Comment createCategoryComment(@PathVariable UUID categoryId, @RequestBody Comment comment, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, categoryId);
@@ -170,7 +170,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/projects/{projectId}/comments")
-	public List<CommentForList> retrieveProjectComments(Principal principal, @PathVariable Long projectId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrieveProjectComments(Principal principal, @PathVariable UUID projectId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments = commentRepository.retrieveUserProjectComments(userId, projectId, status, limit, offset);
 		log.trace("{}", comments);
@@ -178,13 +178,13 @@ public class CommentController {
 	}
 
 	@GetMapping("/projects/{projectId}/comments/count")
-	public Integer retrieveProjectCommentsCount(@PathVariable Long projectId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrieveProjectCommentsCount(@PathVariable UUID projectId, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return commentRepository.getUserProjectCommentsCount(userId, projectId, status);
 	}
 
 	@PostMapping("/projects/{projectId}/comments")
-	public Comment createProjectComment(@PathVariable Long projectId, @RequestBody Comment comment, Principal principal) {
+	public Comment createProjectComment(@PathVariable UUID projectId, @RequestBody Comment comment, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, projectId);
@@ -199,7 +199,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/tasks/{taskId}/comments")
-	public List<CommentForList> retrieveTaskComments(Principal principal, @PathVariable Long taskId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrieveTaskComments(Principal principal, @PathVariable UUID taskId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments = commentRepository.retrieveUserTaskComments(userId, taskId, status, limit, offset);
 		log.trace("comments: {}", comments);
@@ -207,13 +207,13 @@ public class CommentController {
 	}
 
 	@GetMapping("/tasks/{taskId}/comments/count")
-	public Integer retrieveTaskCommentsCount(@PathVariable Long taskId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrieveTaskCommentsCount(@PathVariable UUID taskId, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return commentRepository.getUserTaskCommentsCount(userId, taskId, status);
 	}
 
 	@PostMapping("/tasks/{taskId}/comments")
-	public Comment createTaskComment(@PathVariable Long taskId, @RequestBody Comment comment, Principal principal) {
+	public Comment createTaskComment(@PathVariable UUID taskId, @RequestBody Comment comment, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
@@ -229,7 +229,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/pomodoros/{pomodoroId}/comments")
-	public List<CommentForList> retrievePomodoroComments(Principal principal, @PathVariable Long pomodoroId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
+	public List<CommentForList> retrievePomodoroComments(Principal principal, @PathVariable UUID pomodoroId, @RequestParam(defaultValue = "added") String status, @RequestParam(defaultValue = "10") int limit, @RequestParam(defaultValue = "0") int offset) {
 		Long userId = Long.parseLong(principal.getName());
 		List<CommentForList> comments = commentRepository.retrieveUserPomodoroComments(userId, pomodoroId, status, limit, offset);
 		log.trace("comments: {}", comments);
@@ -237,7 +237,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/pomodoros/{pomodoroId}/comments/count")
-	public Integer retrievePomodoroCommentsCount(@PathVariable Long pomodoroId, @RequestParam(defaultValue = "added") String status, Principal principal) {
+	public Integer retrievePomodoroCommentsCount(@PathVariable UUID pomodoroId, @RequestParam(defaultValue = "added") String status, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return commentRepository.getUserPomodoroCommentsCount(userId, pomodoroId, status);
 	}

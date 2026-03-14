@@ -5,10 +5,8 @@ import java.util.UUID;
 
 public interface TaskForList {
 
-	Long getId();
+	UUID getId();
 	
-	UUID getPublicId();
-
 	String getDescription();
 	
 	String getStatus();
@@ -27,6 +25,6 @@ public interface TaskForList {
 	
 	boolean isEnableNotifications();
 	
-	Long getProjectId();
+	UUID getProjectId();
 	
 }

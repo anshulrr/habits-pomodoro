@@ -9,8 +9,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record TaskDto(
-		Long id, 
-		@NotNull UUID publicId,
+		@NotNull UUID id, 
 		@NotBlank String description, 
 		@NotNull @PositiveOrZero Integer pomodoroLength, 
 		Instant dueDate, 
@@ -20,5 +19,5 @@ public record TaskDto(
 		@NotBlank String type,
 		@NotNull boolean enableNotifications,
 		@NotNull Instant updatedAt,
-		@NotNull @Positive Long projectId
+		@NotNull @Positive UUID projectId
 	) {}

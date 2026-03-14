@@ -35,7 +35,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
 			order by p.endTime desc, p.id desc
 			""")
-	public List<PomodoroForList> findAllForToday(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories);
+	public List<PomodoroForList> findAllForToday(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories);
 	
 	@Query("""
 			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.updatedAt updatedAt,
@@ -53,7 +53,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			order by p.endTime desc, p.id
 			limit :limit offset :offset
 			""")
-	public List<Object> findTaskPomodoros(Long userId, Long taskId, int limit, int offset);
+	public List<Object> findTaskPomodoros(Long userId, UUID taskId, int limit, int offset);
 	
 	@Query(value = "select count(*) from pomodoros where user_id = :userId and task_id = :taskId and status in ('completed', 'past')", nativeQuery = true)
 	public Integer getTaskPomodorosCount(Long userId, Long taskId);
@@ -65,7 +65,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by p.task.project.projectCategory.name, p.task.project.projectCategory.color, p.task.project.projectCategory.level
 			order by p.task.project.projectCategory.level asc
 			""")
-	public List<Object> findProjectCategoriesTime(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories);
+	public List<Object> findProjectCategoriesTime(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories);
 	
 	@Query("""
 			select sum(p.timeElapsed) / 60 as time, p.task.project.name as project, p.task.project.color as color
@@ -74,7 +74,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by p.task.project.name, p.task.project.color, p.task.project.projectCategory.level, p.task.project.priority
 			order by p.task.project.projectCategory.level asc, p.task.project.priority asc
 			""")
-	public List<Object> findProjectsTime(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories);
+	public List<Object> findProjectsTime(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories);
 
 	@Query("""
 			select sum(p.timeElapsed) / 60 as time, p.task.description as task, p.task.project.color as color, p.task.project.name as project
@@ -83,7 +83,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by p.task.description, p.task.project.color, p.task.project.name, p.task.project.projectCategory.level, p.task.project.priority
 			order by p.task.project.projectCategory.level asc, p.task.project.priority asc
 			""")
-	public List<Object> findTasksTime(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories);
+	public List<Object> findTasksTime(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories);
 
 	@Query(value = """
 			select to_char(p.end_time at time zone :timezone, :limit) as date, sum(p.time_elapsed) / 60 as time, pp.id as id, pp.name as entity, pp.color as color, pc.level as level1, pp.priority as level2
@@ -95,7 +95,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by pp.name, pp.color, date, pc.level, pp.priority, pp.id
 			order by date
 			""", nativeQuery = true)
-	public List<String[]> findTotalTime(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories, String timezone, String limit);
+	public List<String[]> findTotalTime(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories, String timezone, String limit);
 
 	@Query(value = """
 			select to_char(p.end_time at time zone :timezone, :limit) as date, sum(p.time_elapsed) / 60 as time, t.id as id, t.description as entity, pp.color as color, pc.level as level1, pp.priority as level2, t.priority as level3
@@ -107,7 +107,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			group by pp.name, pp.color, date, pc.level, pp.priority, t.description, t.id, t.priority
 			order by date
 			""", nativeQuery = true)
-	public List<String[]> findTasksTotalTime(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories, String timezone, String limit);
+	public List<String[]> findTasksTotalTime(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories, String timezone, String limit);
 	
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
@@ -118,7 +118,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user_id = :userId and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end and pc.id in (:categories)
 			group by pomodoro_date
 			""", nativeQuery = true)
-	public List<Object> findPomodorosCount(Long userId, OffsetDateTime start, OffsetDateTime end, long[] categories, String timezone);
+	public List<Object> findPomodorosCount(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories, String timezone);
 	
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
@@ -129,7 +129,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user_id = :userId and pc.id = :categoryId and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
 			group by pomodoro_date
 			""", nativeQuery = true)
-	public List<Object> findCategoryPomodorosCount(Long userId, Long categoryId, OffsetDateTime start, OffsetDateTime end, String timezone);
+	public List<Object> findCategoryPomodorosCount(Long userId, UUID categoryId, OffsetDateTime start, OffsetDateTime end, String timezone);
 	
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
@@ -140,7 +140,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user_id = :userId and pp.id = :projectId and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
 			group by pomodoro_date
 			""", nativeQuery = true)
-	public List<Object> findProjectPomodorosCount(Long userId, Long projectId, OffsetDateTime start, OffsetDateTime end, String timezone);
+	public List<Object> findProjectPomodorosCount(Long userId, UUID projectId, OffsetDateTime start, OffsetDateTime end, String timezone);
 	
 	@Query(value = """
 			select sum(p.time_elapsed) / 60 as time, (p.end_time at time zone :timezone)::::date as pomodoro_date
@@ -151,7 +151,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user_id = :userId and t.id = :taskId and p.status in ('completed', 'past') and end_time >= :start and end_time <= :end
 			group by pomodoro_date
 			""", nativeQuery = true)
-	public List<Object> findTaskPomodorosCount(Long userId, Long taskId, OffsetDateTime start, OffsetDateTime end, String timezone);
+	public List<Object> findTaskPomodorosCount(Long userId, UUID taskId, OffsetDateTime start, OffsetDateTime end, String timezone);
 
 	@Query(value = "delete from pomodoros where id = :id")
 	public void deleteByUuid(UUID id);

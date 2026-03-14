@@ -3,6 +3,7 @@ package com.anshul.atomichabits.business;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheConfig;
@@ -31,15 +32,15 @@ public class ProjectCategoryService {
 
 	private ProjectCategoryRepository projectCategoryRepository;
 	
-	@Cacheable(value = "projectCategory", key = "#id", unless = "#result == null")
-	public ProjectCategory retriveProjectCategory(Long userId, Long id) {
+//	@Cacheable(value = "projectCategory", key = "#id", unless = "#result == null")
+	public ProjectCategory retriveProjectCategory(Long userId, UUID id) {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);
 		return categoryEntry.get();
 	}
 	
-	@Cacheable(value = "projectCategories")
+//	@Cacheable(value = "projectCategories")
 	public List<ProjectCategory> retrieveAllProjectCategories(Long userId, Integer limit, Integer offset, Instant lastSyncTime) {
 		return projectCategoryRepository.findUserProjectCategories(userId, limit, offset, lastSyncTime);
 	}
@@ -52,7 +53,7 @@ public class ProjectCategoryService {
 		return projectCategoryRepository.getUserProjectCategoriesCount(userId);
 	}
 	
-	@CacheEvict(cacheNames = "projectCategories", allEntries = true)
+//	@CacheEvict(cacheNames = "projectCategories", allEntries = true)
 	public ProjectCategory createProjectCategory(Long userId, ProjectCategoryDto categoryDto) {
 		Optional<User> userEntry = userRepository.findById(userId);
 		
@@ -64,16 +65,15 @@ public class ProjectCategoryService {
 		category.setLevel(categoryDto.getLevel());
 		category.setStatsDefault(categoryDto.isStatsDefault());
 		category.setVisibleToPartners(categoryDto.isVisibleToPartners());
-		category.setPublicId(categoryDto.getPublicId());
 		
 		log.debug("{}", category);
 
 		return projectCategoryRepository.save(category);
 	}
 	
-	@Caching(evict = { @CacheEvict(cacheNames = "projectCategory", key = "#id"),
-			@CacheEvict(cacheNames = "projectCategories", allEntries = true) })
-	public ProjectCategory updateProjectCategory(Long userId, Long id, ProjectCategoryDto projectCategory) {
+//	@Caching(evict = { @CacheEvict(cacheNames = "projectCategory", key = "#id"),
+//			@CacheEvict(cacheNames = "projectCategories", allEntries = true) })
+	public ProjectCategory updateProjectCategory(Long userId, UUID id, ProjectCategoryDto projectCategory) {
 		Optional<ProjectCategory> categoryEntry = projectCategoryRepository.findUserProjectCategoryById(userId, id);
 		if (categoryEntry.isEmpty())
 			throw new ResourceNotFoundException("project category id:" + id);

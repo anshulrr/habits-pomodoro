@@ -66,10 +66,10 @@ class TaskServiceTest {
 	static Project project;
 	
 	static Long USER_ID = 1L;
-	static Long CATEGORY_ID = 11L;
-	static Long PROJECT_ID = 111L;
-	static Long TASK_ID = 111L;
-	static Long TAG_ID = 1111L;
+	static UUID CATEGORY_ID = UUID.randomUUID();
+	static UUID PROJECT_ID = UUID.randomUUID();
+	static UUID TASK_ID = UUID.randomUUID();
+	static UUID TAG_ID = UUID.randomUUID();
 	
 	@BeforeAll
 	static void setup() {
@@ -92,7 +92,7 @@ class TaskServiceTest {
 	
 	@Test
 	void retriveTaskEmpty() {
-		Long nil_task_id = 12L;
+		UUID nil_task_id = UUID.randomUUID();
 		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
 			.thenReturn(Optional.ofNullable(null));
 		
@@ -214,7 +214,7 @@ class TaskServiceTest {
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
 			.thenReturn(Optional.of(project));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, UUID.randomUUID(), "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
 		
 		taskService.updateTask(USER_ID, TASK_ID, taskDtoRequest);
 		
@@ -227,13 +227,13 @@ class TaskServiceTest {
 	
 	@Test
 	void updateTaskEmpty() {
-		Long nil_task_id = 12L;
+		UUID nil_task_id = UUID.randomUUID();
 		String status = "added";
 		
 		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
 			.thenReturn(Optional.ofNullable(null));
 		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, UUID.randomUUID(), "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID);
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			taskService.updateTask(USER_ID, nil_task_id, taskDtoRequest);
@@ -247,7 +247,7 @@ class TaskServiceTest {
 		
 		Tag tag = new Tag(TAG_ID, "Test Tag", user);
 		
-		List<Long> tagIds = new ArrayList<>();
+		List<UUID> tagIds = new ArrayList<>();
 		tagIds.add(TAG_ID);
 		
 		Set<Tag> tags = new HashSet<>();
@@ -266,7 +266,7 @@ class TaskServiceTest {
 	
 	@Test
 	void retrieveTasksTags() {
-		long[] taskIds = new long[]{ TASK_ID };
+		UUID[] taskIds = new UUID[]{ TASK_ID };
 		
 		when(taskRepositoryMock.findTaskTagsByIds(taskIds))
 			.thenReturn(new ArrayList<Object>());
@@ -278,7 +278,7 @@ class TaskServiceTest {
 	
 	@Test
 	void retrieveTasksTimeElapsed() {
-		long[] taskIds = new long[]{ TASK_ID };
+		UUID[] taskIds = new UUID[]{ TASK_ID };
 		OffsetDateTime startDate = OffsetDateTime.now(); 
 		OffsetDateTime endDate = OffsetDateTime.now();
 		

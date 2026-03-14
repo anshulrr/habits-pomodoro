@@ -3,6 +3,7 @@ package com.anshul.atomichabits.business;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class TagService {
 
 	private TagRepository tagRepository;
 	
-	public Tag retriveTag(Long userId, Long id) {
+	public Tag retriveTag(Long userId, UUID id) {
 		Optional<Tag> tagEntry = tagRepository.findUserTagById(userId, id);
 		if (tagEntry.isEmpty())
 			throw new ResourceNotFoundException("tag id:" + id);
@@ -47,7 +48,7 @@ public class TagService {
 		return tagRepository.save(tag);
 	}
 	
-	public Tag updateTag(Long userId, Long id, Tag tag) {
+	public Tag updateTag(Long userId, UUID id, Tag tag) {
 		Optional<Tag> tagEntry = tagRepository.findUserTagById(userId, id);
 		if (tagEntry.isEmpty())
 			throw new ResourceNotFoundException("project tag id:" + id);

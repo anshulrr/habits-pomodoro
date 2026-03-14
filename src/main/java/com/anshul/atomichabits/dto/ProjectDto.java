@@ -24,7 +24,6 @@ public class ProjectDto {
 	public ProjectDto(Project project) {
 		super();
 		this.id = project.getId();
-		this.publicId = project.getPublicId();
 		this.name = project.getName();
 		this.description = project.getDescription();
 		this.color = project.getColor();
@@ -37,10 +36,7 @@ public class ProjectDto {
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
 
-	private Long id;
-	
-	@NotNull
-	private UUID publicId;
+	private UUID id;
 	
 	@NotBlank
 	private String name;
@@ -69,14 +65,14 @@ public class ProjectDto {
 	@NotNull
 	private Instant updatedAt;
 	
-	private Long projectCategoryId;
+	private UUID projectCategoryId;
 	
 	// TODO check: I think because of spring boot projection, getters is used to decide variable name in dto object
-	public Long getProjectCategoryId() {
+	public UUID getProjectCategoryId() {
 		return projectCategoryId;
 	}
 
-	public void setProjectCategoryId(Long projectCategoryId) {
+	public void setProjectCategoryId(UUID projectCategoryId) {
 		this.projectCategoryId = projectCategoryId;
 	}
 

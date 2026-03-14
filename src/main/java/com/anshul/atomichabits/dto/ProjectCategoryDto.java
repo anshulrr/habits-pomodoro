@@ -14,7 +14,7 @@ import lombok.Getter;
 public class ProjectCategoryDto {
 	
 	@NotNull
-	private UUID publicId;
+	private UUID id;
 	
 	@NotBlank
 	private String name;

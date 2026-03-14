@@ -6,17 +6,21 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Index;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.FetchType;
 
 import lombok.Getter;
@@ -33,15 +37,11 @@ import lombok.Setter;
 		@Index(name="projects_user_index", columnList="user_id"),
 		@Index(name="projects_updated_at_index", columnList="updatedAt")
 })
-public class Project {
+public class Project implements Persistable<UUID>  {
 
 	@Id
-	@GeneratedValue
-	private Long id;
+	private UUID id;
 	
-	@Column(unique = true, nullable = false)
-    private UUID publicId; // Set this from the client's request
-
 	@Column(nullable = false)
 	private String name;
 
@@ -82,6 +82,16 @@ public class Project {
 	
 	@UpdateTimestamp
 	private Instant updatedAt;
+	
+	@Transient
+    private boolean isNew = true;
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PrePersist
+    void markNotNew() { this.isNew = false; }
 
 	@OneToMany(mappedBy = "project")
 	@JsonIgnore
@@ -94,7 +104,7 @@ public class Project {
 	}
 
 	// constructor used in unit tests	
-	public Project(Long id, String name, User user, ProjectCategory projectCategory) {
+	public Project(UUID id, String name, User user, ProjectCategory projectCategory) {
 		super();
 		this.id = id;
 		this.name = name;

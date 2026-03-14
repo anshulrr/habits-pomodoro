@@ -5,17 +5,15 @@ import java.util.UUID;
 
 public interface CommentForSync {
 
-	Long getId();
-
-	UUID getPublicId();
+	UUID getId();
 
 	String getDescription();
 	
-	Long getCategoryId();
+	UUID getCategoryId();
 	
-	Long getProjectId();
+	UUID getProjectId();
 
-	Long getTaskId();
+	UUID getTaskId();
 
 	String getCategory();
 	

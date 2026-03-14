@@ -4,9 +4,7 @@ import java.util.UUID;
 
 public interface ProjectForList {
 
-	Long getId();
-
-	UUID getPublicId();
+	UUID getId();
 
 	String getName();
 
@@ -26,7 +24,7 @@ public interface ProjectForList {
 
 	Integer getDailyLimit();
 	
-	Long getProjectCategoryId();
+	UUID getProjectCategoryId();
 	
 	Long getCategoryPriority();
 }

@@ -75,9 +75,9 @@ class RunningPomodoroTest {
 	static Task task;
 	
 	static Long USER_ID = 1L;
-	static Long CATEGORY_ID = 11L;
-	static Long PROJECT_ID = 22L;
-	static Long TASK_ID = 33L;
+	static UUID CATEGORY_ID = UUID.randomUUID();
+	static UUID PROJECT_ID = UUID.randomUUID();
+	static UUID TASK_ID = UUID.randomUUID();
 	static UUID POMODORO_ID = UUID.randomUUID();
 	
 	@BeforeAll

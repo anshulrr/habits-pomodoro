@@ -8,8 +8,6 @@ public interface PomodoroForList {
 
 	UUID getId();
 
-	UUID getPublicId();
-	
 	String getStatus();
 
 	OffsetDateTime getStartTime();
@@ -18,7 +16,7 @@ public interface PomodoroForList {
 
 	Integer getTimeElapsed();
 
-	Long getTaskId();
+	UUID getTaskId();
 	
 	String getTask();
 	
@@ -26,7 +24,7 @@ public interface PomodoroForList {
 
 	Instant getUpdatedAt();
 	
-	Long getProjectId();
+	UUID getProjectId();
 	
-	Long getCategoryId();
+	UUID getCategoryId();
 }
