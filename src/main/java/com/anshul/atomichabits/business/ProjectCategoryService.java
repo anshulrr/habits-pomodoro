@@ -60,6 +60,7 @@ public class ProjectCategoryService {
 		ProjectCategory category = new ProjectCategory();
 
 		category.setUser(userEntry.get());
+		category.setId(categoryDto.getId());
 		category.setName(categoryDto.getName());
 		category.setColor(categoryDto.getColor());
 		category.setLevel(categoryDto.getLevel());

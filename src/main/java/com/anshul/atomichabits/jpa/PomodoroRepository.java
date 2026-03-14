@@ -35,7 +35,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.task.project.projectCategory.id in (:categories)
 			order by p.endTime desc, p.id desc
 			""")
-	public List<PomodoroForList> findAllForToday(Long userId, Instant start, Instant end, UUID[] categories);
+	public List<PomodoroForList> findAllForToday(Long userId, OffsetDateTime start, OffsetDateTime end, UUID[] categories);
 	
 	@Query("""
 			select p.id id, p.status status, p.startTime startTime, p.endTime endTime, p.timeElapsed timeElapsed, p.updatedAt updatedAt,
@@ -44,7 +44,7 @@ public interface PomodoroRepository extends JpaRepository<Pomodoro, Long> {
 			where p.user.id = :userId and p.endTime >= :start and p.endTime <= :end and p.status in ('completed', 'past') and p.updatedAt > :lastSyncTime
 			order by p.endTime desc, p.id desc
 			""")
-	public List<PomodoroForList> findAllForSync(Long userId, Instant start, Instant end, Instant lastSyncTime);
+	public List<PomodoroForList> findAllForSync(Long userId, OffsetDateTime start, OffsetDateTime end, Instant lastSyncTime);
 	
 	@Query("""
 			select p
