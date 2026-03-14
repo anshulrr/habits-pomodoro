@@ -19,5 +19,5 @@ public record TaskDto(
 		@NotBlank String type,
 		@NotNull boolean enableNotifications,
 		@NotNull Instant updatedAt,
-		@NotNull @Positive UUID projectId
+		@NotNull UUID projectId
 	) {}

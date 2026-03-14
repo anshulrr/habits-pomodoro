@@ -25,7 +25,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :userId and t.updatedAt > :lastSyncTime
-			group by t.id, pr.id
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""")
@@ -40,7 +39,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :userId and t.project.id = :projectId and t.status = :status and t.updatedAt > :lastSyncTime
-			group by t.id, pr.id
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""")
@@ -55,7 +53,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			from tasks t
 			join projects pr on t.project.id = pr.id
 			where t.user.id = :userId and t.status = :status and dueDate >= :start and dueDate <= :end
-			group by t.id, pr.id
 			order by t.dueDate asc, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
@@ -71,7 +68,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join projects pr on t.project.id = pr.id
 			join t.tags tags
 			where t.user.id = :userId and t.status = :status and tags.id = :tagId
-			group by t.id, pr.id, pr.projectCategory.level
 			order by pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
@@ -92,7 +88,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join projects as pr on t.project_id = pr.id
 			join project_categories as pc on pr.project_category_id = pc.id
 			where t.user_id = :userId and t.status = :status and websearch_to_tsquery('english', :searchString)  @@ to_tsvector('english', t.description)
-			group by t.id, pr.id, pc.id
 			order by pc.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""", nativeQuery = true)
