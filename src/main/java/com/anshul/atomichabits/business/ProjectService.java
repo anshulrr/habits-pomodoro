@@ -69,6 +69,7 @@ public class ProjectService {
 		
 		Project project = new Project();
 
+		project.setId(projectDto.getId());
 		project.setName(projectDto.getName());
 		project.setDescription(projectDto.getDescription());
 		project.setColor(projectDto.getColor());

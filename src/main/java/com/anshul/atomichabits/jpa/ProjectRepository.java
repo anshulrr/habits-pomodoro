@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.anshul.atomichabits.dto.ProjectForList;
 import com.anshul.atomichabits.model.Project;
 
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
 	@Query("select p, p.projectCategory from projects p where p.user.id = :userId and p.id = :projectId")
 	public Optional<Project> findUserProjectById(Long userId, UUID projectId);

@@ -10,9 +10,9 @@ public interface PomodoroForList {
 
 	String getStatus();
 
-	OffsetDateTime getStartTime();
+	Instant getStartTime();
 
-	OffsetDateTime getEndTime();
+	Instant getEndTime();
 
 	Integer getTimeElapsed();
 

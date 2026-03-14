@@ -113,9 +113,9 @@ public class TaskController {
 	    return new ResponseEntity<>(taskService.addTag(userId, id, request.tagIds()), HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/tasks/tags")
+	@PostMapping("/tasks/tags")
 	public List<Object> retrieveTasksTags(Principal principal, 
-			@RequestParam("taskIds") UUID[] taskIds) {
+			@RequestBody UUID[] taskIds) {
 		return taskService.retrieveTasksTags(taskIds);
 	}
 	
@@ -128,9 +128,9 @@ public class TaskController {
 		return taskService.retrieveTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
 	
-	@GetMapping("/tasks/comments/count")
+	@PostMapping("/tasks/comments/count")
 	public List<Object> retrieveTasksCommentsCount(Principal principal, 
-			@RequestParam("taskIds") UUID[] taskIds) {
+			@RequestBody UUID[] taskIds) {
 		return taskService.retrieveTasksCommentsCount(taskIds);
 	}
 }

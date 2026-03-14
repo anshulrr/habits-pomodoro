@@ -36,7 +36,7 @@ public class PomodoroService {
 	private UserSettingsRepository userSettingsRepository;
 	private PomodoroRepository pomodoroRepository;
 	
-	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, UUID[] categories, Instant lastSyncTime) {
+	public List<PomodoroForList> retrievePomodoros(Long userId, Instant startDate, Instant endDate, UUID[] categories, Instant lastSyncTime) {
 		log.debug(startDate + " " + endDate);
 		List<PomodoroForList> pomodoros;
 		if (categories == null) {
