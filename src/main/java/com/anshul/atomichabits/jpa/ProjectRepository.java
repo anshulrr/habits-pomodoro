@@ -28,7 +28,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 	//		""", nativeQuery = true)
 	@Query("""
 			select p.id id, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, 
-			p.projectCategory.name category, p.projectCategory.color categoryColor, p.projectCategory.id projectCategoryId, p.projectCategory.level categoryPriority
+			p.projectCategory.id projectCategoryId, p.projectCategory.level categoryPriority
 			from projects p 
 			where p.user.id = :userId and status = :status and updatedAt > :lastSyncTime
 			order by p.projectCategory.level asc, p.priority asc, id desc 

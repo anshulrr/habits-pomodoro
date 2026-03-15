@@ -15,14 +15,6 @@ public interface CommentForSync {
 
 	UUID getTaskId();
 
-	String getCategory();
-	
-	String getProject();
-
-	String getColor();
-	
-	String getTask();
-
 	Instant getReviseDate();
 	
 	Instant getCreatedAt();

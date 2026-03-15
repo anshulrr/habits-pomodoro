@@ -33,8 +33,7 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 	
 	@Query(value = """
 			select c.*, c.created_at createdAt, c.updated_at updatedAt, c.revise_date reviseDate, 
-			pc.id categoryId, p.id projectId, t.id taskId,
-			pc.name category, p.name project, p.color color, t.description task
+			pc.id categoryId, p.id projectId, t.id taskId
 			from comments c
 			left join project_categories pc on c.project_category_id = pc.id
 			left join projects p on c.project_id = p.id

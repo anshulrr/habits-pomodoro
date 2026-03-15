@@ -18,10 +18,6 @@ public interface PomodoroForList {
 
 	UUID getTaskId();
 	
-	String getTask();
-	
-	String getColor();
-
 	Instant getUpdatedAt();
 	
 	UUID getProjectId();

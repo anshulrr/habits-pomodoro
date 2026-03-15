@@ -16,10 +16,6 @@ public interface ProjectForList {
 
 	Integer getPriority();
 
-	String getCategory();
-
-	String getCategoryColor();
-
 	String getType();
 
 	Integer getDailyLimit();
