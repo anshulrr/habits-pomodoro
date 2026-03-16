@@ -27,7 +27,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 	//		limit ?2 offset ?3
 	//		""", nativeQuery = true)
 	@Query("""
-			select p.id id, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, 
+			select p.id id, p.name name, p.color color, p.description description, p.priority priority, p.pomodoroLength pomodoroLength, p.type type, p.dailyLimit dailyLimit, p.updatedAt updatedAt,
 			p.projectCategory.id projectCategoryId, p.projectCategory.level categoryPriority
 			from projects p 
 			where p.user.id = :userId and status = :status and updatedAt > :lastSyncTime

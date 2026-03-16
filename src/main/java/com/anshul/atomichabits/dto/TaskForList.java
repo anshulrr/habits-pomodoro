@@ -24,6 +24,8 @@ public interface TaskForList {
 	Integer getDailyLimit();
 	
 	boolean isEnableNotifications();
+
+	Instant getUpdatedAt();
 	
 	UUID getProjectId();
 	

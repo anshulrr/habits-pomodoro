@@ -20,7 +20,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Optional<Task> findUserTaskById(Long userId, UUID id);
 
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, t.updatedAt updatedAt,
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -34,7 +34,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getAllTasksCount(Long userId);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
+			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, t.updatedAt updatedAt,
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id

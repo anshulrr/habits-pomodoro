@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public interface ProjectForList {
@@ -19,6 +20,8 @@ public interface ProjectForList {
 	String getType();
 
 	Integer getDailyLimit();
+	
+	Instant getUpdatedAt();
 	
 	UUID getProjectCategoryId();
 	
