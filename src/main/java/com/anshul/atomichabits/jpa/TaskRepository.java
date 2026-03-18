@@ -21,9 +21,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, t.updatedAt updatedAt,
-			pr.id projectId
+			pr.id projectId, pr.priority projectPriority, pc.level categoryPriority
 			from tasks t
 			join projects pr on t.project.id = pr.id
+			join project_categories as pc on pr.projectCategory.id = pc.id
 			where t.user.id = :userId and t.updatedAt > :lastSyncTime
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset

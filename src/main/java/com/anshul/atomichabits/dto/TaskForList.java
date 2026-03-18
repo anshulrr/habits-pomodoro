@@ -29,4 +29,8 @@ public interface TaskForList {
 	
 	UUID getProjectId();
 	
+	Long getProjectPriority();
+	
+	Long getCategoryPriority();
+	
 }
