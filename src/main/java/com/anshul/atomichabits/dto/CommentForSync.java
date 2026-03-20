@@ -3,7 +3,7 @@ package com.anshul.atomichabits.dto;
 import java.time.Instant;
 import java.util.UUID;
 
-public interface CommentForList {
+public interface CommentForSync {
 
 	Long getId();
 
@@ -11,6 +11,12 @@ public interface CommentForList {
 
 	String getDescription();
 	
+	Long getCategoryId();
+	
+	Long getProjectId();
+
+	Long getTaskId();
+
 	String getCategory();
 	
 	String getProject();
@@ -18,7 +24,7 @@ public interface CommentForList {
 	String getColor();
 	
 	String getTask();
-	
+
 	Instant getReviseDate();
 	
 	Instant getCreatedAt();

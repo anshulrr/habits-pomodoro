@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +47,17 @@ public class PomodoroController {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("categoryIds") long[] categories) {
+			@RequestParam(name = "categoryIds", required = false) long[] categories,
+			@RequestParam(required = false) Instant lastSyncTime) {
+		if (lastSyncTime == null) {
+			lastSyncTime = Instant.EPOCH;
+		}
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
-			return new ResponseEntity<>(pomodoroService.retrievePomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
+			return new ResponseEntity<>(pomodoroService.retrievePomodoros(userId, startDate, endDate, categories, lastSyncTime), HttpStatus.OK);
 		} else {
 			if (accountabilityPartnerService.isSubject(userId, subjectId)) {	
-				return new ResponseEntity<>(pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories), HttpStatus.OK);
+				return new ResponseEntity<>(pomodoroService.retrievePomodoros(subjectId, startDate, endDate, categories, lastSyncTime), HttpStatus.OK);
 			} else {
 				log.info(LOG_MESSAGE, userId, subjectId);
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

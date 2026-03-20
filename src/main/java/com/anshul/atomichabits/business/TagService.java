@@ -1,5 +1,6 @@
 package com.anshul.atomichabits.business;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +29,8 @@ public class TagService {
 		return tagEntry.get();
 	}
 	
-	public List<Tag> retrieveAllTags(Long userId, Integer limit, Integer offset) {
-		return tagRepository.findUserTags(userId, limit, offset);
+	public List<Tag> retrieveAllTags(Long userId, Integer limit, Integer offset, Instant lastSyncTime) {
+		return tagRepository.findUserTags(userId, limit, offset, lastSyncTime);
 	}
 	
 	public Integer retrieveAllTagsCount(Long userId) {

@@ -19,22 +19,37 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Optional<Task> findUserTaskById(Long userId, Long id);
 
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
-			where t.user.id = :userId and t.project.id = :projectId and t.status = :status
+			where t.user.id = :userId and t.updatedAt > :lastSyncTime
 			group by t.id, pr.id
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, Long projectId, String status, int limit, int offset);
+	public List<TaskForList> retrieveAllUserTasks(Long userId, int limit, int offset, Instant lastSyncTime);
+
+	@Query(value = "select count(*) from tasks where user_id = :userId", nativeQuery = true)
+	public Integer getAllTasksCount(Long userId);
+	
+	@Query(value = """
+			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength,
+			pr.id projectId
+			from tasks t
+			join projects pr on t.project.id = pr.id
+			where t.user.id = :userId and t.project.id = :projectId and t.status = :status and t.updatedAt > :lastSyncTime
+			group by t.id, pr.id
+			order by t.priority asc, t.id desc
+			limit :limit offset :offset
+			""")
+	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, Long projectId, String status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query(value = "select count(*) from tasks where user_id = :userId and project_id = :projectId and status = :status", nativeQuery = true)
 	public Integer getProjectTasksCount(Long userId, Long projectId, String status);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -49,7 +64,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getFilteredTasksCount(Long userId, String status, Instant start, Instant end);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
+			select t.id id, t.publicId publicId, t.priority priority, t.description description, t.status status, t.type type, t.dueDate dueDate, t.repeatDays repeatDays, t.dailyLimit dailyLimit, t.enableNotifications enableNotifications, t.pomodoroLength pomodoroLength, 
 			pr.id projectId
 			from tasks t
 			join projects pr on t.project.id = pr.id
@@ -70,7 +85,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	public Integer getTagsTasksCount(Long userId, Long tagId, String status);
 	
 	@Query(value = """
-			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
+			select t.id id, t.public_id publicId, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
 			t.project_id projectId
 			from tasks t
 			join projects as pr on t.project_id = pr.id
@@ -123,7 +138,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			WHERE user_id = :userId and project_id = :projectId
 			)
 			UPDATE tasks
-			SET priority = reordered_items.new_order
+			SET priority = reordered_items.new_order, updated_at = NOW()
 			FROM reordered_items
 			WHERE tasks.id = reordered_items.id
 			""", nativeQuery = true)

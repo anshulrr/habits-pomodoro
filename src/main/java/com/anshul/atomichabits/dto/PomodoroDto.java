@@ -1,6 +1,8 @@
 package com.anshul.atomichabits.dto;
 
 import java.time.OffsetDateTime;
+import java.time.Instant;
+import java.util.UUID;
 
 import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.Task;
@@ -8,6 +10,8 @@ import com.anshul.atomichabits.model.Task;
 public interface PomodoroDto {
 
 	Long getId();
+
+	UUID getPublicId();
 
 	OffsetDateTime getStartTime();
 
@@ -20,6 +24,8 @@ public interface PomodoroDto {
 	String getStatus();
 
 	Task getTask();
+
+	Instant getUpdatedAt();
 	
 	Project getProject();
 }

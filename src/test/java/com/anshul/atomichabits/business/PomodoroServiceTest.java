@@ -11,10 +11,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
@@ -94,7 +96,7 @@ class PomodoroServiceTest {
 		when(pomodoroRepositoryMock.findAllForToday(USER_ID, startDate, endDate, categoryIds))
 			.thenReturn(new ArrayList<PomodoroForList>());
 		
-		List<PomodoroForList> pomodoros = pomodoroService.retrievePomodoros(USER_ID, startDate, endDate, categoryIds);
+		List<PomodoroForList> pomodoros = pomodoroService.retrievePomodoros(USER_ID, startDate, endDate, categoryIds, Instant.EPOCH);
 		
 		assertEquals(0, pomodoros.size());
 	}
@@ -128,7 +130,7 @@ class PomodoroServiceTest {
 		Pomodoro pomodoroRequest = new Pomodoro(null, startDate, null, null, null, null, null);
 		
 		List<PomodoroDto> runningPomodoros = new ArrayList<PomodoroDto>();
-		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, startDate, null, 0, 0, "started", task, project);
+		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, UUID.randomUUID(), startDate, null, 0, 0, "started", Instant.now(), task, project);
 		runningPomodoros.add(pomodoroDto);
 		
 		when(pomodoroRepositoryMock.findRunningPomodoros(USER_ID))
@@ -236,7 +238,7 @@ class PomodoroServiceTest {
 		Pomodoro pomodoro = new Pomodoro(POMODORO_ID, startDate, null, 0, "started", task, user);
 		List<PomodoroDto> runningPomodoros = new ArrayList<PomodoroDto>();
 		
-		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, startDate, null, 0, 0, "started", task, project);
+		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, UUID.randomUUID(), startDate, null, 0, 0, "started", Instant.now(), task, project);
 		runningPomodoros.add(pomodoroDto);
 		
 		when(pomodoroRepositoryMock.findRunningPomodoros(USER_ID))
@@ -259,7 +261,7 @@ class PomodoroServiceTest {
 		Pomodoro pomodoro = new Pomodoro(POMODORO_ID, startDate, null, 0, "started", task, user);
 		List<PomodoroDto> runningPomodoros = new ArrayList<PomodoroDto>();
 		
-		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, startDate, null, 0, 0, "started", task, project);
+		PomodoroDto pomodoroDto = new PomodoroDtoImpl(POMODORO_ID, UUID.randomUUID(), startDate, null, 0, 0, "started", Instant.now(), task, project);
 		runningPomodoros.add(pomodoroDto);
 		runningPomodoros.add(pomodoroDto);
 		runningPomodoros.add(pomodoroDto);
@@ -286,11 +288,13 @@ class PomodoroServiceTest {
 @AllArgsConstructor
 class PomodoroDtoImpl implements PomodoroDto {
 	Long id;
+	UUID publicId;
 	OffsetDateTime startTime;
 	OffsetDateTime endTime;
 	Integer timeElapsed;
 	Integer length;
 	String status;
+	Instant updatedAt;
 	Task task;
 	Project project;
 }

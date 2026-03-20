@@ -2,6 +2,7 @@ package com.anshul.atomichabits.model;
 
 import java.time.OffsetDateTime;
 import java.time.Instant;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,13 +30,17 @@ import lombok.Setter;
 		@Index(name="pomodoros_end_time_index", columnList="endTime"),
 		@Index(name="pomodoros_status_index", columnList="status"),
 		@Index(name="pomodoros_task_index", columnList="task_id"),
-		@Index(name="pomodoros_user_index", columnList="user_id")
+		@Index(name="pomodoros_user_index", columnList="user_id"),
+		@Index(name="pomodoros_updated_at_index", columnList="updatedAt")
 })
 public class Pomodoro {
 
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column(unique = true, nullable = false)
+    private UUID publicId; // Set this from the client's request
 
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private OffsetDateTime startTime;
