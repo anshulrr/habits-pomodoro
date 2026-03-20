@@ -4,29 +4,35 @@ import java.time.OffsetDateTime;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface PomodoroForList {
 
-	Long getId();
+	UUID getId();
 
-	UUID getPublicId();
-	
 	String getStatus();
 
-	OffsetDateTime getStartTime();
+	@JsonIgnore
+	OffsetDateTime getOffsetStartTime();
 
-	OffsetDateTime getEndTime();
+	@JsonIgnore
+	OffsetDateTime getOffsetEndTime();
+	
+	default Instant getStartTime() {
+        return getOffsetStartTime() != null ? getOffsetStartTime().toInstant() : null;
+    }
+	
+	default Instant getEndTime() {
+        return getOffsetStartTime() != null ? getOffsetStartTime().toInstant() : null;
+    }
 
 	Integer getTimeElapsed();
 
-	Long getTaskId();
+	UUID getTaskId();
 	
-	String getTask();
-	
-	String getColor();
-
 	Instant getUpdatedAt();
 	
-	Long getProjectId();
+	UUID getProjectId();
 	
-	Long getCategoryId();
+	UUID getCategoryId();
 }

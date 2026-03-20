@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class PomodoroService {
 	private UserSettingsRepository userSettingsRepository;
 	private PomodoroRepository pomodoroRepository;
 	
-	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, Instant lastSyncTime) {
+	public List<PomodoroForList> retrievePomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, UUID[] categories, Instant lastSyncTime) {
 		log.debug(startDate + " " + endDate);
 		List<PomodoroForList> pomodoros;
 		if (categories == null) {
@@ -47,7 +48,7 @@ public class PomodoroService {
 		return pomodoros;
 	}
 	
-	public Pomodoro createPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
+	public Pomodoro createPomodoro(Long userId, UUID taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
 		List<PomodoroDto> runningPomodoros= pomodoroRepository.findRunningPomodoros(userId);
 		if (!runningPomodoros.isEmpty()) {
@@ -68,7 +69,7 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoro);
 	}
 	
-	public Pomodoro createPastPomodoro(Long userId, Long taskId, Pomodoro pomodoro) {
+	public Pomodoro createPastPomodoro(Long userId, UUID taskId, Pomodoro pomodoro) {
 		//Check if there is any running pomodoro for the user
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
@@ -108,7 +109,7 @@ public class PomodoroService {
 		return length;
 	}
 	
-	public Pomodoro deletePomodoro(Long userId, Long id) {
+	public Pomodoro deletePomodoro(Long userId, UUID id) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -118,7 +119,7 @@ public class PomodoroService {
 		return pomodoroRepository.save(pomodoroEntry.get());
 	}
 	
-	public Pomodoro updatePomodoro(Long userId, Long id, PomodoroUpdateDto pomodoroUpdateDto) {
+	public Pomodoro updatePomodoro(Long userId, UUID id, PomodoroUpdateDto pomodoroUpdateDto) {
 		Optional<Pomodoro> pomodoroEntry = pomodoroRepository.findUserPomodoroById(userId, id);
 		if (pomodoroEntry.isEmpty())
 			throw new ResourceNotFoundException("pomodoro id:" + id);
@@ -140,7 +141,7 @@ public class PomodoroService {
 			// TODO: find better solution
 			log.info("multiple pomodoros found: {}", runningPomodoros.size());
 			for (int i = 1; i < runningPomodoros.size(); i++) {
-				pomodoroRepository.deleteById(runningPomodoros.get(i).getId());
+				pomodoroRepository.deleteByUuid(runningPomodoros.get(i).getId());
 			}
 		}
 		

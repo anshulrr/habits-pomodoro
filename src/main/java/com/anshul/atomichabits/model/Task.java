@@ -7,17 +7,21 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Index;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -38,14 +42,10 @@ import lombok.Setter;
 		@Index(name="tasks_user_index", columnList="user_id"),
 		@Index(name="tasks_updated_at_index", columnList="updatedAt")
 })
-public class Task {
+public class Task implements Persistable<UUID>  {
 
 	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Column(unique = true, nullable = false)
-    private UUID publicId; // Set this from the client's request
+	private UUID id;
 
 	@Column(nullable = false)
 	private String description;
@@ -100,6 +100,16 @@ public class Task {
 	
 	@UpdateTimestamp
 	private Instant updatedAt;
+	
+	@Transient
+    private boolean isNew = true;
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PrePersist
+    void markNotNew() { this.isNew = false; }
 
 	@OneToMany(mappedBy = "task")
 	@JsonIgnore
@@ -112,7 +122,7 @@ public class Task {
 	}
 	
 	// constructor used in unit tests	
-	public Task(Long id, String description, User user, Project project) {
+	public Task(UUID id, String description, User user, Project project) {
 		super();
 		this.id = id;
 		this.description = description;

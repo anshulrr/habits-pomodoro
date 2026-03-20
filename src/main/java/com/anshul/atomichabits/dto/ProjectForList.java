@@ -1,12 +1,11 @@
 package com.anshul.atomichabits.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public interface ProjectForList {
 
-	Long getId();
-
-	UUID getPublicId();
+	UUID getId();
 
 	String getName();
 
@@ -18,15 +17,13 @@ public interface ProjectForList {
 
 	Integer getPriority();
 
-	String getCategory();
-
-	String getCategoryColor();
-
 	String getType();
 
 	Integer getDailyLimit();
 	
-	Long getProjectCategoryId();
+	Instant getUpdatedAt();
+	
+	UUID getProjectCategoryId();
 	
 	Long getCategoryPriority();
 }

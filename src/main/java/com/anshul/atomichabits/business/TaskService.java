@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class TaskService {
 	
 	private static final String NOT_FOUND_MESSAGE = "task id:";
 	
-	public Task retriveTask(Long userId, Long taskId) {
+	public Task retriveTask(Long userId, UUID taskId) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, taskId);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + taskId);
@@ -85,7 +86,7 @@ public class TaskService {
 		return count;
 	}
 	
-	public Task createTask(Long userId, Long projectId, Task task) {
+	public Task createTask(Long userId, UUID projectId, Task task) {
 		Optional<User> userEntry = userRepository.findById(userId);
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, projectId);
 		if (projectEntry.isEmpty())
@@ -104,7 +105,7 @@ public class TaskService {
 	}
 	
 	@Transactional
-	public Task updateTask(Long userId, Long id, TaskDto taskDto) {
+	public Task updateTask(Long userId, UUID id, TaskDto taskDto) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
@@ -137,7 +138,7 @@ public class TaskService {
 	}
 	
 	@Transactional
-	public Task updateTaskPriority(Long userId, Long id, Map<String, String> map) {
+	public Task updateTaskPriority(Long userId, UUID id, Map<String, String> map) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
@@ -168,13 +169,13 @@ public class TaskService {
 	}
 	
 	@Transactional
-	public Boolean resetProjectTaskPriority(Long userId, Long projectId) {
+	public Boolean resetProjectTaskPriority(Long userId, UUID projectId) {
 		log.debug("updating project's {} task's orders", projectId);
 		taskRepository.updateTasksPriorityOrder(userId, projectId);
 		return true;
 	}
 	
-	public Task addTag(Long userId, Long id, List<Long> tagIds) {
+	public Task addTag(Long userId, UUID id, List<UUID> tagIds) {
 		Optional<Task> taskEntry = taskRepository.findUserTaskById(userId, id);
 		if (taskEntry.isEmpty())
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
@@ -186,16 +187,16 @@ public class TaskService {
 	    return taskRepository.save(taskEntry.get());
 	}
 	
-	public List<Object> retrieveTasksTags(long[] taskIds) {
+	public List<Object> retrieveTasksTags(UUID[] taskIds) {
 		return taskRepository.findTaskTagsByIds(taskIds);
 	}
 	
-	public List<Object> retrieveTasksTimeElapsed(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, long[] taskIds) {
+	public List<Object> retrieveTasksTimeElapsed(Long userId, OffsetDateTime startDate, OffsetDateTime endDate, UUID[] taskIds) {
 		log.debug(startDate + " " + endDate);
 		return taskRepository.findTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
 	
-	public List<Object> retrieveTasksCommentsCount(long[] taskIds) {
+	public List<Object> retrieveTasksCommentsCount(UUID[] taskIds) {
 		return taskRepository.countTaskCommentsByIds(taskIds);
 	}
 }

@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -20,6 +22,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.FetchType;
 
 import lombok.Getter;
@@ -39,14 +43,10 @@ import lombok.Setter;
 		@Index(name="comments_pomodoro_index", columnList="pomodoro_id"),
 		@Index(name="comments_updated_at_index", columnList="updatedAt")		
 })
-public class Comment {
+public class Comment implements Persistable<UUID>  {
 
 	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Column(unique = true, nullable = false)
-    private UUID publicId; // Set this from the client's request
+	private UUID id;
 
 	@Column(columnDefinition = "text", nullable = false)
 	private String description;
@@ -82,8 +82,8 @@ public class Comment {
 	    })
 	@JoinTable(
 	  name = "comments_tags", 
-	  joinColumns = @JoinColumn(name = "comment_id"), 
-	  inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	  joinColumns = @JoinColumn(name = "comment_id", columnDefinition = "uuid"), 
+	  inverseJoinColumns = @JoinColumn(name = "tag_id", columnDefinition = "uuid"))
 	private Set<Tag> tags;
 	
 	@CreationTimestamp
@@ -91,4 +91,14 @@ public class Comment {
 	
 	@UpdateTimestamp
 	private Instant updatedAt;
+	
+	@Transient
+    private boolean isNew = true;
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PrePersist
+    void markNotNew() { this.isNew = false; }
 }

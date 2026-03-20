@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class TaskController {
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
 	@GetMapping("/tasks/{taskId}")
-	public Task retrieveTask(Principal principal, @PathVariable Long taskId) {
+	public Task retrieveTask(Principal principal, @PathVariable UUID taskId) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.retriveTask(userId, taskId);
 	}
@@ -43,11 +44,11 @@ public class TaskController {
 	@GetMapping("/tasks")
 	public ResponseEntity<List<TaskForList>> retrieveTasks(Principal principal, 
 			@RequestParam(required = false) Long subjectId,
-			@RequestParam(required = false) Long projectId, 
+			@RequestParam(required = false) UUID projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) String searchString,
-			@RequestParam(required = false) Long tagId,
+			@RequestParam(required = false) UUID tagId,
 			@RequestParam(defaultValue = "current") String status, 
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset,
@@ -69,11 +70,11 @@ public class TaskController {
 
 	@GetMapping("/tasks/count")
 	public Integer retrieveTasksCountOfUserProject(Principal principal, 
-			@RequestParam(required = false) Long projectId, 
+			@RequestParam(required = false) UUID projectId, 
 			@RequestParam(required = false) Instant startDate, 
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) String searchString,
-			@RequestParam(required = false) Long tagId,
+			@RequestParam(required = false) UUID tagId,
 			@RequestParam(defaultValue = "current") String status) {
 		Long userId = Long.parseLong(principal.getName());
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchString);
@@ -81,40 +82,40 @@ public class TaskController {
 	}
 
 	@PostMapping("/tasks")
-	public Task createTask(Principal principal, @RequestParam Long projectId, @RequestBody Task task) {
+	public Task createTask(Principal principal, @RequestParam UUID projectId, @RequestBody Task task) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.createTask(userId, projectId, task);
 	}
 
 	@PutMapping("/tasks/{id}")
-	public Task updateTask(Principal principal, @PathVariable Long id, @Valid @RequestBody TaskDto taskDto) {
+	public Task updateTask(Principal principal, @PathVariable UUID id, @Valid @RequestBody TaskDto taskDto) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.updateTask(userId, id, taskDto);
 	}
 
 	@PutMapping("/tasks/{id}/priority")
-	public Task updateTaskPriority(Principal principal, @PathVariable Long id, @Valid @RequestBody Map<String, String> map) {
+	public Task updateTaskPriority(Principal principal, @PathVariable UUID id, @Valid @RequestBody Map<String, String> map) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.updateTaskPriority(userId, id, map);
 	}
 	
 	@PutMapping("/projects/{id}/priority-reset")
-	public Boolean resetProjectTaskPriority(Principal principal, @PathVariable Long id) {
+	public Boolean resetProjectTaskPriority(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.resetProjectTaskPriority(userId, id);
 	}
 	
 	@PostMapping("/tasks/{id}/tags")
 	public ResponseEntity<Task> addTag(Principal principal, 
-			@PathVariable Long id, 
+			@PathVariable UUID id, 
 			@RequestBody MapTagsRequest request) {
 		Long userId = Long.parseLong(principal.getName());
 	    return new ResponseEntity<>(taskService.addTag(userId, id, request.tagIds()), HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/tasks/tags")
+	@PostMapping("/tasks/tags")
 	public List<Object> retrieveTasksTags(Principal principal, 
-			@RequestParam("taskIds") long[] taskIds) {
+			@RequestBody UUID[] taskIds) {
 		return taskService.retrieveTasksTags(taskIds);
 	}
 	
@@ -122,16 +123,16 @@ public class TaskController {
 	public List<Object> retrieveTasksTimeElapsed(Principal principal, 
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate,
-			@RequestParam("taskIds") long[] taskIds) {
+			@RequestParam("taskIds") UUID[] taskIds) {
 		Long userId = Long.parseLong(principal.getName());
 		return taskService.retrieveTasksTimeElapsed(userId, startDate, endDate, taskIds);
 	}
 	
-	@GetMapping("/tasks/comments/count")
+	@PostMapping("/tasks/comments/count")
 	public List<Object> retrieveTasksCommentsCount(Principal principal, 
-			@RequestParam("taskIds") long[] taskIds) {
+			@RequestBody UUID[] taskIds) {
 		return taskService.retrieveTasksCommentsCount(taskIds);
 	}
 }
 
-record MapTagsRequest(List<Long> tagIds) {}
+record MapTagsRequest(List<UUID> tagIds) {}

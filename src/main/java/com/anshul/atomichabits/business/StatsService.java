@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -24,22 +25,22 @@ public class StatsService {
 	private PomodoroRepository pomodoroRepository;
 
 	public List<Object> retrieveProjectCategoriesPomodoros(Long userId, OffsetDateTime startDate,
-			OffsetDateTime endDate, long[] categories) {
+			OffsetDateTime endDate, UUID[] categories) {
 		return pomodoroRepository.findProjectCategoriesTime(userId, startDate, endDate, categories);
 	}
 
 	public List<Object> retrieveProjectPomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate,
-			long[] categories) {
+			UUID[] categories) {
 		return pomodoroRepository.findProjectsTime(userId, startDate, endDate, categories);
 	}
 
 	public List<Object> retrieveTaskPomodoros(Long userId, OffsetDateTime startDate, OffsetDateTime endDate,
-			long[] categories) {
+			UUID[] categories) {
 		return pomodoroRepository.findTasksTime(userId, startDate, endDate, categories);
 	}
 
 	public Map<String, TotalChartProjectData> retrieveProjectsTotalPomodoros(Long userId, String limit,
-			OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, String timezone) {
+			OffsetDateTime startDate, OffsetDateTime endDate, UUID[] categories, String timezone) {
 		// temporary fix for timezone issue with latest postgres / IANA timezone
 		if (timezone.equals("Asia/Calcutta")) {
 			timezone = "Asia/Kolkata";
@@ -76,7 +77,7 @@ public class StatsService {
 	}
 
 	public Map<String, TotalChartTaskData> retrieveTasksTotalPomodoros(Long userId, String limit,
-			OffsetDateTime startDate, OffsetDateTime endDate, long[] categories, String timezone) {
+			OffsetDateTime startDate, OffsetDateTime endDate, UUID[] categories, String timezone) {
 		// temporary fix for timezone issue with latest postgres / IANA timezone
 		if (timezone.equals("Asia/Calcutta")) {
 			timezone = "Asia/Kolkata";
@@ -113,7 +114,7 @@ public class StatsService {
 	}
 
 	public List<Object> retrievePomodorosCount(Long userId, OffsetDateTime startDate, OffsetDateTime endDate,
-			String type, Long typeId, long[] categories, String timezone) {
+			String type, UUID typeId, UUID[] categories, String timezone) {
 		// temporary fix for timezone issue with latest postgres / IANA timezone
 		// TODO: find generic solution
 		if (timezone.equals("Asia/Calcutta")) {
@@ -132,7 +133,7 @@ public class StatsService {
 		return result;
 	}
 
-	public List<Object> retrieveTaskPomodoros(Long userId, Long taskId, int limit, int offset) {
+	public List<Object> retrieveTaskPomodoros(Long userId, UUID taskId, int limit, int offset) {
 		return pomodoroRepository.findTaskPomodoros(userId, taskId, limit, offset);
 	}
 

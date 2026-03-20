@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,7 @@ public class PomodoroController {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam(name = "categoryIds", required = false) long[] categories,
+			@RequestParam(name = "categoryIds", required = false) UUID[] categories,
 			@RequestParam(required = false) Instant lastSyncTime) {
 		if (lastSyncTime == null) {
 			lastSyncTime = Instant.EPOCH;
@@ -70,7 +71,7 @@ public class PomodoroController {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("categoryIds") long[] categories) {
+			@RequestParam("categoryIds") UUID[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
 			return new ResponseEntity<>(statsService.retrieveProjectCategoriesPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -89,7 +90,7 @@ public class PomodoroController {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("categoryIds") long[] categories) {
+			@RequestParam("categoryIds") UUID[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
 			return new ResponseEntity<>(statsService.retrieveProjectPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -108,7 +109,7 @@ public class PomodoroController {
 			@RequestParam(required = false) Long subjectId,
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
-			@RequestParam("categoryIds") long[] categories) {
+			@RequestParam("categoryIds") UUID[] categories) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
 			return new ResponseEntity<>(statsService.retrieveTaskPomodoros(userId, startDate, endDate, categories), HttpStatus.OK);
@@ -128,7 +129,7 @@ public class PomodoroController {
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
 			@RequestParam OffsetDateTime endDate,
-			@RequestParam("categoryIds") long[] categories,
+			@RequestParam("categoryIds") UUID[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
@@ -149,7 +150,7 @@ public class PomodoroController {
 			@RequestParam String limit,
 			@RequestParam OffsetDateTime startDate, 
 			@RequestParam OffsetDateTime endDate,
-			@RequestParam("categoryIds") long[] categories,
+			@RequestParam("categoryIds") UUID[] categories,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {
@@ -170,8 +171,8 @@ public class PomodoroController {
 			@RequestParam OffsetDateTime startDate,
 			@RequestParam OffsetDateTime endDate, 
 			@RequestParam(defaultValue = "user")  String type,
-			@RequestParam(name = "categoryIds", required = false) long[] categories,
-			@RequestParam(required = false) Long typeId,
+			@RequestParam(name = "categoryIds", required = false) UUID[] categories,
+			@RequestParam(required = false) UUID typeId,
 			@RequestParam(defaultValue = "UTC") String timezone) {
 		Long userId = Long.parseLong(principal.getName());
 		if (subjectId == null) {	
@@ -188,7 +189,7 @@ public class PomodoroController {
 	
 	@GetMapping("/stats/task-pomodoros")
 	public List<Object> retrieveTaskPomodorosList(Principal principal, 
-			@RequestParam Long taskId,
+			@RequestParam UUID taskId,
 			@RequestParam(defaultValue = "10") int limit, 
 			@RequestParam(defaultValue = "0") int offset) {
 		Long userId = Long.parseLong(principal.getName());
@@ -203,7 +204,7 @@ public class PomodoroController {
 
 	@PostMapping("/pomodoros")
 	public ResponseEntity<Pomodoro> createPomodoro(Principal principal, 
-			@RequestParam Long taskId,
+			@RequestParam UUID taskId,
 			@Valid @RequestBody Pomodoro pomodoro) {	
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.createPomodoro(userId, taskId, pomodoro), HttpStatus.OK);
@@ -211,20 +212,20 @@ public class PomodoroController {
 
 	@PostMapping("/pomodoros/past")
 	public ResponseEntity<Pomodoro> createPastPomodoro(Principal principal, 
-			@RequestParam Long taskId,
+			@RequestParam UUID taskId,
 			@Valid @RequestBody Pomodoro pomodoro) {	
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.createPastPomodoro(userId, taskId, pomodoro), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable Long id) {
+	public ResponseEntity<Pomodoro> deletePomodoro(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.deletePomodoro(userId, id), HttpStatus.OK);
 	}
 
 	@PutMapping("/pomodoros/{id}")
-	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable Long id,
+	public ResponseEntity<Pomodoro> updatePomodoro(@PathVariable UUID id,
 			@RequestBody PomodoroUpdateDto pomodoroUpdateDto, Principal principal) {
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(pomodoroService.updatePomodoro(userId, id, pomodoroUpdateDto), HttpStatus.OK);

@@ -3,6 +3,7 @@ package com.anshul.atomichabits.controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class ProjectCategoryController {
 	private AccountabilityPartnerService accountabilityPartnerService;
 	
 	@GetMapping("/project-categories/{id}")
-	public ProjectCategory retrieveProjectCategory(Principal principal, @PathVariable Long id) {
+	public ProjectCategory retrieveProjectCategory(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 
 		return projectCategoryService.retriveProjectCategory(userId, id);
@@ -74,7 +75,7 @@ public class ProjectCategoryController {
 
 	@PutMapping("/project-categories/{id}")
 	public ResponseEntity<ProjectCategory> updateProjectCategoryOfUser(Principal principal, 
-			@PathVariable Long id,
+			@PathVariable UUID id,
 			@Valid @RequestBody ProjectCategoryDto projectCategory) {
 		Long userId = Long.parseLong(principal.getName());
 		return new ResponseEntity<>(projectCategoryService.updateProjectCategory(userId, id, projectCategory), HttpStatus.OK);

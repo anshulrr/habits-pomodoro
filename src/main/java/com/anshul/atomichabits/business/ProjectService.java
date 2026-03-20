@@ -3,6 +3,7 @@ package com.anshul.atomichabits.business;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ public class ProjectService {
 
 	private CommentRepository commentRepository;
 	
-	public ProjectDto retriveProject(Long userId, Long id) {
+	public ProjectDto retriveProject(Long userId, UUID id) {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, id);
 		if (projectEntry.isEmpty())
 			 	throw new ResourceNotFoundException("project id:" + id);
@@ -48,7 +49,7 @@ public class ProjectService {
 		return projectRepository.findUserProjects(userId, status, limit, offset, lastSyncTime);
 	}
 
-	public List<ProjectForList> retrieveCategoryProjects(Long userId, Long categoryId) {
+	public List<ProjectForList> retrieveCategoryProjects(Long userId, UUID categoryId) {
 		return projectRepository.findCategoryProjects(userId, categoryId);
 	}
 	
@@ -68,6 +69,7 @@ public class ProjectService {
 		
 		Project project = new Project();
 
+		project.setId(projectDto.getId());
 		project.setName(projectDto.getName());
 		project.setDescription(projectDto.getDescription());
 		project.setColor(projectDto.getColor());
@@ -75,7 +77,6 @@ public class ProjectService {
 		project.setPriority(projectDto.getPriority());
 		project.setType(projectDto.getType());
 		project.setDailyLimit(projectDto.getDailyLimit());
-		project.setPublicId(projectDto.getPublicId());
 		project.setUser(userEntry.get());
 		project.setProjectCategory(categoryEntry.get());
 		projectRepository.save(project);
@@ -84,7 +85,7 @@ public class ProjectService {
 	}
 	
 	@Transactional
-	public Project updateProject(Long userId, Long id, ProjectDto projectDto) {
+	public Project updateProject(Long userId, UUID id, ProjectDto projectDto) {
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, id);
 		if (projectEntry.isEmpty())
 			throw new ResourceNotFoundException("project id:" + id);

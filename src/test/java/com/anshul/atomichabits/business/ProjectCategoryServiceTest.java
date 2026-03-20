@@ -41,7 +41,7 @@ class ProjectCategoryServiceTest {
 	private ProjectCategoryRepository projectCategoryRepositoryMock;
 	
 	static Long USER_ID = 1L;
-	static Long CATEGORY_ID = 11L;
+	static UUID CATEGORY_ID = UUID.randomUUID();
 	static User user = new User("Samay", "samay@xyz.com");
 
 	@Test

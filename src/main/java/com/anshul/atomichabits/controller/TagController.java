@@ -2,6 +2,7 @@ package com.anshul.atomichabits.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import java.time.Instant;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class TagController {
 	private TagService tagService;
 
 	@GetMapping("/tags/{id}")
-	public Tag retrieveTag(Principal principal, @PathVariable Long id) {
+	public Tag retrieveTag(Principal principal, @PathVariable UUID id) {
 		Long userId = Long.parseLong(principal.getName());
 		return tagService.retriveTag(userId, id);
 	}
@@ -57,7 +58,7 @@ public class TagController {
 
 	@PutMapping("/tags/{id}")
 	public Tag updateTagOfUser(Principal principal, 
-			@PathVariable Long id,
+			@PathVariable UUID id,
 			@Valid @RequestBody Tag tagRequest) {
 		Long userId = Long.parseLong(principal.getName());
 		return tagService.updateTag(userId, id, tagRequest);

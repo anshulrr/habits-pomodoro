@@ -5,9 +5,7 @@ import java.util.UUID;
 
 public interface CommentForList {
 
-	Long getId();
-
-	UUID getPublicId();
+	UUID getId();
 
 	String getDescription();
 	
