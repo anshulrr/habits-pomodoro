@@ -1,6 +1,7 @@
 package com.anshul.atomichabits.dto;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -19,5 +20,6 @@ public record TaskDto(
 		@NotBlank String type,
 		@NotNull boolean enableNotifications,
 		@NotNull Instant updatedAt,
-		@NotNull UUID projectId
+		@NotNull UUID projectId,
+		List<UUID> tagIds
 	) {}
