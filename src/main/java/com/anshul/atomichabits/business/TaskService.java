@@ -111,7 +111,7 @@ public class TaskService {
 		 	throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + id);
 		
 		if (taskDto.updatedAt().isBefore(taskEntry.get().getUpdatedAt())) {
-			throw new ResourceConflictException("Conflict: project provided is stale");
+			throw new ResourceConflictException("Conflict: task provided is stale");
 		}
 		
 		Optional<Project> projectEntry = projectRepository.findUserProjectById(userId, taskDto.projectId());
@@ -134,6 +134,9 @@ public class TaskService {
 		taskEntry.get().setDailyLimit(taskDto.dailyLimit());
 		taskEntry.get().setEnableNotifications(taskDto.enableNotifications());
 		taskEntry.get().setProject(projectEntry.get());
+		
+		Set<Tag> tags = tagRepository.findUserTagByIds(userId, taskDto.tagIds());
+		taskEntry.get().setTags(tags);
 		return taskRepository.save(taskEntry.get());
 	}
 	
