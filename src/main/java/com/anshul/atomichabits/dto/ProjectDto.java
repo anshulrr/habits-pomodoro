@@ -32,6 +32,7 @@ public class ProjectDto {
 		this.type = project.getType();
 		this.dailyLimit = project.getDailyLimit();
 		this.status = project.getStatus();
+		this.updatedAt = project.getUpdatedAt();
 		log.trace("mapping category id");
 		this.projectCategoryId = project.getProjectCategory().getId();
 	}
