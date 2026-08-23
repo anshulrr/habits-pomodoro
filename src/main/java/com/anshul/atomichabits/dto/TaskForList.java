@@ -3,15 +3,18 @@ package com.anshul.atomichabits.dto;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.anshul.atomichabits.model.TaskStatus;
+import com.anshul.atomichabits.model.TaskType;
+
 public interface TaskForList {
 
 	UUID getId();
-	
+
 	String getDescription();
-	
-	String getStatus();
-	
-	String getType();
+
+	TaskStatus getStatus();
+
+	TaskType getType();
 	
 	Integer getPomodoroLength();
 	

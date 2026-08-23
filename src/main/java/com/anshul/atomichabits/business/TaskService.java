@@ -26,6 +26,7 @@ import com.anshul.atomichabits.jpa.UserRepository;
 import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
+import com.anshul.atomichabits.model.TaskStatus;
 import com.anshul.atomichabits.model.User;
 
 import lombok.AllArgsConstructor;
@@ -52,34 +53,34 @@ public class TaskService {
 		return taskEntry.get();
 	}
 	
-	public List<TaskForList> retrieveAllTasks(Long userId, int limit, int offset, TaskFilter filter, String status, Instant lastSyncTime) {
+	public List<TaskForList> retrieveAllTasks(Long userId, int limit, int offset, TaskFilter filter, TaskStatus status, Instant lastSyncTime) {
 		List<TaskForList> tasks;
-		if (filter.projectId() != null) {			
+		if (filter.projectId() != null) {
 			tasks = taskRepository.retrieveUserTasksByProjectId(userId, filter.projectId(), status, limit, offset, lastSyncTime);
 		} else if (filter.tagId() != null) {
 			tasks = taskRepository.findTasksByUserIdAndTagsId(userId, filter.tagId(), status, limit, offset);
 		} else if (filter.startDate() != null) {
 			tasks = taskRepository.retrieveFilteredTasks(userId, status, filter.startDate(), filter.endDate(), limit, offset);
 		} else if (filter.searchString() != null) {
-			tasks = taskRepository.retrieveSearchedTasks(userId, status, filter.searchString(), limit, offset);
+			tasks = taskRepository.retrieveSearchedTasks(userId, status.getValue(), filter.searchString(), limit, offset);
 		} else {
 			tasks = taskRepository.retrieveAllUserTasks(userId, limit, offset, lastSyncTime);
 		}
 		log.trace("tasks: {}", tasks);
 		return tasks;
 	}
-	
-	public Integer retrieveTasksCount(Long userId, TaskFilter filter, String status) {
+
+	public Integer retrieveTasksCount(Long userId, TaskFilter filter, TaskStatus status) {
 		Integer count = 0;
 		log.debug("{} {} {}", status, filter.startDate(), filter.endDate());
-		if (filter.projectId() != null) {	
-			count = taskRepository.getProjectTasksCount(userId, filter.projectId(), status);
+		if (filter.projectId() != null) {
+			count = taskRepository.getProjectTasksCount(userId, filter.projectId(), status.getValue());
 		} else if (filter.tagId() != null) {
 			count = taskRepository.getTagsTasksCount(userId, filter.tagId(), status);
 		} else if (filter.startDate() != null) {
-			count = taskRepository.getFilteredTasksCount(userId, status, filter.startDate(), filter.endDate());
+			count = taskRepository.getFilteredTasksCount(userId, status.getValue(), filter.startDate(), filter.endDate());
 		} else if (filter.searchString() != null) {
-			count = taskRepository.getSearchedTasksCount(userId, status, filter.searchString());
+			count = taskRepository.getSearchedTasksCount(userId, status.getValue(), filter.searchString());
 		} else {
 			count = taskRepository.getAllTasksCount(userId);
 		}
@@ -94,7 +95,7 @@ public class TaskService {
 		log.trace("found project: {}", projectEntry);
 		
 		// calculate priority
-		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(userId, projectId, "current", 1, 0, Instant.EPOCH);
+		List<TaskForList> tasks = taskRepository.retrieveUserTasksByProjectId(userId, projectId, TaskStatus.CURRENT, 1, 0, Instant.EPOCH);
 		if (!tasks.isEmpty()) {
 			task.setPriority(tasks.get(0).getPriority() - 1000);
 		}

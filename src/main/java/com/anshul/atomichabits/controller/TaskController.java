@@ -23,6 +23,7 @@ import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskFilter;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.model.Task;
+import com.anshul.atomichabits.model.TaskStatus;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -49,8 +50,8 @@ public class TaskController {
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) String searchString,
 			@RequestParam(required = false) UUID tagId,
-			@RequestParam(defaultValue = "current") String status, 
-			@RequestParam(defaultValue = "10") int limit, 
+			@RequestParam(defaultValue = "current") TaskStatus status,
+			@RequestParam(defaultValue = "10") int limit,
 			@RequestParam(defaultValue = "0") int offset,
 			@RequestParam(required = false) Instant lastSyncTime) {
 		if (lastSyncTime == null) {
@@ -75,7 +76,7 @@ public class TaskController {
 			@RequestParam(required = false) Instant endDate,
 			@RequestParam(required = false) String searchString,
 			@RequestParam(required = false) UUID tagId,
-			@RequestParam(defaultValue = "current") String status) {
+			@RequestParam(defaultValue = "current") TaskStatus status) {
 		Long userId = Long.parseLong(principal.getName());
 		TaskFilter filter = new TaskFilter(projectId, tagId, startDate, endDate, searchString);
 		return taskService.retrieveTasksCount(userId, filter, status);

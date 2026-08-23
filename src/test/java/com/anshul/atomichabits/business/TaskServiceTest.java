@@ -42,6 +42,8 @@ import com.anshul.atomichabits.model.Project;
 import com.anshul.atomichabits.model.ProjectCategory;
 import com.anshul.atomichabits.model.Tag;
 import com.anshul.atomichabits.model.Task;
+import com.anshul.atomichabits.model.TaskStatus;
+import com.anshul.atomichabits.model.TaskType;
 import com.anshul.atomichabits.model.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,83 +111,83 @@ class TaskServiceTest {
 	
 	@Test
 	void retrieveAllProjectTasks() {
-		String status = "added";
+		TaskStatus status = TaskStatus.CURRENT;
 		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null, null);
-		
+
 		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, status, 0, 0, Instant.EPOCH))
 			.thenReturn(new ArrayList<TaskForList>());
-		
+
 		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
-		
+
 		assertEquals(0, tasks.size());
 	}
-	
+
 	@Test
 	void retrieveAllTagTasks() {
-		String status = "added";
+		TaskStatus status = TaskStatus.CURRENT;
 		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null, null);
-		
+
 		when(taskRepositoryMock.findTasksByUserIdAndTagsId(USER_ID, TAG_ID, status, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
-		
+
 		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
-		
+
 		assertEquals(0, tasks.size());
 	}
-	
+
 	@Test
 	void retrieveAllFilteredTasks() {
-		String status = "added";
-		Instant startDate = Instant.now(); 
+		TaskStatus status = TaskStatus.CURRENT;
+		Instant startDate = Instant.now();
 		Instant endDate = Instant.now();
 		TaskFilter filter = new TaskFilter(null, null, startDate, endDate, null);
-		
+
 		when(taskRepositoryMock.retrieveFilteredTasks(USER_ID, status, startDate, endDate, 0, 0))
 			.thenReturn(new ArrayList<TaskForList>());
-		
+
 		List<TaskForList> tasks = taskService.retrieveAllTasks(USER_ID, 0, 0, filter, status, Instant.EPOCH);
-		
+
 		assertEquals(0, tasks.size());
 	}
-	
+
 	@Test
 	void retrieveAllProjectTasksCount() {
-		String status = "added";
+		TaskStatus status = TaskStatus.CURRENT;
 		TaskFilter filter = new TaskFilter(PROJECT_ID, null, null, null, null);
-		
-		when(taskRepositoryMock.getProjectTasksCount(USER_ID, PROJECT_ID, status))
+
+		when(taskRepositoryMock.getProjectTasksCount(USER_ID, PROJECT_ID, status.getValue()))
 			.thenReturn(1);
-		
+
 		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
-		
+
 		assertEquals(1, tasksCount);
 	}
-	
+
 	@Test
 	void retrieveAllTagsTasksCount() {
-		String status = "added";
+		TaskStatus status = TaskStatus.CURRENT;
 		TaskFilter filter = new TaskFilter(null, TAG_ID, null, null, null);
-		
+
 		when(taskRepositoryMock.getTagsTasksCount(USER_ID, TAG_ID, status))
 			.thenReturn(2);
-		
+
 		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
-		
+
 		assertEquals(2, tasksCount);
 	}
-	
+
 	@Test
 	void retrieveAllFilteredTasksCount() {
-		String status = "added";
-		Instant startDate = Instant.now(); 
+		TaskStatus status = TaskStatus.CURRENT;
+		Instant startDate = Instant.now();
 		Instant endDate = Instant.now();
 		TaskFilter filter = new TaskFilter(null, null, startDate, endDate, null);
-		
-		when(taskRepositoryMock.getFilteredTasksCount(USER_ID, status, startDate, endDate))
+
+		when(taskRepositoryMock.getFilteredTasksCount(USER_ID, status.getValue(), startDate, endDate))
 			.thenReturn(3);
-		
+
 		Integer tasksCount = taskService.retrieveTasksCount(USER_ID, filter, status);
-		
+
 		assertEquals(3, tasksCount);
 	}
 	
@@ -218,7 +220,7 @@ class TaskServiceTest {
 		TaskForList existingTopTask = mock(TaskForList.class);
 		when(existingTopTask.getPriority()).thenReturn(500);
 
-		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, "current", 1, 0, Instant.EPOCH))
+		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, TaskStatus.CURRENT, 1, 0, Instant.EPOCH))
 			.thenReturn(List.of(existingTopTask));
 
 		Task taskRequest = new Task(TASK_ID, "Test Task", user, project);
@@ -338,16 +340,15 @@ class TaskServiceTest {
 	@Test
 	void updateTask() {
 		Task task = new Task(TASK_ID, "Test Task", user, project);
-		String status = "added";
-		
+
 		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
 			.thenReturn(Optional.of(task));
-		
+
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
 			.thenReturn(Optional.of(project));
-		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID, new ArrayList<>());
-		
+
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, TaskStatus.CURRENT, TaskType.NEUTRAL, false, Instant.now(), PROJECT_ID, new ArrayList<>());
+
 		taskService.updateTask(USER_ID, TASK_ID, taskDtoRequest);
 		
 		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
@@ -360,12 +361,11 @@ class TaskServiceTest {
 	@Test
 	void updateTaskEmpty() {
 		UUID nil_task_id = UUID.randomUUID();
-		String status = "added";
-		
+
 		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
 			.thenReturn(Optional.ofNullable(null));
-		
-		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, status, "neutral", false, Instant.now(), PROJECT_ID, new ArrayList<>());
+
+		TaskDto taskDtoRequest = new TaskDto(TASK_ID, "Test Task", 25, null, 0, 1, TaskStatus.CURRENT, TaskType.NEUTRAL, false, Instant.now(), PROJECT_ID, new ArrayList<>());
 		
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			taskService.updateTask(USER_ID, nil_task_id, taskDtoRequest);

@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
+import com.anshul.atomichabits.model.converter.TaskStatusConverter;
+import com.anshul.atomichabits.model.converter.TaskTypeConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -18,6 +20,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PostLoad;
@@ -58,13 +61,13 @@ public class Task implements Persistable<UUID>  {
 
 	private Instant dueDate;
 
-	// current, archived
+	@Convert(converter = TaskStatusConverter.class)
 	@Column(columnDefinition = "varchar(255) default 'current'")
-	private String status = "current";
+	private TaskStatus status = TaskStatus.CURRENT;
 
-	// neutral, good, bad
+	@Convert(converter = TaskTypeConverter.class)
 	@Column(columnDefinition = "varchar(10) default 'neutral'")
-	private String type = "neutral";
+	private TaskType type = TaskType.NEUTRAL;
 	
 	@Column(columnDefinition = "integer default 1")
 	private Integer priority = 1;

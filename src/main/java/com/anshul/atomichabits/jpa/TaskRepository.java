@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.anshul.atomichabits.dto.TaskForList;
 import com.anshul.atomichabits.dto.TaskForNotifications;
 import com.anshul.atomichabits.model.Task;
+import com.anshul.atomichabits.model.TaskStatus;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
@@ -43,7 +44,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			order by t.priority asc, t.id desc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, UUID projectId, String status, int limit, int offset, Instant lastSyncTime);
+	public List<TaskForList> retrieveUserTasksByProjectId(Long userId, UUID projectId, TaskStatus status, int limit, int offset, Instant lastSyncTime);
 	
 	@Query(value = "select count(*) from tasks where user_id = :userId and project_id = :projectId and status = :status", nativeQuery = true)
 	public Integer getProjectTasksCount(Long userId, UUID projectId, String status);
@@ -57,7 +58,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			order by t.dueDate asc, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> retrieveFilteredTasks(Long userId, String status, Instant start, Instant end, int limit, int offset);
+	public List<TaskForList> retrieveFilteredTasks(Long userId, TaskStatus status, Instant start, Instant end, int limit, int offset);
 	
 	@Query(value = "select count(*) from tasks where user_id = :userId and status = :status and due_date >= :start and due_date <= :end", nativeQuery = true)
 	public Integer getFilteredTasksCount(Long userId, String status, Instant start, Instant end);
@@ -72,7 +73,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			order by pr.projectCategory.level, pr.priority, t.priority asc, t.id asc
 			limit :limit offset :offset
 			""")
-	public List<TaskForList> findTasksByUserIdAndTagsId(Long userId, UUID tagId, String status, int limit, int offset);
+	public List<TaskForList> findTasksByUserIdAndTagsId(Long userId, UUID tagId, TaskStatus status, int limit, int offset);
 	
 	@Query(value = """
 			select count(*) 
@@ -80,7 +81,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			join t.tags tags 
 			where t.user.id = :userId and tags.id = :tagId and status = :status
 			""")
-	public Integer getTagsTasksCount(Long userId, UUID tagId, String status);
+	public Integer getTagsTasksCount(Long userId, UUID tagId, TaskStatus status);
 	
 	@Query(value = """
 			select t.id id, t.priority priority, t.description description, t.status status, t.type type, t.due_date dueDate, t.repeat_days repeatDays, t.daily_limit dailyLimit, t.enable_notifications enableNotifications, t.pomodoro_length pomodoroLength, 
