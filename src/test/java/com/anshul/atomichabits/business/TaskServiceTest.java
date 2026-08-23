@@ -14,8 +14,10 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.mock;
 
 import com.anshul.atomichabits.dto.TaskDto;
 import com.anshul.atomichabits.dto.TaskFilter;
@@ -202,7 +206,135 @@ class TaskServiceTest {
 		
 		assertEquals(user, captor.getValue().getUser());
 	}
-	
+
+	@Test
+	void createTask_whenProjectAlreadyHasTasks_setsPriorityBelowExistingTopTask() {
+		when(userRepositoryMock.findById(USER_ID))
+			.thenReturn(Optional.of(user));
+
+		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
+			.thenReturn(Optional.of(project));
+
+		TaskForList existingTopTask = mock(TaskForList.class);
+		when(existingTopTask.getPriority()).thenReturn(500);
+
+		when(taskRepositoryMock.retrieveUserTasksByProjectId(USER_ID, PROJECT_ID, "current", 1, 0, Instant.EPOCH))
+			.thenReturn(List.of(existingTopTask));
+
+		Task taskRequest = new Task(TASK_ID, "Test Task", user, project);
+
+		taskService.createTask(USER_ID, PROJECT_ID, taskRequest);
+
+		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepositoryMock).save(captor.capture());
+
+		assertEquals(500 - 1000, captor.getValue().getPriority());
+	}
+
+	@Test
+	void updateTaskPriority_droppedAtStartOfList_setsPriorityBelowNext() {
+		Task task = new Task(TASK_ID, "Test Task", user, project);
+
+		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
+			.thenReturn(Optional.of(task));
+
+		Map<String, String> request = new HashMap<>();
+		request.put("prevOrder", "");
+		request.put("nextOrder", "2000");
+
+		taskService.updateTaskPriority(USER_ID, TASK_ID, request);
+
+		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepositoryMock).save(captor.capture());
+
+		assertEquals(2000 - 1000, captor.getValue().getPriority());
+	}
+
+	@Test
+	void updateTaskPriority_droppedAtEndOfList_setsPriorityAbovePrev() {
+		Task task = new Task(TASK_ID, "Test Task", user, project);
+
+		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
+			.thenReturn(Optional.of(task));
+
+		Map<String, String> request = new HashMap<>();
+		request.put("prevOrder", "3000");
+		request.put("nextOrder", "");
+
+		taskService.updateTaskPriority(USER_ID, TASK_ID, request);
+
+		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepositoryMock).save(captor.capture());
+
+		assertEquals(3000 + 1000, captor.getValue().getPriority());
+	}
+
+	@Test
+	void updateTaskPriority_droppedBetweenTwoTasks_setsPriorityToMidpoint() {
+		Task task = new Task(TASK_ID, "Test Task", user, project);
+
+		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
+			.thenReturn(Optional.of(task));
+
+		Map<String, String> request = new HashMap<>();
+		request.put("prevOrder", "1000");
+		request.put("nextOrder", "2000");
+
+		taskService.updateTaskPriority(USER_ID, TASK_ID, request);
+
+		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepositoryMock).save(captor.capture());
+
+		assertEquals(1500, captor.getValue().getPriority());
+	}
+
+	@Test
+	void updateTaskPriority_droppedBetweenAdjacentTasks_roundsDownOnOddMidpoint() {
+		// integer division: (1000 + 1001) / 2 == 1000, colliding with prevOrder.
+		// documents current behavior of the gap-based ordering, not necessarily desired behavior.
+		Task task = new Task(TASK_ID, "Test Task", user, project);
+
+		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
+			.thenReturn(Optional.of(task));
+
+		Map<String, String> request = new HashMap<>();
+		request.put("prevOrder", "1000");
+		request.put("nextOrder", "1001");
+
+		taskService.updateTaskPriority(USER_ID, TASK_ID, request);
+
+		ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepositoryMock).save(captor.capture());
+
+		assertEquals(1000, captor.getValue().getPriority());
+	}
+
+	@Test
+	void updateTaskPriority_taskNotFound_throws() {
+		UUID nil_task_id = UUID.randomUUID();
+
+		when(taskRepositoryMock.findUserTaskById(USER_ID, nil_task_id))
+			.thenReturn(Optional.ofNullable(null));
+
+		Map<String, String> request = new HashMap<>();
+		request.put("prevOrder", "1000");
+		request.put("nextOrder", "2000");
+
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+			taskService.updateTaskPriority(USER_ID, nil_task_id, request);
+	    });
+
+		assertEquals("task id:" + nil_task_id, exception.getMessage());
+	}
+
+	@Test
+	void resetProjectTaskPriority_delegatesToRepositoryAndReturnsTrue() {
+		Boolean result = taskService.resetProjectTaskPriority(USER_ID, PROJECT_ID);
+
+		verify(taskRepositoryMock).updateTasksPriorityOrder(USER_ID, PROJECT_ID);
+		assertEquals(Boolean.TRUE, result);
+	}
+
 	@Test
 	void updateTask() {
 		Task task = new Task(TASK_ID, "Test Task", user, project);
