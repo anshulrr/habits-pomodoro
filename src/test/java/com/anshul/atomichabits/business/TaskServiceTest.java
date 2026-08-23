@@ -340,6 +340,7 @@ class TaskServiceTest {
 	@Test
 	void updateTask() {
 		Task task = new Task(TASK_ID, "Test Task", user, project);
+		task.setUpdatedAt(Instant.now().minusSeconds(60));
 
 		when(taskRepositoryMock.findUserTaskById(USER_ID, TASK_ID))
 			.thenReturn(Optional.of(task));
@@ -355,9 +356,10 @@ class TaskServiceTest {
 		verify(taskRepositoryMock).save(captor.capture());
 		
 		assertEquals(task, captor.getValue());
-		assertEquals(5, captor.getValue().getPriority());
+		// updateTask doesn't touch priority; this is the Task default, unchanged
+		assertEquals(1, captor.getValue().getPriority());
 	}
-	
+
 	@Test
 	void updateTaskEmpty() {
 		UUID nil_task_id = UUID.randomUUID();

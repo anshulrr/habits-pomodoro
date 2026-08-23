@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -274,8 +274,8 @@ class PomodoroServiceTest {
 		
 		pomodoroService.getRunningPomodoro(USER_ID);
 		
-		// check if multiple entries are deleted	
-		verify(pomodoroRepositoryMock, times(2)).deleteById(anyLong());;
+		// check if multiple entries are deleted
+		verify(pomodoroRepositoryMock, times(2)).deleteByUuid(any(UUID.class));
 		
 		ArgumentCaptor<Pomodoro> captor = ArgumentCaptor.forClass(Pomodoro.class);
 		verify(pomodoroRepositoryMock).save(captor.capture());

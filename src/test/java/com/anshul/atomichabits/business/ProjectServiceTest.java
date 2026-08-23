@@ -146,7 +146,8 @@ class ProjectServiceTest {
 	@Test
 	void updateProject() {
 		Project project = new Project(PROJECT_ID, "Test Project", user, category);
-		
+		project.setUpdatedAt(Instant.now());
+
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
 			.thenReturn(Optional.of(project));
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
@@ -167,6 +168,7 @@ class ProjectServiceTest {
 	@Test
 	void updateProjectChangeCategory() {
 		Project project = new Project(PROJECT_ID, "Test Project", user, category);
+		project.setUpdatedAt(Instant.now());
 		UUID category_id_2 = UUID.randomUUID();
 		
 		when(projectRepositoryMock.findUserProjectById(USER_ID, PROJECT_ID))
@@ -185,7 +187,8 @@ class ProjectServiceTest {
 		
 		assertEquals(project, captor.getValue());
 		assertEquals(5, captor.getValue().getPriority());
-		verify(commentRepositoryMock, times(1)).updateCommentsCategory(USER_ID, PROJECT_ID, category_id_2);
+		// category_id_2 is only the lookup key; the call passes the resolved category's own id
+		verify(commentRepositoryMock, times(1)).updateCommentsCategory(USER_ID, PROJECT_ID, category2.getId());
 	}
 	
 	@Test

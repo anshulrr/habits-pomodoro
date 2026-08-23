@@ -110,6 +110,7 @@ class ProjectCategoryServiceTest {
 	void updateProjectCategory() {
 		ProjectCategory projectCategory = new ProjectCategory();
 		projectCategory.setLevel(2);
+		projectCategory.setUpdatedAt(Instant.now().minusSeconds(60));
 		when(projectCategoryRepositoryMock.findUserProjectCategoryById(USER_ID, CATEGORY_ID))
 			.thenReturn(Optional.of(projectCategory));
 		
