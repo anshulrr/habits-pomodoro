@@ -17,7 +17,7 @@ Freeform notes attachable to a Category, Project, Task, or Pomodoro — used thr
 | `projectCategory`, `project`, `task`, `pomodoro` | each `@ManyToOne`, lazy | **all nullable — exactly one is set per comment**, no polymorphic/discriminator column |
 | `tags` | `Set<Tag>` | `@ManyToMany` via `comments_tags` |
 
-**Architectural note:** `CommentController` has no corresponding `CommentService` — it's the one feature where controller code talks to repositories directly (`UserRepository`, `ProjectCategoryRepository`, `ProjectRepository`, `TaskRepository`, `PomodoroRepository`, `CommentRepository`, `TagRepository`, all injected into the controller). See backend [ARCHITECTURE.md](../../habits-pomodoro/ARCHITECTURE.md#layering).
+**Architectural note:** `CommentController` has no corresponding `CommentService` — it's the one feature where controller code talks to repositories directly (`UserRepository`, `ProjectCategoryRepository`, `ProjectRepository`, `TaskRepository`, `PomodoroRepository`, `CommentRepository`, `TagRepository`, all injected into the controller). See backend [ARCHITECTURE.md](../ARCHITECTURE.md#layering).
 
 **Endpoints:** `CommentController` (`controller/CommentController.java`) — the largest controller in the app, with both generic and parent-scoped routes:
 

@@ -1,6 +1,6 @@
 # Architecture — Habits Pomodoro (Backend)
 
-Spring Boot 3 / Java 17 API for the Habits Pomodoro app. See the [root README](README.md) for the product concept. This document describes how the code is actually organized today, including known inconsistencies, so it can serve as a map for refactoring — not an idealized target state.
+Spring Boot 3 / Java 17 API for the Habits Pomodoro app. See the [root README](../README.md) for the product concept. This document describes how the code is actually organized today, including known inconsistencies, so it can serve as a map for refactoring — not an idealized target state.
 
 ## Stack
 

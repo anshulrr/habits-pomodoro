@@ -70,5 +70,5 @@ Two levels of grouping above Task, matching the README's "Make It Obvious" guida
 ## Known gaps
 
 - `Project.type`/`status` are raw strings, same enum gap as `Task` (see [Tasks](01-tasks.md)).
-- `ProjectCategoryService`'s Redis cache annotations are commented out rather than removed or fixed (see backend [ARCHITECTURE.md](../../habits-pomodoro/ARCHITECTURE.md#caching)) — category reads currently bypass caching entirely, mid-cleanup.
+- `ProjectCategoryService`'s Redis cache annotations are commented out rather than removed or fixed (see backend [ARCHITECTURE.md](../ARCHITECTURE.md#caching)) — category reads currently bypass caching entirely, mid-cleanup.
 - Category management UI lives under Settings rather than alongside Projects/Tasks — not a bug, but worth knowing when looking for it.

@@ -2,8 +2,8 @@
 
 Each doc below covers one feature end-to-end: the backend model + API, the frontend components + local-sync behavior, and known gaps specific to that feature. For layer-by-layer architecture (not feature-by-feature), see:
 
-- [`habits-pomodoro/ARCHITECTURE.md`](../../habits-pomodoro/ARCHITECTURE.md) — backend
-- [`habits-pomodoro-frontend/ARCHITECTURE.md`](../../habits-pomodoro-frontend/ARCHITECTURE.md) — frontend
+- [`habits-pomodoro/docs/ARCHITECTURE.md`](../ARCHITECTURE.md) — backend
+- [`habits-pomodoro-frontend/docs/ARCHITECTURE.md`](../../../habits-pomodoro-frontend/docs/ARCHITECTURE.md) — frontend
 
 All docs reflect the code as of 2026-08-14, not an idealized design — flagged gaps are real, found by reading the source.
 

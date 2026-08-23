@@ -59,7 +59,7 @@ sequenceDiagram
 **Auth components/services:**
 - `src/components/LoginComponent.jsx`, `SignupComponent.jsx`, `ForgotPasswordComponent.jsx`
 - `src/services/auth/FirebaseAuthService.js` — thin wrapper over Firebase Auth SDK calls (login/signup/refresh/reset)
-- `src/services/auth/AuthContext.jsx` — the app-wide auth context; also owns the axios request/response interceptor (token attach + refresh + 401→logout) and the periodic Dexie sync scheduling (see [frontend ARCHITECTURE.md](../../habits-pomodoro-frontend/ARCHITECTURE.md#state-management))
+- `src/services/auth/AuthContext.jsx` — the app-wide auth context; also owns the axios request/response interceptor (token attach + refresh + 401→logout) and the periodic Dexie sync scheduling (see [frontend ARCHITECTURE.md](../../../habits-pomodoro-frontend/docs/ARCHITECTURE.md#state-management))
 - `src/services/FirebaseMessageService.jsx` — requests/stores the FCM token (`getAndStoreNotificationsToken`)
 - `src/services/FirebaseFirestoreService.js` — `disableToken`, called on logout
 - `src/firebase-messaging-sw.js` — service worker for background push
@@ -80,5 +80,5 @@ sequenceDiagram
 - **`logout()` cleanup isn't fully wrapped:** if `disableToken(user.uid)` throws, the later steps (Firebase sign-out, IndexedDB cache clear) are skipped — a potential stale-session/data-leak risk on a shared device.
 - **Caching bug:** `AuthorityService.getAuthorities(User user)` is `@Cacheable` with no explicit key; since `User` has no `equals`/`hashCode` override, the cache key falls back to object identity and effectively never hits.
 - **Stale cache after password change:** `UserService.updatePassword` saves without evicting the `user` cache entry, so a stale (pre-change) cached user can still be served.
-- Both periodic sync intervals scheduled from `AuthContext.jsx` are hardcoded to 1 hour despite a comment implying the dirty-row push should run every 5 minutes — see [frontend ARCHITECTURE.md](../../habits-pomodoro-frontend/ARCHITECTURE.md#known-gaps).
+- Both periodic sync intervals scheduled from `AuthContext.jsx` are hardcoded to 1 hour despite a comment implying the dirty-row push should run every 5 minutes — see [frontend ARCHITECTURE.md](../../../habits-pomodoro-frontend/docs/ARCHITECTURE.md#known-gaps).
 - `FirebaseConfiguration.firebaseApp()` on the backend has a `// TODO: use better and secure way` note about how the service account key is currently loaded from the classpath.
