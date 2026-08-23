@@ -5,6 +5,8 @@ Each doc below covers one feature end-to-end: the backend model + API, the front
 - [`habits-pomodoro/docs/ARCHITECTURE.md`](../ARCHITECTURE.md) — backend
 - [`habits-pomodoro-frontend/docs/ARCHITECTURE.md`](../../../habits-pomodoro-frontend/docs/ARCHITECTURE.md) — frontend
 
+For security, reliability, observability, performance, and maintainability concerns that cut across every feature, see [`NON_FUNCTIONAL_REQUIREMENTS.md`](../NON_FUNCTIONAL_REQUIREMENTS.md).
+
 All docs reflect the code as of 2026-08-14, not an idealized design — flagged gaps are real, found by reading the source.
 
 ## Features
